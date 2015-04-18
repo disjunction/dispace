@@ -11,7 +11,7 @@ module.exports = {
         }
     },
     field: {
-        LocalDispaceMixin: require('./field/LocalDispaceMixin'),
+        ModuleDispaceLocal: require('./field/ModuleDispaceLocal'),
         EgoInteractorApplierLocal: require('./field/EgoInteractorApplierLocal'),
         EgoProtagonistLocal: require('./field/EgoProtagonistLocal')
     },
