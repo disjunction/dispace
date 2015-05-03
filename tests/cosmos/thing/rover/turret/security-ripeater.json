@@ -1,0 +1,11 @@
+{
+    "states" : {
+        "basic" : {
+            "main": {
+                "layer": "main",
+                "src": "vorschlag/rover/turret/security-turrets.png",
+                "subrect": [0, 0, 16, 16]
+            }
+        }
+    }
+}

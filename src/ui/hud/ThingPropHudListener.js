@@ -63,20 +63,12 @@ var ThingPropHudListener = AbstractHudListener.extend({
         this.opts.selector.append(row);
     },
     
-    update: function(force) {
-        if (!force && this.opts.interval) {
-            var d = new Date(),
-                current = d.getTime();
-            if (this.lastUpdate && current < this.lastUpdate + this.opts.interval) {
-                return;
-            }
-            this.lastUpdate = d.getTime();
-        }
-        
+    doUpdate: function(force) {
         for (var i = 0; i < this.props.length; i++) {
             var prop = this.props[i];
             prop.valueSelector.html(this.getValueByGetter(prop.getter));
         }
+        return this.opts.interval;
     }
     
     

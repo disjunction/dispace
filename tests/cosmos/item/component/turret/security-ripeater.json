@@ -1,0 +1,28 @@
+{
+    "name": "Ripeater",
+    
+    "subtype": "turret",
+    "socket": "B",
+    "turretType": "weapon",
+    
+    "planSrc": "thing/rover/turret/security-ripeater",
+    
+    "params": {
+        "1": {
+            "omega": 0.1,
+            "chargeTime": 1000,
+            "damage": {
+                "projectile": 1
+            }
+        },
+        "2": {
+            "omega": 0.2,
+            "chargeTime": 900,
+            "damage": {
+                "projectile": 1
+            }
+        }
+    },
+    "producer": "security",
+    "description": "weak machine gun"
+}

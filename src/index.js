@@ -1,23 +1,26 @@
 module.exports = {
     entity: {
         item: {
-            Assembly: require('./entity/item/Assembly'),
             Item: require('./entity/item/Item'),
-            Pile: require('./entity/item/Pile'),
-            Turret: require('./entity/item/Turret')
+            Component: require('./entity/item/Component')
         },
         thing: {
             Rover: require('./entity/thing/Rover')
-        }
+        },
+        Assembly: require('./entity/Assembly'),
+        ItemManager: require('./entity/ItemManager'),
+        RoverBuilder: require('./entity/RoverBuilder')
     },
     field: {
         ModuleDispaceLocal: require('./field/ModuleDispaceLocal'),
+        ModuleShooter: require('./field/ModuleShooter'),
         EgoInteractorApplierLocal: require('./field/EgoInteractorApplierLocal'),
         EgoProtagonistLocal: require('./field/EgoProtagonistLocal')
     },
     ui: {
         hud: {
-            ThingPropHudListener: require('./ui/hud/ThingPropHudListener')
+            ThingPropHudListener: require('./ui/hud/ThingPropHudListener'),
+            TurretPointerHudComponent: require('./ui/hud/TurretPointerHudComponent')
         }
     }
 };

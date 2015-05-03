@@ -4,11 +4,16 @@ var cc = require('cc'),
 
 var Rover = Thing.extend({
     ctor: function(opts) {
-        this.type = 'rover';
-        Thing.prototype.ctor.call(this, opts);
         if (!opts.assembly) {
             throw new Error('Rover requires "assembly" opt');
         }
+        this.type = 'rover';
+        Thing.prototype.ctor.call(this, opts);
+        
+        this.things = {}
+
+        // create alias
+        this.assembly = opts.assembly;
     }
 });
 

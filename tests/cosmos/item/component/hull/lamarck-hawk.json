@@ -1,0 +1,25 @@
+{
+    "subtype": "hull",
+    "planSrc": "thing/rover/hull/lamarck-hawk",
+    "sockets": {
+        "engine": {
+            "type": "E",
+            "xShift": -1,
+            "plan": "thing/rover/deco/propeller-1"
+        },
+        "turret1": {
+            "type": "C",
+            "xShift": 0.5
+        },
+        "turret2": {
+            "type": "B",
+            "xShift": 0
+        }
+    },
+    "params": {
+        "class1": {
+            "engineMultiplier": 2,
+            "linearDamping": 2
+        }
+    }
+}
