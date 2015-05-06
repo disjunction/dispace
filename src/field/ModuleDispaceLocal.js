@@ -1,7 +1,8 @@
 var b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
     Thing = flame.entity.Thing,
-    ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract');
+    ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
+    ViewponAbstract = require('view/viewpon/ViewponAbstract');
 
 var radius;
 
@@ -56,23 +57,19 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
         }.bind(this));
         
         this.fe.fd.addListener('injectShot', function(event) {
-            var shotThing = this.makeShotThing(event.shot);
-            this.fe.injectThing(shotThing);
-            Thing.stretch(shotThing, event.shot.l2, event.shot.l1);
-            this.fe.m.c.syncStateFromThing(shotThing);
-            globalShot = shotThing;
+            var component = event.shot.subjComponent;
+            if (!component.viewpon) {
+                component.viewpon = new ViewponAbstract({
+                    fe: this.fe,
+                    viewponPlan: this.fe.opts.cosmosManager.getResource(component.opts.viewponSrc)
+                });
+            }
+            component.viewpon.showShot(event.shot);
         }.bind(this));
         
         this.fe.fd.addListener('injectHit', function(event) {
             this.envisionHit(event.hit);
         }.bind(this));
-    },
-
-    makeShotThing: function(shot) {
-        var  thing = new Thing({
-            plan: this.fe.opts.cosmosManager.getResource('thing/effect/shot/red-laser')
-        });
-        return thing;
     },
     
     envisionRover: function(thing) {

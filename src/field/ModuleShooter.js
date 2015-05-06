@@ -61,21 +61,27 @@ var ModuleShooter = cc.Class.extend({
                     a: 10,
                     i: 1
                 },
-                subjComponent: subjComponent
+                subjComponent: subjComponent,
+                subjThing: subjThing,
+                objThing: this.ray.results[0].thing
             };
             
             result.shot = {
                 isHit: true,
                 l1: this.ray.muzzlePoint,
                 l2: endPoint,
-                subjComponent: subjComponent
+                subjComponent: subjComponent,
+                subjThing: subjThing,
+                fraction: this.ray.results[0].fraction
             };
         } else {
             result.shot = {
                 isHit: false,
                 l1: this.ray.muzzlePoint,
                 l2: this.ray.missPoint,
-                subjComponent: subjComponent
+                subjThing: subjThing,
+                subjComponent: subjComponent,
+                fraction: this.ray.results[0].fraction
             };
         }
         
