@@ -38,6 +38,12 @@ var ModuleShooter = cc.Class.extend({
                 type: 'injectShot',
                 shot: shotResult.shot
             });
+            if (shotResult.hit) {
+                this.fe.fd.dispatch({
+                    type: 'injectHit',
+                    hit: shotResult.hit
+                });
+            }
             subjComponent.lastShot = this.fe.timeSum;
             return shotResult;
         } else {

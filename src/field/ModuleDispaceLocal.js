@@ -22,7 +22,7 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
         this.fe.fd.addListener('injectThing', function(event) {
             var thing = event.extra.thing;
             if (thing.type && thing.type == 'rover') {
-                this.envisionRover(thing);
+                this.displayRover(thing);
                 
                 // store important for "us" things,
                 // so that we iterate only through the relevant ones in poststep
@@ -57,22 +57,35 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
         }.bind(this));
         
         this.fe.fd.addListener('injectShot', function(event) {
-            var component = event.shot.subjComponent;
-            if (!component.viewpon) {
-                component.viewpon = new ViewponAbstract({
-                    fe: this.fe,
-                    viewponPlan: this.fe.opts.cosmosManager.getResource(component.opts.viewponSrc)
-                });
-            }
-            component.viewpon.showShot(event.shot);
+            this.displayShot(event);
         }.bind(this));
         
         this.fe.fd.addListener('injectHit', function(event) {
-            this.envisionHit(event.hit);
+            this.displayHit(event);
         }.bind(this));
     },
     
-    envisionRover: function(thing) {
+    getViewponForComponent: function(component) {
+        if (!component.viewpon) {
+            component.viewpon = new ViewponAbstract({
+                fe: this.fe,
+                viewponPlan: this.fe.opts.cosmosManager.getResource(component.opts.viewponSrc)
+            });
+        }
+        return component.viewpon;
+    },
+    
+    displayShot: function(event) {
+        var viewpon = this.getViewponForComponent(event.shot.subjComponent);
+        viewpon.showShot(event.shot);
+    },
+    
+    displayHit: function(event) {
+        var viewpon = this.getViewponForComponent(event.hit.subjComponent);
+        viewpon.showHit(event.hit);
+    },
+    
+    displayRover: function(thing) {
         // alias for socket definition
         thing.sockets = thing.assembly.opts.components['hull'].opts.sockets;
         

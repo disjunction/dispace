@@ -14,6 +14,7 @@ module.exports = {
     field: {
         ModuleDispaceLocal: require('./field/ModuleDispaceLocal'),
         ModuleShooter: require('./field/ModuleShooter'),
+        ModuleInsight: require('./field/ModuleInsight'),
         EgoInteractorApplierLocal: require('./field/EgoInteractorApplierLocal'),
         EgoProtagonistLocal: require('./field/EgoProtagonistLocal')
     },
