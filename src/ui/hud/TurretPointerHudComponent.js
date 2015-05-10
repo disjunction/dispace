@@ -15,16 +15,16 @@ var TurretPointerHudComponent = AbstractHudListener.extend({
      */
     ctor: function(opts) {
         AbstractHudListener.prototype.ctor.call(this, opts);
-        
+
         this.turretThing = opts.turretComponent.thing;
-        
+
         this.cursorThing = new flame.entity.Thing({
             plan: opts.cursorPlan,
             l: cc.clone(this.turretThing.l),
             a: this.turretThing.a
         });
         this.opts.fe.m.c.envision(this.cursorThing);
-        
+
         var node = this.cursorThing.state.nodes.main;
         var tint = cc.sequence(
             cc.tintTo(1, 255, 0, 0),
@@ -34,14 +34,14 @@ var TurretPointerHudComponent = AbstractHudListener.extend({
 
         this.p1 = cc.p(0, 0);
         this.p2 = cc.p(0, 0);
-        
+
         this.a1 = 0;
         this.a2 = 0;
 
         node.runAction(tint.repeatForever());
-        
+
         this.radius = opts.turretComponent.params.range;
-        
+
         this.ray = new flame.engine.ray.RayClosestFilterFunction({
             filterFunction: function(thing) {
                 if (thing.__instanceId == opts.ego.__instanceId) {
@@ -50,7 +50,7 @@ var TurretPointerHudComponent = AbstractHudListener.extend({
             }
         });
     },
-        
+
     doUpdate: function(dt) {
         var aniInterval = 0.2,
             fixedInterval = aniInterval * 0.85;
@@ -58,10 +58,10 @@ var TurretPointerHudComponent = AbstractHudListener.extend({
         if (!isFinite(this.turretThing.a)) {
             return;
         }
-        
+
         var node = this.cursorThing.state.nodes.main;
         this.opts.fe.m.b.rayCastFromThing(this.ray, this.turretThing, this.radius);
-        
+
         node.setRotation(- this.turretThing.a * geo.rad2Deg);
         if (this.ray.isHit) {
             var p = this.ray.results[0].p;
@@ -69,14 +69,19 @@ var TurretPointerHudComponent = AbstractHudListener.extend({
             if (!node.visible) {
                 var turretTargetL = this.opts.viewport.scrolledLocation2Target(this.turretThing.l),
                     appearL = cc.p((turretTargetL.x + p.x)/2, (turretTargetL.y + p.y)/2);
-                
+
+                node.setPosition(p);
+
+                // the animation below is distracting, but cool. not sure if we need it
+                /*
                 node.setPosition(appearL);
                 var moveTo = cc.moveTo(fixedInterval, p).easing(cc.easeOut(0.5));
                 node.runAction(moveTo);
-                
+                */
+
                 var fadeAction = cc.fadeTo(fixedInterval, 255);
                 node.runAction(fadeAction);
-                
+
                 node.visible = true;
                 return aniInterval;
             } else {

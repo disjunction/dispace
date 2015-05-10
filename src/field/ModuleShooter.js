@@ -2,7 +2,7 @@ var cc = require('cc'),
     b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract');
-    
+
 var ModuleShooter = cc.Class.extend({
     ctor: function(opts) {
         this.opts = opts || {};
@@ -11,11 +11,11 @@ var ModuleShooter = cc.Class.extend({
     injectFe: function(fe, name) {
         this.di = 0; // dispace iteration
         this.importantThings = [];
-        
+
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
-        
+
         this.shooterIid = 0;
-        
+
         this.ray = new flame.engine.ray.RayClosestFilterFunction({
             filterFunction: function(thing) {
                 if (thing.__instanceId == this.shooterIid) {
@@ -24,7 +24,7 @@ var ModuleShooter = cc.Class.extend({
             }.bind(this)
         });
     },
-    
+
     /**
      * a wrapper around the shoot, which checks first the conditions and only then fires
      * @param {Thing} subjThing
@@ -50,28 +50,66 @@ var ModuleShooter = cc.Class.extend({
             return null;
         }
     },
-    
+
+    /**
+     * apply damage of subjComponent vs. objThing
+     * subjThing is still in params to add friendly-fire modifiers etc.
+     */
+    calculateDamage: function(subjThing, objThing, subjComponent) {
+        function readDamageValue(value) {
+            if (Array.isArray(value)) {
+                return Math.round(value[0] + Math.random() * (value[1] - value[0]));
+            }
+            return value;
+        }
+
+        var effect = subjComponent.params.effect,
+            result = {};
+
+        // projectile effects armour
+        if (effect.projectile) {
+            result.a = readDamageValue(effect.projectile);
+        }
+
+        // electric effects shield
+        if (effect.electric) {
+            result.s = readDamageValue(effect.electric);
+        }
+
+        switch (objThing.type) {
+            // trees have only infra, all damage is converted into it
+            case 'tree':
+                var treeResult = {i: 0};
+                for (var i in result) {
+                    treeResult.i += result[i];
+                }
+                return treeResult.i > 0 ? treeResult : {};
+            case 'rover':
+                return result;
+        }
+
+        // all other things can't be hurt
+        return {};
+    },
+
     shoot: function(subjThing, subjComponent) {
         this.shooterIid = subjThing.__instanceId;
         var result = {},
             range = subjComponent.params.range,
             turretThing = subjComponent.thing;
-        
+
         this.fe.m.b.rayCastFromThing(this.ray, turretThing, range, subjComponent.opts.radius);
-    
+
         if (this.ray.isHit) {
             var endPoint = cc.clone(this.ray.results[0].p);
             result.hit = {
                 l: endPoint,
-                damage: {
-                    a: 10,
-                    i: 1
-                },
+                damage: this.calculateDamage(subjThing, this.ray.results[0].thing, subjComponent),
                 subjComponent: subjComponent,
                 subjThing: subjThing,
                 objThing: this.ray.results[0].thing
             };
-            
+
             result.shot = {
                 isHit: true,
                 l1: this.ray.muzzlePoint,
@@ -90,7 +128,7 @@ var ModuleShooter = cc.Class.extend({
                 fraction: this.ray.results[0].fraction
             };
         }
-        
+
         return result;
     }
 });
