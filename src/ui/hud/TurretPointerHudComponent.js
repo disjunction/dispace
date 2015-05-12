@@ -63,6 +63,9 @@ var TurretPointerHudComponent = AbstractHudListener.extend({
         this.opts.fe.m.b.rayCastFromThing(this.ray, this.turretThing, this.radius);
 
         node.setRotation(- this.turretThing.a * geo.rad2Deg);
+
+        var fadeAction;
+
         if (this.ray.isHit) {
             var p = this.ray.results[0].p;
             p = this.opts.viewport.scrolledLocation2Target(p);
@@ -79,11 +82,11 @@ var TurretPointerHudComponent = AbstractHudListener.extend({
                 node.runAction(moveTo);
                 */
 
-                var fadeAction = cc.fadeTo(fixedInterval, 255);
+                fadeAction = cc.fadeTo(fixedInterval * 2, 255);
                 node.runAction(fadeAction);
 
                 node.visible = true;
-                return aniInterval;
+                return aniInterval / 4;
             } else {
                 var moveTo = cc.moveTo(fixedInterval / 4, p).easing(cc.easeOut(0.5));
                 node.runAction(moveTo);
@@ -91,7 +94,7 @@ var TurretPointerHudComponent = AbstractHudListener.extend({
             }
         } else {
             if (node.visible) {
-                var fadeAction = cc.sequence(
+                fadeAction = cc.sequence(
                         cc.fadeTo(fixedInterval, 0),
                         cc.hide()
                     );

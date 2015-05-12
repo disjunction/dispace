@@ -11,6 +11,9 @@ module.exports = {
         ItemManager: require('./entity/ItemManager'),
         RoverBuilder: require('./entity/RoverBuilder')
     },
+    service: {
+        GutsManager: require('./service/GutsManager'),
+    },
     field: {
         ModuleDispaceLocal: require('./field/ModuleDispaceLocal'),
         ModuleShooter: require('./field/ModuleShooter'),

@@ -1,4 +1,4 @@
-var cc = require('cc');
+var cc = require('cc'),
     Assembly = require('./Assembly'),
     Rover = require('./thing/Rover');
 /**
@@ -7,7 +7,7 @@ var cc = require('cc');
  * * thingBuilder
  */
 var RoverBuilder = cc.Class.extend({
-    
+
     ctor: function(opts) {
         if (!opts.itemManager) {
             throw new Error('RoverBuilder requires "itemManager" opt');
@@ -23,7 +23,7 @@ var RoverBuilder = cc.Class.extend({
                 plan: hullPlan,
                 assembly: assembly
             });
-    
+
         for (var i in assembly.opts.components) {
             if (i != 'hull') {
                 var component = assembly.opts.components[i],
@@ -33,23 +33,23 @@ var RoverBuilder = cc.Class.extend({
                 if (planSrc) {
                     plan = this.cosmosManager.getResource(component.opts.planSrc);
                     rover.things[i] = this.opts.thingBuilder.makeThingByPlan(plan);
-                    
+
                     // alias
                     component.thing = rover.things[i];
-                   
+
                     // rotation relative to hull
                     rover.things[i].a = 0;
                     rover.things[i].aa = 0;
                 }
             }
         }
-        
+
         // short alias for accessing components
         rover.c = assembly.opts.components;
-        
+        rover.g = this.opts.gutsManager.makeGutsByAssembly(assembly);
         return rover;
     },
-    
+
     makeAssembly: function(assemblyPlan) {
         if (!assemblyPlan.components) {
             throw new Error('assemblyPlan must contain "components" property');
@@ -58,7 +58,7 @@ var RoverBuilder = cc.Class.extend({
         for (var i in assemblyPlan.components) {
             var component = assemblyPlan.components[i],
                 m = component.match(/(.+):(.+)/);
-            
+
             if (m) {
                 component = m[1];
                 mark = m[2];
