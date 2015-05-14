@@ -1,9 +1,9 @@
 var cc = require('cc'),
     geo = require('fgtk/smog').util.geo,
-    AbstractHudListener = require('ui/hud/AbstractHudListener'),
+    SelfUpdater = require('ui/SelfUpdater'),
     flame = require('fgtk/flame');
 
-var TurretPointerHudComponent = AbstractHudListener.extend({
+var TurretPointerHudComponent = SelfUpdater.extend({
     /**
      * opts:
      * * cursorPlan
@@ -14,7 +14,7 @@ var TurretPointerHudComponent = AbstractHudListener.extend({
      * @param opts object
      */
     ctor: function(opts) {
-        AbstractHudListener.prototype.ctor.call(this, opts);
+        SelfUpdater.prototype.ctor.call(this, opts);
 
         this.turretThing = opts.turretComponent.thing;
 

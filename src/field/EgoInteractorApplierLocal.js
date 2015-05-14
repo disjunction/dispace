@@ -15,12 +15,45 @@ var EgoInteractorApplier = cc.Class.extend({
      * * fe
      * @param opts object
      */
-    ctor: function(opts) { 
+    ctor: function(opts) {
         this.opts = opts;
         this.setupInteractor();
         this.ego = opts.protagonist.opts.ego;
     },
-    
+
+    selectUnderMouse: function(evt, index) {
+        var thingFinder = this.opts.fe.m.b.thingFinder,
+            l = this.opts.viewport.targetToScrolledLocation(this.opts.mouseThing.l),
+            thing = thingFinder.findThingAtLocation(l);
+
+        var ui = this.opts.uiController;
+        var panel = (index == 1) ? ui.elements.selectionPanel1 : ui.elements.selectionPanel2;
+        if (panel) {
+            panel.setThing(thing);
+        }
+    },
+
+    applyMouseDown: function(evt, index) {
+        var state = this.opts.interactor.state;
+        switch (1) {
+            case state.ctrl:
+                return this.selectUnderMouse(evt, index);
+            default:
+                var turret = (index == 1) ? this.ego.c.turret1 : this.ego.c.turret2;
+                if (turret) {
+                    turret.mode  = 'charge';
+                }
+        }
+    },
+
+    applyMouseUp: function(evt, index) {
+        var turret = (index == 1) ? this.ego.c.turret1 : this.ego.c.turret2;
+        if (turret) {
+            turret.mode  = 'none';
+        }
+    },
+
+
     setupInteractor: function() {
         keys = this.opts.interactor.layout.keys;
         keys[Interactor.ARROW_UP] = keys[Interactor.KEY_W] = [{type: 'state', state: rof.ACCELERATE}];
@@ -29,20 +62,35 @@ var EgoInteractorApplier = cc.Class.extend({
         keys[Interactor.ARROW_RIGHT] = keys[Interactor.KEY_D] = [{type: 'state', state: rof.TURN_RIGHT}];
 
         keys[Interactor.LMB] = [
-            {type: 'event', on: 'keyDown', event: 'fire1'},
-            {type: 'event', on: 'keyUp', event: 'release1'},
+            {type: 'event', on: 'keyDown', event: 'mouseDown1'},
+            {type: 'event', on: 'keyUp', event: 'mouseUp1'},
             {type: 'state', state: 'charge1'}
         ];
-        
+
         keys[Interactor.RMB] = [
-            {type: 'event', on: 'keyDown', event: 'fire2'},
-            {type: 'event', on: 'keyUp', event: 'release2'},
+            {type: 'event', on: 'keyDown', event: 'mouseDown2'},
+            {type: 'event', on: 'keyUp', event: 'mouseUp2'},
             {type: 'state', state: 'charge2'}
         ];
-        
+
         keys[Interactor.KEY_Q] = [{type: 'state', state: 'strafeLeft'}];
         keys[Interactor.KEY_E] = [{type: 'state', state: 'strafeRight'}];
-        
+
+        keys[Interactor.CTRL] = [
+            {type: 'state', state: 'ctrl'},
+            {type: 'event', on: 'keyUp', event: 'ctrlUp'},
+            {type: 'event', on: 'keyDown', event: 'ctrlDown'}
+        ];
+        keys[Interactor.SHIFT] = [
+            {type: 'state', state: 'shift'},
+            {type: 'event', on: 'keyUp', event: 'shiftUp'},
+            {type: 'event', on: 'keyDown', event: 'shiftDown'}
+        ];
+
+        keys[Interactor.KEY_T] = [
+            {type: 'event', on: 'keyUp', event: 'target'}
+        ];
+
         keys[Interactor.MINUS] = keys[Interactor.CHROME_MINUS] = [{type: 'event', on: 'keyUp', event: 'zoomOut'}];
         keys[Interactor.EQUAL] = keys[Interactor.CHROME_EQUAL] = [{type: 'event', on: 'keyUp', event: 'zoomIn'}];
 
@@ -52,7 +100,7 @@ var EgoInteractorApplier = cc.Class.extend({
         ];
 
         var me = this;
-        
+
         function InteractorApplier() {
         }
 
@@ -67,32 +115,23 @@ var EgoInteractorApplier = cc.Class.extend({
             me.opts.viewport.scaleCameraTo(me.opts.protagonist.baseScale);
         }
 
-        _p.applyEvent = function(evt, name) {           
+        _p.applyEvent = function(evt, name) {
             switch(name) {
-                case 'fire1':
-                    if (this.ego.c.turret1) {
-                        this.ego.c.turret1.mode = 'charge';
-                    }
-                    break;
-                
-                case 'fire2':
-                    if (this.ego.c.turret2) {
-                        this.ego.c.turret2.mode = 'charge';
-                    }
-                    break;
-                    
-                case 'release1':
-                    if (this.ego.c.turret1) {
-                        this.ego.c.turret1.mode = 'none';
-                    }
-                    break;
-                
-                case 'release2':
-                    if (this.ego.c.turret2) {
-                        this.ego.c.turret2.mode = 'none';
-                    }
-                    break;
-                
+                case 'target':
+                    console.log(this.opts.interactor.state); break;
+
+                case 'mouseDown1':
+                    me.applyMouseDown(evt, 1); break;
+
+                case 'mouseDown2':
+                    me.applyMouseDown(evt, 2); break;
+
+                case 'mouseUp1':
+                    me.applyMouseUp(evt, 1); break;
+
+                case 'mouseUp2':
+                    me.applyMouseUp(evt, 2); break;
+
                 case 'testClick':
                     var location = me.opts.viewport.targetToScrolledLocation(me.opts.mouseThing.l);
                     var plan = me.opts.fe.opts.cosmosManager.getResource('thing/bg/util/red-lamp'),
@@ -101,7 +140,7 @@ var EgoInteractorApplier = cc.Class.extend({
                             l: location
                         });
                     me.opts.fe.injectThing(thing);
-                    
+
                     break;
                 case 'zoomIn':
                     me.opts.protagonist.baseScale *= 1.25;

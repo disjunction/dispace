@@ -63,33 +63,26 @@ var ModuleShooter = cc.Class.extend({
             return value;
         }
 
-        var effect = subjComponent.params.effect,
-            result = {};
+        // if object thing can be actually damaged, then correct damage values respectively
+        if (objThing.g) {
+            var effect = subjComponent.params.effect,
+                result = {};
 
-        // projectile effects armour
-        if (effect.projectile) {
-            result.a = readDamageValue(effect.projectile);
+            // projectile effects armour
+            if (effect.projectile) {
+                result.a = readDamageValue(effect.projectile);
+            }
+
+            // electric effects shield
+            if (effect.electric) {
+                result.s = readDamageValue(effect.electric);
+            }
+
+            this.fe.m.d.opts.gutsManager.correctDamage(result, objThing.g);
+            return result;
+        } else {
+            return {};
         }
-
-        // electric effects shield
-        if (effect.electric) {
-            result.s = readDamageValue(effect.electric);
-        }
-
-        switch (objThing.type) {
-            // trees have only infra, all damage is converted into it
-            case 'tree':
-                var treeResult = {i: 0};
-                for (var i in result) {
-                    treeResult.i += result[i];
-                }
-                return treeResult.i > 0 ? treeResult : {};
-            case 'rover':
-                return result;
-        }
-
-        // all other things can't be hurt
-        return {};
     },
 
     shoot: function(subjThing, subjComponent) {

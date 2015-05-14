@@ -3,6 +3,7 @@ var cc = require('cc'),
     Rover = require('./thing/Rover');
 /**
  * opts:
+ * * gutsManage
  * * itemManager
  * * thingBuilder
  */
@@ -47,6 +48,7 @@ var RoverBuilder = cc.Class.extend({
         // short alias for accessing components
         rover.c = assembly.opts.components;
         rover.g = this.opts.gutsManager.makeGutsByAssembly(assembly);
+        this.opts.gutsManager.fullRecover(rover.g);
         return rover;
     },
 

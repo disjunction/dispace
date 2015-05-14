@@ -8,9 +8,7 @@ var radius;
 
 /**
  * opts:
- * * viewport
- * * stateBuilder
- * * config
+ * * gutsManager
  */
 var ModuleDispaceLocal = ModuleAbstract.extend({
     injectFe: function(fe, name) {
@@ -33,7 +31,7 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
         this.fe.fd.addListener('moveThing', function(event) {
             var thing = event.thing;
             if (thing.type && thing.type == 'rover') {
-                this.stepAwakeRover(thing, event.dt)
+                this.stepAwakeRover(thing, event.dt);
             }
         }.bind(this));
 
@@ -62,6 +60,9 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
 
         this.fe.fd.addListener('injectHit', function(event) {
             this.displayHit(event);
+            if (event.hit.objThing.g) {
+                this.opts.gutsManager.applyDamage(event.hit.damage, event.hit.objThing.g);
+            }
         }.bind(this));
     },
 
@@ -86,9 +87,17 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
         this.fe.m.insight.displayDamage(event.hit);
     },
 
+    applyHit: function(event) {
+
+    },
+
+    checkGuts: function(thing) {
+
+    },
+
     displayRover: function(thing) {
         // alias for socket definition
-        thing.sockets = thing.assembly.opts.components['hull'].opts.sockets;
+        thing.sockets = thing.assembly.opts.components.hull.opts.sockets;
 
         for (var i in thing.things) {
             subthing = thing.things[i];
@@ -107,7 +116,7 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
 
     stepSubthing: function(thing, subthing, dt) {
         if (subthing.o) this.rotateComponent(subthing, dt);
-        subthing.a = thing.a + subthing.aa
+        subthing.a = thing.a + subthing.aa;
         this.fe.m.c.syncStateFromThing(subthing);
     },
 
@@ -120,11 +129,12 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
     },
 
     stepSleepyRover: function(rover, dt) {
-        for (var i in rover.things) {
+        var i;
+        for (i in rover.things) {
             this.stepSubthing(rover, rover.things[i], dt);
         }
-        for (var i in rover.c) { // step component
-            this.stepComponent(rover, rover.c[i], dt)
+        for (i in rover.c) { // step component
+            this.stepComponent(rover, rover.c[i], dt);
         }
     },
 
@@ -133,7 +143,8 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
             sin = Math.sin(rover.a);
         rover.di = this.di;
 
-        for (var i in rover.things) {
+        var i;
+        for (i in rover.things) {
             var subthing = rover.things[i],
                 radius = rover.sockets[i].radius;
 
@@ -142,8 +153,8 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
             this.stepSubthing(rover, subthing, dt);
 
         }
-        for (var i in rover.c) { // step component
-            this.stepComponent(rover, rover.c[i], dt)
+        for (i in rover.c) { // step component
+            this.stepComponent(rover, rover.c[i], dt);
         }
     }
 });

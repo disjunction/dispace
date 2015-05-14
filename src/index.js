@@ -23,8 +23,13 @@ module.exports = {
     },
     ui: {
         hud: {
-            ThingPropHudListener: require('./ui/hud/ThingPropHudListener'),
             TurretPointerHudComponent: require('./ui/hud/TurretPointerHudComponent')
-        }
+        },
+        panel: {
+            PropMonitor: require('./ui/panel/PropMonitor'),
+            SelectionPanel: require('./ui/panel/SelectionPanel')
+        },
+        SelfUpdater: require('./ui/SelfUpdater'),
+        UiController: require('./ui/UiController'),
     }
 };
