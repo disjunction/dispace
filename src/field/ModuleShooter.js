@@ -2,6 +2,7 @@
 "use strict";
 
 var cc = require('cc'),
+    smog = require('fgtk/smog'),
     b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract');
@@ -66,6 +67,9 @@ var ModuleShooter = cc.Class.extend({
             return value;
         }
 
+        if (objThing.inert) {
+            return smog.EMPTY;
+        }
         // if object thing can be actually damaged, then correct damage values respectively
         if (objThing.g) {
             var effect = subjComponent.params.effect,
@@ -84,7 +88,7 @@ var ModuleShooter = cc.Class.extend({
             this.fe.m.d.opts.gutsManager.correctDamage(result, objThing.g);
             return result;
         } else {
-            return {};
+            return smog.EMPTY;
         }
     },
 

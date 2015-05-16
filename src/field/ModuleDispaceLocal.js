@@ -76,6 +76,7 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
             if (event.hit.affects) {
                 for (var i = 0; i < event.hit.affects.length; i++) {
                     if (event.hit.affects[i] == 'explode') {
+                        objThing.inert = true;
                         if (objThing.plan.states.explode) {
                             this.fe.m.c.changeState(objThing, 'explode');
                         }
