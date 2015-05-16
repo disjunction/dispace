@@ -1,3 +1,6 @@
+/*jslint node: true */
+"use strict";
+
 var b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
     Thing = flame.entity.Thing,
@@ -59,11 +62,33 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
         }.bind(this));
 
         this.fe.fd.addListener('injectHit', function(event) {
-            this.displayHit(event);
-            if (event.hit.objThing.g) {
-                this.opts.gutsManager.applyDamage(event.hit.damage, event.hit.objThing.g);
-            }
+            this.injectHit(event);
         }.bind(this));
+    },
+
+    injectHit: function(event) {
+        this.displayHit(event);
+
+
+        if (event.hit.objThing.g) {
+            var objThing = event.hit.objThing;
+            this.opts.gutsManager.applyDamage(event.hit.damage, objThing.g);
+            if (event.hit.affects) {
+                for (var i = 0; i < event.hit.affects.length; i++) {
+                    if (event.hit.affects[i] == 'explode') {
+                        if (objThing.plan.states.explode) {
+                            this.fe.m.c.changeState(objThing, 'explode');
+                        }
+                        if (objThing.things) {
+                            for (var j in objThing.things) {
+                                this.fe.m.c.removeThing(objThing.things[j]);
+                            }
+                            objThing.things = null;
+                        }
+                    }
+                }
+            }
+        }
     },
 
     getViewponForComponent: function(component) {
@@ -87,20 +112,12 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
         this.fe.m.insight.displayDamage(event.hit);
     },
 
-    applyHit: function(event) {
-
-    },
-
-    checkGuts: function(thing) {
-
-    },
-
     displayRover: function(thing) {
         // alias for socket definition
         thing.sockets = thing.assembly.opts.components.hull.opts.sockets;
 
         for (var i in thing.things) {
-            subthing = thing.things[i];
+            var subthing = thing.things[i];
             this.fe.m.c.envision(subthing);
         }
 

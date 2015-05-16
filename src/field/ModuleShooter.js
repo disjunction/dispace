@@ -1,3 +1,6 @@
+/*jslint node: true */
+"use strict";
+
 var cc = require('cc'),
     b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
@@ -102,6 +105,10 @@ var ModuleShooter = cc.Class.extend({
                 subjThing: subjThing,
                 objThing: this.ray.results[0].thing
             };
+
+            if (result.hit.damage.i && result.hit.objThing.g && result.hit.damage.i >= result.hit.objThing.g.i[0]) {
+                result.hit.affects = ['explode'];
+            }
 
             result.shot = {
                 isHit: true,

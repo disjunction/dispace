@@ -5,15 +5,6 @@ var b2 = require('jsbox2d'),
     geo = require('fgtk/smog').util.geo;
 
 /**
- * reusable dummy plan
- * @type type
- */
-var containerPlan = {
-    type: 'container',
-    layerId: 'stuff'
-};
-
-/**
  * opts:
  * * viewport
  * * config
@@ -27,25 +18,6 @@ var ModuleInsight = ModuleAbstract.extend({
             'i': thingPlanHelper.readValue('#ff0000'),
             's': thingPlanHelper.readValue('#7799ff')
         };
-    },
-    getEffectContainer: function(thing) {
-        if (!thing.state.nodes.effectContainer) {
-            var container = this.fe.m.c.opts.viewport.opts.nb.makeNode(containerPlan);
-            this.fe.m.c.opts.viewport.addNodeToLayer(container);
-            thing.state.nodes.effectContainer = container;
-        }
-        return thing.state.nodes.effectContainer;
-    },
-    attachNodeToEffectContainer: function(node, thing, localL) {
-        var effectContainer = this.getEffectContainer(thing);
-        node.setPosition(cc.pMult(localL, this.fe.opts.config.ppm));
-        effectContainer.addChild(node);
-        this.fe.m.c.opts.viewport.applyAnimation(node);
-    },
-    attachStateToEffectContainer: function(state, thing, localL) {
-        for (var i in state.nodes) {
-            this.attachNodeToEffectContainer(state.nodes[i], thing, localL);
-        }
     },
     displayDamage: function(hit) {
         var thingPlan = {states: {basic: {}}},

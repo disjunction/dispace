@@ -89,7 +89,7 @@ var ViewponAbstract = cc.Class.extend({
             var state = this.opts.fe.m.c.opts.stateBuilder.makeState(hitThing.plan, hitThing.s),
                 localL = hit.objThing.body.GetLocalPoint(hit.l);
 
-            this.opts.fe.m.insight.attachStateToEffectContainer(state, hit.objThing, localL);
+            this.opts.fe.m.c.attachStateToContainerNode(state, hit.objThing, localL, 'effects');
         } else {
             hitThing.l = hit.l;
             this.opts.fe.injectThing(hitThing);

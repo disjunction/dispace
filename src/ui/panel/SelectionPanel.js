@@ -18,6 +18,9 @@ var SelectionPanel = PropMonitor.extend({
 
         if (!thing) return;
 
+        // GLOBAL!!! yeah
+        selected = thing;
+
         this.addProp('type', function() {
             return this.thing.type;
         }.bind(this));
