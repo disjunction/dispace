@@ -1,6 +1,6 @@
 var cc = require('cc'),
     Interactor = require('fgtk/flame/view/Interactor'),
-    rof = require('fgtk/flame/rof'),
+    rofCore = require('fgtk/flame/rof/core'),
     Thing  = require('fgtk/flame/entity/Thing');
 
 var mouse;
@@ -56,10 +56,10 @@ var EgoInteractorApplier = cc.Class.extend({
 
     setupInteractor: function() {
         keys = this.opts.interactor.layout.keys;
-        keys[Interactor.ARROW_UP] = keys[Interactor.KEY_W] = [{type: 'state', state: rof.ACCELERATE}];
-        keys[Interactor.ARROW_DOWN] = keys[Interactor.KEY_S] = [{type: 'state', state: rof.DECELERATE}];
-        keys[Interactor.ARROW_LEFT] = keys[Interactor.KEY_A] = [{type: 'state', state: rof.TURN_LEFT}];
-        keys[Interactor.ARROW_RIGHT] = keys[Interactor.KEY_D] = [{type: 'state', state: rof.TURN_RIGHT}];
+        keys[Interactor.ARROW_UP] = keys[Interactor.KEY_W] = [{type: 'state', state: rofCore.ACCELERATE}];
+        keys[Interactor.ARROW_DOWN] = keys[Interactor.KEY_S] = [{type: 'state', state: rofCore.DECELERATE}];
+        keys[Interactor.ARROW_LEFT] = keys[Interactor.KEY_A] = [{type: 'state', state: rofCore.TURN_LEFT}];
+        keys[Interactor.ARROW_RIGHT] = keys[Interactor.KEY_D] = [{type: 'state', state: rofCore.TURN_RIGHT}];
 
         keys[Interactor.LMB] = [
             {type: 'event', on: 'keyDown', event: 'mouseDown1'},

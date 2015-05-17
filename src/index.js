@@ -8,14 +8,16 @@ module.exports = {
             Rover: require('./entity/thing/Rover')
         },
         Assembly: require('./entity/Assembly'),
-        ItemManager: require('./entity/ItemManager'),
-        RoverBuilder: require('./entity/RoverBuilder')
+        ItemManager: require('./entity/ItemManager')
     },
     service: {
         GutsManager: require('./service/GutsManager'),
+        MoverConfigBuilder: require('./service/MoverConfigBuilder'),
+        RoverBuilder: require('./service/RoverBuilder')
     },
     field: {
         ModuleDispaceLocal: require('./field/ModuleDispaceLocal'),
+        ModuleRof: require('./field/ModuleRof'),
         ModuleShooter: require('./field/ModuleShooter'),
         ModuleInsight: require('./field/ModuleInsight'),
         EgoInteractorApplierLocal: require('./field/EgoInteractorApplierLocal'),

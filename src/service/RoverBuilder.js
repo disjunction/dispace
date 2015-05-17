@@ -1,6 +1,6 @@
 var cc = require('cc'),
-    Assembly = require('./Assembly'),
-    Rover = require('./thing/Rover');
+    Assembly = require('entity/Assembly'),
+    Rover = require('entity/thing/Rover');
 /**
  * opts:
  * * gutsManage
@@ -49,6 +49,7 @@ var RoverBuilder = cc.Class.extend({
         rover.c = assembly.opts.components;
         rover.g = this.opts.gutsManager.makeGutsByAssembly(assembly);
         this.opts.gutsManager.fullRecover(rover.g);
+
         return rover;
     },
 
