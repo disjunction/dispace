@@ -39,14 +39,14 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
         }.bind(this));
 
         // mark start of the iteraction
-        this.fe.fd.addListener('prestep', function(event) {
+        this.fe.fd.addListener('simStepCall', function(event) {
             this.di++;
         }.bind(this));
 
         // process things, which were not triggered by other events
         // this is done in a separate loop, to save double redraw on move and then rotate
         // these should be low-cost operations
-        this.fe.fd.addListener('poststep', function(event) {
+        this.fe.fd.addListener('simStepEnd', function(event) {
             for (var i = 0; i < this.importantThings.length; i++) {
                 var thing = this.importantThings[i];
                 if (thing.di != this.di) {

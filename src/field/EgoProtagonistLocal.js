@@ -2,7 +2,7 @@ var cc = require('cc'),
     b2 = require('jsbox2d'),
     geo = require('fgtk/smog').util.geo,
     Interactor = require('fgtk/flame/view/Interactor');
-      
+
 var EgoProtagonistLocal = cc.Class.extend({
     /**
      * opts:
@@ -14,23 +14,23 @@ var EgoProtagonistLocal = cc.Class.extend({
      * * hd - hud event dispatcher
      * @param opts object
      */
-    ctor: function(opts) { 
+    ctor: function(opts) {
         this.opts = opts;
         this.cameraShift = cc.p(0, 0);
         this.cameraThreshold = 3;
         this.cameraScaleThreshold = 5;
         this.cameraMaxShift = 7;
         this.baseScale = 0.5;
-        this.opts.fe.fd.addListener('step', this.step.bind(this));
+        this.opts.fe.fd.addListener('renderEnd', this.step.bind(this));
     },
-    
+
     adjustCameraShift: function(velocity, shift) {
         if (velocity * shift < 0)  {
             delta = 0.05;
         } else {
             delta = 0.02;
         }
-               
+
         if (velocity > shift) {
             if (shift >= this.cameraMaxShift || velocity - delta < shift) return shift;
             return shift + delta;
@@ -39,7 +39,7 @@ var EgoProtagonistLocal = cc.Class.extend({
             return shift - delta;
         }
     },
-    
+
     adjustCameraScale: function() {
         var additionalScale = Math.sqrt(this.cameraShift.x * this.cameraShift.x + this.cameraShift.y * this.cameraShift.y);
         if (additionalScale > this.cameraScaleThreshold) {
@@ -53,19 +53,19 @@ var EgoProtagonistLocal = cc.Class.extend({
         } else {
         }
     },
-    
+
     rotateTurret: function(rover, turretThing, turretComponent, dt) {
         var mouseL = this.opts.viewport.targetToScrolledLocation(this.opts.mouse.l),
             mouseAngle = geo.segment2Angle(turretThing.l, mouseL),
             closestRotation = geo.closestRotation(turretThing.a, mouseAngle),
             absClosestRotation = Math.abs(closestRotation),
             omega = turretComponent.params.omegaRad;
-        
+
         if (absClosestRotation < 0.01) {
             turretThing.o = 0;
             return;
         }
-        
+
         if (absClosestRotation < omega * dt) {
             turretThing.o = 0;
             turretThing.aa = mouseAngle - rover.a;
@@ -73,7 +73,7 @@ var EgoProtagonistLocal = cc.Class.extend({
             turretThing.o = geo.sign(closestRotation) * omega;
         }
     },
-    
+
     syncCamera: function(dt) {
         var ego = this.opts.ego,
             v1 = ego.body.GetWorldCenter(),
@@ -95,7 +95,7 @@ var EgoProtagonistLocal = cc.Class.extend({
         this.opts.viewport.moveCameraToLocationXY(shiftedX, shiftedY);
         this.adjustCameraScale();
     },
-    
+
     step: function(event) {
         var ego = this.opts.ego;
         if (this.opts.syncCamera) {

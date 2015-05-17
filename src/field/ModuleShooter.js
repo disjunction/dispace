@@ -47,6 +47,14 @@ var ModuleShooter = cc.Class.extend({
                     type: 'injectHit',
                     hit: shotResult.hit
                 });
+
+                if (shotResult.hit.isKill) {
+                    this.fe.scheduler.scheduleIn(0.5, {
+                        type: 'removeThing',
+                        thing: shotResult.hit.objThing
+                    });
+                }
+
             }
             subjComponent.lastShot = this.fe.timeSum;
             return shotResult;
@@ -111,6 +119,7 @@ var ModuleShooter = cc.Class.extend({
             };
 
             if (result.hit.damage.i && result.hit.objThing.g && result.hit.damage.i >= result.hit.objThing.g.i[0]) {
+                result.hit.isKill = true;
                 result.hit.affects = ['explode'];
             }
 

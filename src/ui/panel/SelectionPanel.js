@@ -27,6 +27,14 @@ var SelectionPanel = PropMonitor.extend({
         this.addProp('coord', function() {
             return this.thing.l;
         }.bind(this));
+        this.addProp('lin. velocity', function() {
+            if (this.thing.body) {
+                return this.thing.body.GetLinearVelocity();
+            } else {
+                return '';
+            }
+
+        }.bind(this));
 
         if (thing.g) {
             if (thing.g.i) {
