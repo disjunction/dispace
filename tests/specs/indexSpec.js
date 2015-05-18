@@ -1,7 +1,7 @@
 var dispace = require('dispace');
 
-describe('_dispace', function() {
+describe('dispace', function() {
     it ('can be included', function() {
 
-    })
+    });
 });

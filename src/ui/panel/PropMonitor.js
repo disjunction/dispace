@@ -1,5 +1,5 @@
 var cc = require('cc'),
-    SelfUpdater = require('ui/SelfUpdater');
+    SelfUpdater = require('dispace/ui/SelfUpdater');
 
 var PropMonitor = SelfUpdater.extend({
     /**

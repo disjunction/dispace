@@ -8,7 +8,7 @@ var cc = require('cc'),
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
     Driver = flame.rof.Driver,
     core = flame.rof.core,
-    MoverConfigBuilder = require('service/MoverConfigBuilder');
+    MoverConfigBuilder = require('dispace/service/MoverConfigBuilder');
 
 /**
  * should be added somewhere in the end of init

@@ -1,6 +1,6 @@
 var cc = require('cc'),
     geo = require('fgtk/smog').util.geo,
-    SelfUpdater = require('ui/SelfUpdater'),
+    SelfUpdater = require('dispace/ui/SelfUpdater'),
     flame = require('fgtk/flame');
 
 var TurretPointerHudComponent = SelfUpdater.extend({

@@ -5,7 +5,7 @@ var b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
     Thing = flame.entity.Thing,
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
-    ViewponAbstract = require('view/viewpon/ViewponAbstract');
+    ViewponAbstract = require('dispace/view/viewpon/ViewponAbstract');
 
 var radius;
 

@@ -1,21 +1,21 @@
 {
     "name": "Ripeater",
-    
+
     "subtype": "turret",
     "socket": "B",
     "turretType": "weapon",
-    
+
     "planSrc": "thing/rover/turret/security-ripeater",
-    
+
     "params": {
-        "1": {
+        "m1": {
             "omega": 0.1,
             "chargeTime": 1000,
             "damage": {
                 "projectile": 1
             }
         },
-        "2": {
+        "m2": {
             "omega": 0.2,
             "chargeTime": 900,
             "damage": {

@@ -1,5 +1,5 @@
 var cc = require('cc'),
-    PropMonitor = require('ui/panel/PropMonitor');
+    PropMonitor = require('dispace/ui/panel/PropMonitor');
 
 var SelectionPanel = PropMonitor.extend({
     /**

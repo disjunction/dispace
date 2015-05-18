@@ -1,6 +1,6 @@
 var cc = require('cc'),
-    Assembly = require('entity/Assembly'),
-    Rover = require('entity/thing/Rover');
+    Assembly = require('dispace/entity/Assembly'),
+    Rover = require('dispace/entity/thing/Rover');
 /**
  * opts:
  * * gutsManage

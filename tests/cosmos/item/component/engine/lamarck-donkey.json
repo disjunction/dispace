@@ -2,7 +2,7 @@
     "subtype": "engine",
     "socket": "E",
     "params": {
-        "class1": {
+        "m1": {
             "topSpeedModifier": 0.9,
             "acceleration": 1
         }

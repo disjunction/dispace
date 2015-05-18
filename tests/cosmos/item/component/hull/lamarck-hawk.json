@@ -17,7 +17,7 @@
         }
     },
     "params": {
-        "class1": {
+        "m1": {
             "engineMultiplier": 2,
             "linearDamping": 2
         }
