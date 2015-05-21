@@ -22,7 +22,6 @@ var ViewponAbstract = cc.Class.extend({
 
         // if the subcomponent is drawable + has shoot state
         if (shot.subjComponent.thing.plan.states && shot.subjComponent.thing.plan.states.shoot) {
-            console.log('shot!');
             this.opts.fe.m.c.changeState(shot.subjComponent.thing, 'shoot');
         }
 
