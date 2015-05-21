@@ -20,6 +20,12 @@ var ViewponAbstract = cc.Class.extend({
         var distance = shot.subjComponent.params.range * shot.fraction;
         var distances = this.opts.viewponPlan.shot.distances;
 
+        // if the subcomponent is drawable + has shoot state
+        if (shot.subjComponent.thing.plan.states && shot.subjComponent.thing.plan.states.shoot) {
+            console.log('shot!');
+            this.opts.fe.m.c.changeState(shot.subjComponent.thing, 'shoot');
+        }
+
         for (var i = 0; i < distances.length; i++) {
             var subplan = distances[i];
             if (distance >= subplan.distanceRange[0] && distance <= subplan.distanceRange[1]) {
@@ -30,6 +36,7 @@ var ViewponAbstract = cc.Class.extend({
                 return;
             }
         }
+
         throw new Error('no distanceRange found for given params');
     },
 
