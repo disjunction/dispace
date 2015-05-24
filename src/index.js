@@ -16,6 +16,9 @@ module.exports = {
         RoverBuilder: require('./service/RoverBuilder')
     },
     field: {
+        generator: {
+            DevGenerator: require('./field/generator/DevGenerator')
+        },
         ModuleDispaceLocal: require('./field/ModuleDispaceLocal'),
         ModuleRof: require('./field/ModuleRof'),
         ModuleShooter: require('./field/ModuleShooter'),
