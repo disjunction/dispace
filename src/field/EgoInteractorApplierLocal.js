@@ -172,7 +172,6 @@ var EgoInteractorApplier = cc.Class.extend({
                          interState[rofCore.TURN_LEFT]  == 1||
                          interState[rofCore.TURN_RIGHT] == 1
                     )):
-                    console.log('forward!');
                     me.opts.fe.m.c.changeState(me.ego, 'driveForward');
                     break;
                 case (me.ego.stateName != 'stop' &&
@@ -182,8 +181,6 @@ var EgoInteractorApplier = cc.Class.extend({
                          interState[rofCore.TURN_RIGHT] == 1 ||
                          interState[rofCore.DECELERATE] == 1
                     )):
-                    console.log('stop!');
-                    console.log(interState[rofCore.ACCELERATE]);
                     me.opts.fe.m.c.changeState(me.ego, 'stop');
                     break;
             }
