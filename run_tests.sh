@@ -1,5 +1,5 @@
 #!/bin/sh
-export NODE_PATH=$NODE_PATH:./src:../fgtk/vendor:../fgtk/src:../dispace-libs:/usr/local/lib/node_modules
+export NODE_PATH=$NODE_PATH:./src:./tests:../fgtk/vendor:../fgtk/src:../dispace-libs:/usr/local/lib/node_modules
 
 if [ -z $1 ]; then
         SPECS=tests/specs

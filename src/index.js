@@ -1,4 +1,5 @@
 module.exports = {
+    Bootstrap: require('./Bootstrap'),
     entity: {
         item: {
             Item: require('./entity/item/Item'),
@@ -7,11 +8,11 @@ module.exports = {
         thing: {
             Rover: require('./entity/thing/Rover')
         },
-        Assembly: require('./entity/Assembly'),
-        ItemManager: require('./entity/ItemManager')
+        Assembly: require('./entity/Assembly')
     },
     service: {
         GutsManager: require('./service/GutsManager'),
+        ItemManager: require('./service/ItemManager'),
         MoverConfigBuilder: require('./service/MoverConfigBuilder'),
         RoverBuilder: require('./service/RoverBuilder')
     },

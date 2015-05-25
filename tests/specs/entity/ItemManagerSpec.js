@@ -1,7 +1,7 @@
 var dispace = require('dispace'),
     flame = require('fgtk/flame');
 
-describe('dispace.entity.ItemManager', function() {
+describe('dispace.service.ItemManager', function() {
     it('creates items', function() {
         var dir = __dirname + '/../../cosmos',
         cm = new flame.service.CosmosManager({
@@ -9,7 +9,7 @@ describe('dispace.entity.ItemManager', function() {
                 dir
             ]
         });
-        var o = new dispace.entity.ItemManager({
+        var o = new dispace.service.ItemManager({
             cosmosManager: cm
         });
 

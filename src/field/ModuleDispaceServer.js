@@ -13,7 +13,7 @@ var radius;
  * opts:
  * * gutsManager
  */
-var ModuleDispaceClient = ModuleAbstract.extend({
+var ModuleDispaceServer = ModuleAbstract.extend({
     injectFe: function(fe, name) {
         this.di = 0; // dispace iteration
         this.importantThings = [];
@@ -177,4 +177,4 @@ var ModuleDispaceClient = ModuleAbstract.extend({
     }
 });
 
-module.exports = ModuleDispaceClient;
+module.exports = ModuleDispaceServer;

@@ -1,11 +1,11 @@
 var dispace = require('dispace'),
     flame = require('fgtk/flame');
 
-describe('dispace.entity.RoverBuilder', function() {
+describe('dispace.service.RoverBuilder', function() {
     it('creates rovers', function() {
         var dir = __dirname + '/../../cosmos',
             cm = new flame.service.CosmosManager({dirs: [dir]}),
-            itemManager = new dispace.entity.ItemManager({cosmosManager: cm}),
+            itemManager = new dispace.service.ItemManager({cosmosManager: cm}),
             thingBuilder = new flame.service.ThingBuilder(),
             gutsManager = new dispace.service.GutsManager(),
             roverBuilder = new dispace.service.RoverBuilder({
