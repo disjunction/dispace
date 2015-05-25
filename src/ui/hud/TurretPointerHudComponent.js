@@ -69,6 +69,8 @@ var TurretPointerHudComponent = SelfUpdater.extend({
         if (this.ray.isHit) {
             var p = this.ray.results[0].p;
             p = this.opts.viewport.scrolledLocation2Target(p);
+
+
             if (!node.visible) {
                 var turretTargetL = this.opts.viewport.scrolledLocation2Target(this.turretThing.l),
                     appearL = cc.p((turretTargetL.x + p.x)/2, (turretTargetL.y + p.y)/2);
@@ -88,8 +90,14 @@ var TurretPointerHudComponent = SelfUpdater.extend({
                 node.visible = true;
                 return aniInterval / 4;
             } else {
-                var moveTo = cc.moveTo(fixedInterval / 4, p).easing(cc.easeOut(0.5));
-                node.runAction(moveTo);
+                distSq = cc.pDistanceSQ(p, node.getPosition());
+                // avoid huge (> 64px) cursor jumps
+                if (distSq < 4096) {
+                    var moveTo = cc.moveTo(fixedInterval / 4, p).easing(cc.easeOut(0.5));
+                    node.runAction(moveTo);
+                } else {
+                    node.setPosition(p);
+                }
                 return aniInterval / 4;
             }
         } else {
