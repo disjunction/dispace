@@ -6,11 +6,12 @@ var cc = require('cc'),
     Thing = flame.entity.Thing,
     Field = flame.entity.Field,
     geo = require('fgtk/smog').util.geo,
-    GutsManager = require('dispace/service/GutsManager'),
-    //ItemManager = require('dispace/service/ItemManager'),
-    //RoverBuilder = require('dispace/service/RoverBuilder'),
     ModuleShooter = require('dispace/field/ModuleShooter'),
     ModuleRof = require('dispace/field/ModuleRof'),
+    ThingSerializer = flame.service.ThingBuilder,
+    GutsManager = require('dispace/service/GutsManager'),
+    RoverBuilder = require('dispace/service/RoverBuilder'),
+    ItemManager = require('dispace/service/ItemManager'),
     FieldSerializer = flame.service.serialize.FieldSerializer,
     ThingSerializer = flame.service.serialize.ThingSerializer;
 
@@ -26,25 +27,37 @@ function Bootstrap(opts) {
     this.config = opts.config;
     this.cosmosManager = opts.cosmosManager;
     this.assetManager = opts.assetManager;
+
+    this.gutsManager = new GutsManager({});
+    this.thingBuilder = new flame.service.ThingBuilder();
+    this.itemManager = new ItemManager({
+        cosmosManager: this.cosmosManager
+    });
+    this.roverBuilder = new RoverBuilder({
+        itemManager: this.itemManager,
+        thingBuilder: this.thingBuilder,
+        gutsManager: this.gutsManager
+    });
 }
 
 var _p = Bootstrap.prototype;
 
 _p.makeFieldSerializer = function() {
     var serializer =  new FieldSerializer({
-        thingSerializer: new ThingSerializer()
+        thingSerializer: new ThingSerializer({
+            cosmosManager: this.cosmosManager,
+            thingBuilder: this.thingBuilder
+        })
     });
     return serializer;
 };
 
 _p.makeBasicFe = function() {
-    this.gutsManager = new GutsManager({
-    });
-
     this.fe = new flame.engine.FieldEngine({
         cosmosManager: this.cosmosManager,
         assetManager: this.assetManager,
-        config: this.config
+        config: this.config,
+        thingBuilder: this.thingBuilder
     });
 
     this.fe.registerModule(new flame.engine.ModuleBox2d({

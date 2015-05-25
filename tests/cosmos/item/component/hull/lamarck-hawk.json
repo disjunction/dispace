@@ -1,6 +1,6 @@
 {
     "subtype": "hull",
-    "planSrc": "thing/rover/hull/lamarck-hawk",
+    "planSrc": "thing/rover/hull/lamarck-hawk-hull",
     "sockets": {
         "engine": {
             "type": "E",

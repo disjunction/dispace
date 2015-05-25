@@ -1,6 +1,10 @@
 var flame = require('flame'),
     FieldEngine = flame.engine.FieldEngine,
-    Thing = flame.entity.Thing;
+    Thing = flame.entity.Thing,
+    GutsManager = require('dispace/service/GutsManager'),
+    RoverBuilder = require('dispace/service/RoverBuilder'),
+    ItemManager = require('dispace/service/ItemManager'),
+    DispaceThingSerializer = require('dispace/service/serialize/DispaceThingSerializer');
 
 module.exports = {
     makeConfig: function() {
@@ -23,6 +27,32 @@ module.exports = {
                 dir
             ]
         });
+    },
+
+    makeThingBuilder: function() {
+        return new flame.service.ThingBuilder();
+    },
+
+    makeSerializationBatch: function() {
+        var batch = {};
+        batch.cosmosManager = module.exports.makeCosmosManager();
+        batch.thingBuilder = module.exports.makeThingBuilder();
+        batch.gutsManager = new GutsManager({});
+        batch.itemManager = new ItemManager({
+            cosmosManager: batch.cosmosManager
+        });
+        batch.roverBuilder = new RoverBuilder({
+            itemManager: batch.itemManager,
+            thingBuilder: batch.thingBuilder,
+            gutsManager: batch.gutsManager
+        });
+
+        batch.thingSerializer = new DispaceThingSerializer({
+            cosmosManager: batch.cosmosManager,
+            thingBuilder: batch.thingBuilder,
+            roverBuilder: batch.roverBuilder
+        });
+        return batch;
     },
 
     makeFeBox2d: function() {

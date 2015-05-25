@@ -1,0 +1,38 @@
+{
+    "subtype": "hull",
+    "planSrc": "thing/rover/hull/faf-m29-hull",
+    "sockets": {
+        "engine": {
+            "type": "E",
+            "radius": -1
+        },
+        "turret1": {
+            "type": "C",
+            "radius": 0.75
+        },
+        "turret2": {
+            "type": "B",
+            "radius": -0.5
+        }
+    },
+    "mover": {
+        "chasis": "track",
+        "mass": 5,
+        "linearDamping": 5,
+        "angularDamping": 7,
+        "multiplierForward": 5,
+        "multiplierBackward": 3.5,
+        "multiplierTorque": 1.2
+    },
+    "params": {
+        "m1": {
+            "mover" : {
+                "engineMultiplier": 4
+            },
+
+            "infra": 50,
+            "armor": 200,
+            "shield": 26
+        }
+    }
+}

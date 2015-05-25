@@ -75,7 +75,10 @@ var RoverBuilder = cc.Class.extend({
             );
             components[i].setMark(mark);
         }
-        return new Assembly({components: components});
+        return new Assembly({
+            components: components,
+            plan: assemblyPlan
+        });
     }
 });
 

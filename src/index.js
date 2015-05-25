@@ -11,6 +11,9 @@ module.exports = {
         Assembly: require('./entity/Assembly')
     },
     service: {
+        serialize: {
+            DispaceThingSerializer: require('./service/serialize/DispaceThingSerializer')
+        },
         GutsManager: require('./service/GutsManager'),
         ItemManager: require('./service/ItemManager'),
         MoverConfigBuilder: require('./service/MoverConfigBuilder'),

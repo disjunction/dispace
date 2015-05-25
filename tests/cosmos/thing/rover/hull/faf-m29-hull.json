@@ -1,0 +1,68 @@
+{
+    "states" : {
+        "basic" : {
+            "main": {
+                "layer": "main",
+                "src": "vorschlag/rover/hull/faf-hulls-orange.png",
+                "subrect": [0, 304, 112, 64],
+                "frames": [
+                    [128, 304, 112, 64],
+                    [256, 304, 112, 64]
+                ]
+            },
+            "shadow": {
+                "deco": {"shadow": true},
+                "layer": "shadow",
+                "src": "vorschlag/rover/hull/faf-hulls-orange.png",
+                "subrect": [384, 304, 144, 96]
+            }
+        },
+        "stop": {
+            "main": {
+                "inherit": "main"
+            },
+            "shadow": { "inherit": "shadow" }
+        },
+        "driveForward": {
+            "main": {
+                "inherit": "main",
+                "ani": ["repeat", "forever",
+                    ["animate", [0.03]]
+                ]
+            },
+            "shadow": { "inherit": "shadow" }
+        },
+        "driveBackward": {
+            "main": {
+                "inherit": "main",
+                "ani": ["repeat", "forever",
+                    ["animate", [0.03, [2, 1, 0]]]
+                ]
+            },
+            "shadow": { "inherit": "shadow" }
+        },
+        "explode": {
+            "main": {
+                "inherit": "main",
+                "ani": ["sequence", [
+                    ["spawn", [
+                        ["fadeTo", [0.3, 0]],
+                        ["tintTo", [0.1, 0, 0, 0]]
+                    ]]
+                ]]
+            },
+            "$include": {
+                "planSrc": "thing/effect/explode/explode1"
+            }
+        }
+    },
+    "body" : {
+        "type": "box",
+        "size": {
+            "width": 3.5,
+            "height": 2
+        },
+        "linearDamping": 5,
+        "angularDamping": 5
+    }
+}
