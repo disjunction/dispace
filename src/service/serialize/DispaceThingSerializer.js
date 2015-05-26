@@ -31,11 +31,11 @@ _p.serializeInitial = function(thing) {
     }
 };
 
-_p.unserializeInitial = function(thing) {
-    if (thing.type && this.serializers[thing.type]) {
-        return this.serializers[thing.type].unserializeInitial(thing);
+_p.unserializeInitial = function(bundle) {
+    if (bundle[1].type && this.serializers[bundle[1].type]) {
+        return this.serializers[bundle[1].type].unserializeInitial(bundle);
     } else {
-        return ThingSerializer.prototype.unserializeInitial.call(this, thing);
+        return ThingSerializer.prototype.unserializeInitial.call(this, bundle);
     }
 };
 

@@ -17,6 +17,10 @@ var RoverBuilder = cc.Class.extend({
         this.cosmosManager = this.opts.itemManager.opts.cosmosManager;
     },
 
+    makeRoverByAssemblyPlan: function(assemblyPlan) {
+        var assembly = this.makeAssembly(assemblyPlan);
+        return this.makeRover(assembly);
+    },
     makeRover: function(assembly) {
         var hull = assembly.opts.components.hull,
             hullPlan = this.cosmosManager.getResource(hull.opts.planSrc),
@@ -44,6 +48,8 @@ var RoverBuilder = cc.Class.extend({
                 }
             }
         }
+
+        rover.i = {};
 
         // short alias for accessing components
         rover.c = assembly.opts.components;

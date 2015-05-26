@@ -13,7 +13,7 @@ var cc = require('cc'),
     RoverBuilder = require('dispace/service/RoverBuilder'),
     ItemManager = require('dispace/service/ItemManager'),
     FieldSerializer = flame.service.serialize.FieldSerializer,
-    ThingSerializer = flame.service.serialize.ThingSerializer;
+    DispaceThingSerializer = require('dispace/service/serialize/DispaceThingSerializer');
 
 /**
  * A factory for common bigger structures
@@ -44,9 +44,10 @@ var _p = Bootstrap.prototype;
 
 _p.makeFieldSerializer = function() {
     var serializer =  new FieldSerializer({
-        thingSerializer: new ThingSerializer({
+        thingSerializer: new DispaceThingSerializer({
             cosmosManager: this.cosmosManager,
-            thingBuilder: this.thingBuilder
+            thingBuilder: this.thingBuilder,
+            roverBuilder: this.roverBuilder
         })
     });
     return serializer;

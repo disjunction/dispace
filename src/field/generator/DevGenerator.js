@@ -68,6 +68,45 @@ _p.placeRandom = function(params){
     }
 };
 
+/**
+ * params:
+  * * count
+ * * x
+ * * y
+ * * width
+ * * height
+ */
+_p.placeRandomRovers = function(params){
+    var assemblyPlans = [
+        {components: {
+            hull: 'item/component/hull/faf-m29',
+            turret1: 'item/component/turret/security-ripeater',
+            turret2: 'item/component/turret/security-ripeater',
+            engine: 'item/component/engine/lamarck-donkey',
+        }},
+        {components: {
+            hull: 'item/component/hull/zawot-rocket',
+            turret1: 'item/component/turret/security-ripeater',
+            engine: 'item/component/engine/lamarck-donkey',
+        }},
+        {components: {
+            hull: 'item/component/hull/faf-m17',
+            turret1: 'item/component/turret/security-ripeater',
+            engine: 'item/component/engine/lamarck-donkey',
+        }}
+    ];
+
+    for (var i = 0; i < params.count; i++) {
+        var assemblyPlan = assemblyPlans[Math.floor(Math.random()*3)],
+            rover = this.roverBuilder.makeRoverByAssemblyPlan(assemblyPlan);
+        rover.l = {
+            x: Math.random() * params.width + params.x,
+            y: Math.random() * params.height + params.y
+        };
+        rover.a = Math.random() * geo.PI2;
+        this.field.things.push(rover);
+    }
+};
 
 _p.createEdges = function(){
     var edgeThing = new Thing();

@@ -44,8 +44,12 @@ var ModuleRof = ModuleAbstract.extend({
     },
 
     injectThing: function(thing) {
-        var moverConfig = this.moverConfigBuilder.makeByAssembly(thing.assembly);
-        thing.mover = this.driver.makeMover(thing, moverConfig);
+        try {
+            var moverConfig = this.moverConfigBuilder.makeByAssembly(thing.assembly);
+            thing.mover = this.driver.makeMover(thing, moverConfig);
+        } catch (e) {
+            console.error('ModuleRof failed to injectThing: ' + thing.id);
+        }
     },
 
     driveAll: function() {
@@ -76,7 +80,9 @@ var ModuleRof = ModuleAbstract.extend({
             var thing = this.rovers[i];
             this.driver.drive(thing);
             if (!thing.player && Math.random() < 0.05) {
-                randomizeInteractor(thing);
+                if (this.opts.randomMove) {
+                    randomizeInteractor(thing);
+                }
             }
         }
     }

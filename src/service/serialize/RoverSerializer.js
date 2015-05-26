@@ -21,8 +21,8 @@ var RoverSerializer = ThingSerializer.extend({
 
     serializeInitial: function(thing) {
         var bundle = ThingSerializer.prototype.serializeInitial.call(this, thing);
-        bundle.assemblyPlan = thing.assembly.opts.plan;
-        bundle.g = thing.g;
+        bundle[1].assemblyPlan = thing.assembly.opts.plan;
+        bundle[1].g = thing.g;
         return bundle;
     },
 
@@ -33,7 +33,7 @@ var RoverSerializer = ThingSerializer.extend({
     unserializeInitial: function(bundle) {
         var rb = this.opts.roverBuilder,
             assembly = rb.makeAssembly(bundle[1].assemblyPlan),
-            rover = rb.roverBuilder.makeRover(assembly);
+            rover = rb.makeRover(assembly);
         this.applyGutsBundle(rover, bundle);
         this.applyPhisicsBundle(rover, bundle[1].p);
         return rover;
