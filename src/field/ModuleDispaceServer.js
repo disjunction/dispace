@@ -15,6 +15,10 @@ var radius;
  * * socketManager
  */
 var ModuleDispaceServer = ModuleAbstract.extend({
+    ctor: function(opts) {
+        ModuleAbstract.prototype.ctor.call(this, opts);
+        this.previous = {};
+    },
 
     injectFe: function(fe, name) {
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
@@ -28,7 +32,7 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             pup = [];
         for (var i = 0; i < this.fe.field.things.length; i++) {
             var thing = this.fe.field.things[i];
-            if (thing.body && thing.plan && !thing.plan.static) {
+            if (thing.body && thing.body.IsAwake() && thing.plan && !thing.plan.static) {
                 pup.push([thing.id, thingSerializer.makePhisicsBundle(thing)]);
             }
         }

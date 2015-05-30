@@ -182,13 +182,24 @@ var ModuleDispaceClient = ModuleAbstract.extend({
     },
 
     processFieldSocketEvent: function(event) {
+        if (!Array.isArray(event)) {
+            throw new Error('unexpected fieldSocketEvent format. ' + typeof event);
+        }
+
+        switch (event[0]) {
+            case 'pup': return this.applyPup(event);
+            default:
+                throw new Error('unknown fieldSocketEvent event. ' + event[0]);
+        }
+    },
+
+    applyPup: function(event) {
         var serializer = this.fe.serializer.opts.thingSerializer;
         if (Array.isArray(event) && event[0] == 'pup') {
             for (var i = 0; i < event[1].length; i++) {
                 var phisicsBundle = event[1][i],
                     thing = this.thingMap[event[1][i][0]];
                 if (!thing) {
-                    //console.error('unknown thing ' + event[1][i][0]);
                     continue;
                 }
 
@@ -197,6 +208,8 @@ var ModuleDispaceClient = ModuleAbstract.extend({
 
             }
             this.fe.simAccumulator = 0;
+            this.fe.stats.simDiff = this.fe.simSum - event[2];
+            this.fe.simSum = event[2];
         }
     }
 });
