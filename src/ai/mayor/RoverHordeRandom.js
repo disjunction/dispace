@@ -39,7 +39,7 @@ _p.randomizeInterstate = function(value) {
 
         if (thing.c && thing.c.turret1) {
             if (Math.random() < 0.2) {
-                thing.c.turret1.mode = 'charge';
+                //thing.c.turret1.mode = 'charge';
             } else {
                 thing.c.turret1.mode = 'none';
             }
