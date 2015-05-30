@@ -26,7 +26,7 @@ var ModuleRof = ModuleAbstract.extend({
         this.moverConfigBuilder = new MoverConfigBuilder();
 
         this.fe.fd.addListener('injectThing', function(event) {
-            var thing = event.extra.thing;
+            var thing = event.thing;
             if (thing.type && thing.type == 'rover') {
                 this.injectThing(thing);
                 this.rovers.push(thing);
@@ -81,7 +81,7 @@ var ModuleRof = ModuleAbstract.extend({
             this.driver.drive(thing);
             if (!thing.player && Math.random() < 0.05) {
                 if (this.opts.randomMove) {
-                    randomizeInteractor(thing);
+                    //randomizeInteractor(thing);
                 }
             }
         }

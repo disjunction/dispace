@@ -15,13 +15,18 @@ var radius;
  */
 var ModuleDispaceLocal = ModuleAbstract.extend({
     injectFe: function(fe, name) {
+        this.thingMap = {};
         this.di = 0; // dispace iteration
         this.importantThings = [];
 
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
 
         this.fe.fd.addListener('injectThing', function(event) {
-            var thing = event.extra.thing;
+            var thing = event.thing;
+            if (thing.id) {
+                this.thingMap[thing.id] = thing;
+            }
+
             if (thing.type && thing.type == 'rover') {
                 this.displayRover(thing);
 

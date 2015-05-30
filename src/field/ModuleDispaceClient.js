@@ -15,13 +15,18 @@ var radius;
  */
 var ModuleDispaceClient = ModuleAbstract.extend({
     injectFe: function(fe, name) {
+        this.thingMap = {};
         this.di = 0; // dispace iteration
         this.importantThings = [];
 
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
 
         this.fe.fd.addListener('injectThing', function(event) {
-            var thing = event.extra.thing;
+            var thing = event.thing;
+            if (thing.id) {
+                this.thingMap[thing.id] = thing;
+            }
+
             if (thing.type && thing.type == 'rover') {
                 this.displayRover(thing);
 
@@ -173,6 +178,25 @@ var ModuleDispaceClient = ModuleAbstract.extend({
         }
         for (i in rover.c) { // step component
             this.stepComponent(rover, rover.c[i], dt);
+        }
+    },
+
+    processFieldSocketEvent: function(event) {
+        var serializer = this.fe.serializer.opts.thingSerializer;
+        if (Array.isArray(event) && event[0] == 'pup') {
+            for (var i = 0; i < event[1].length; i++) {
+                var phisicsBundle = event[1][i],
+                    thing = this.thingMap[event[1][i][0]];
+                if (!thing) {
+                    //console.error('unknown thing ' + event[1][i][0]);
+                    continue;
+                }
+
+                thing.pup = event[1][i][1];
+                //serializer.applyPhisicsBundleToBody(thing, event[1][i][1]);
+
+            }
+            this.fe.simAccumulator = 0;
         }
     }
 });

@@ -1,5 +1,10 @@
 module.exports = {
     Bootstrap: require('./Bootstrap'),
+    ai: {
+        mayor: {
+            RoverHordeRandom: require('./ai/mayor/RoverHordeRandom')
+        }
+    },
     entity: {
         item: {
             Item: require('./entity/item/Item'),
@@ -14,6 +19,7 @@ module.exports = {
         serialize: {
             DispaceThingSerializer: require('./service/serialize/DispaceThingSerializer')
         },
+        FieldSocketManager: require('./service/FieldSocketManager'),
         GutsManager: require('./service/GutsManager'),
         ItemManager: require('./service/ItemManager'),
         MoverConfigBuilder: require('./service/MoverConfigBuilder'),
@@ -24,8 +30,11 @@ module.exports = {
             DevGenerator: require('./field/generator/DevGenerator')
         },
         ModuleDispaceLocal: require('./field/ModuleDispaceLocal'),
+        ModuleDispaceClient: require('./field/ModuleDispaceClient'),
+        ModuleDispaceServer: require('./field/ModuleDispaceServer'),
         ModuleRof: require('./field/ModuleRof'),
         ModuleShooter: require('./field/ModuleShooter'),
+        ModuleMayor: require('./field/ModuleMayor'),
         ModuleInsight: require('./field/ModuleInsight'),
         EgoInteractorApplierLocal: require('./field/EgoInteractorApplierLocal'),
         EgoProtagonistLocal: require('./field/EgoProtagonistLocal')

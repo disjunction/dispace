@@ -22,6 +22,7 @@ var EgoProtagonistLocal = cc.Class.extend({
         this.cameraMaxShift = 7;
         this.baseScale = 0.5;
         this.opts.fe.fd.addListener('renderEnd', this.step.bind(this));
+        console.log('protagonist with ego', opts.ego)
     },
 
     adjustCameraShift: function(velocity, shift) {
@@ -100,8 +101,12 @@ var EgoProtagonistLocal = cc.Class.extend({
         var ego = this.opts.ego;
         if (this.opts.syncCamera) {
             this.syncCamera(event.dt);
-            this.rotateTurret(ego, ego.things.turret1, ego.assembly.opts.components.turret1, event.dt);
-            this.rotateTurret(ego, ego.things.turret2, ego.assembly.opts.components.turret2, event.dt);
+            if (ego.things.turret1) {
+                this.rotateTurret(ego, ego.things.turret1, ego.assembly.opts.components.turret1, event.dt);
+            }
+            if (ego.things.turret2) {
+                this.rotateTurret(ego, ego.things.turret2, ego.assembly.opts.components.turret2, event.dt);
+            }
         }
     }
 });

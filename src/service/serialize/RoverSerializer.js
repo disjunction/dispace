@@ -35,7 +35,7 @@ var RoverSerializer = ThingSerializer.extend({
             assembly = rb.makeAssembly(bundle[1].assemblyPlan),
             rover = rb.makeRover(assembly);
         this.applyGutsBundle(rover, bundle);
-        this.applyPhisicsBundle(rover, bundle[1].p);
+        this.applyPhisicsBundleToThing(rover, bundle[1].p);
         return rover;
     }
 });
