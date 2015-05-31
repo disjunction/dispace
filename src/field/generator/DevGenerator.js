@@ -77,27 +77,15 @@ _p.placeRandom = function(params){
  * * height
  */
 _p.placeRandomRovers = function(params){
-    var assemblyPlans = [
-        {components: {
-            hull: 'item/component/hull/faf-m29',
-            turret1: 'item/component/turret/security-ripeater',
-            turret2: 'item/component/turret/security-ripeater',
-            engine: 'item/component/engine/lamarck-donkey',
-        }},
-        {components: {
-            hull: 'item/component/hull/zawot-rocket',
-            turret1: 'item/component/turret/security-ripeater',
-            engine: 'item/component/engine/lamarck-donkey',
-        }},
-        {components: {
-            hull: 'item/component/hull/faf-m17',
-            turret1: 'item/component/turret/security-ripeater',
-            engine: 'item/component/engine/lamarck-donkey',
-        }}
-    ];
 
-    for (var i = 0; i < params.count; i++) {
-        var assemblyPlan = assemblyPlans[Math.floor(Math.random()*3)],
+    var rawAssemblies = this.cosmosManager.getAllInDirectory('assembly'),
+        assemblyPlans = [];
+    for (var i in rawAssemblies) {
+        assemblyPlans.push(rawAssemblies[i]);
+    }
+
+    for (i = 0; i < params.count; i++) {
+        var assemblyPlan = assemblyPlans[Math.floor(Math.random()*assemblyPlans.length)],
             rover = this.roverBuilder.makeRoverByAssemblyPlan(assemblyPlan);
         rover.l = {
             x: Math.random() * params.width + params.x,
