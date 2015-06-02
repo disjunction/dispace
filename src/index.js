@@ -37,7 +37,7 @@ module.exports = {
         ModuleMayor: require('./field/ModuleMayor'),
         ModuleInsight: require('./field/ModuleInsight'),
         EgoInteractorApplierLocal: require('./field/EgoInteractorApplierLocal'),
-        EgoProtagonistLocal: require('./field/EgoProtagonistLocal')
+        ModuleProtagonist: require('./field/ModuleProtagonist')
     },
     ui: {
         hud: {
@@ -49,5 +49,7 @@ module.exports = {
         },
         SelfUpdater: require('./ui/SelfUpdater'),
         UiController: require('./ui/UiController'),
+        UiDevBuilder: require('./ui/UiDevBuilder')
+
     }
 };

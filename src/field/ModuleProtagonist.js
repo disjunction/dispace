@@ -3,7 +3,7 @@ var cc = require('cc'),
     geo = require('fgtk/smog').util.geo,
     Interactor = require('fgtk/flame/view/Interactor');
 
-var EgoProtagonistLocal = cc.Class.extend({
+var ModuleProtagonist = cc.Class.extend({
     /**
      * opts:
      * * fe
@@ -22,7 +22,17 @@ var EgoProtagonistLocal = cc.Class.extend({
         this.cameraMaxShift = 7;
         this.baseScale = 0.5;
         this.opts.fe.fd.addListener('renderEnd', this.step.bind(this));
-        console.log('protagonist with ego', opts.ego)
+        if (this.opts.ego) {
+            this.registerEgo(opts.ego);
+        }
+    },
+
+    registerEgo: function(ego) {
+        this.ego = ego;
+    },
+
+    unregisterEgo: function() {
+        this.ego = null;
     },
 
     adjustCameraShift: function(velocity, shift) {
@@ -76,7 +86,9 @@ var EgoProtagonistLocal = cc.Class.extend({
     },
 
     syncCamera: function(dt) {
-        var ego = this.opts.ego,
+        if (!this.ego) return;
+
+        var ego = this.ego,
             v1 = ego.body.GetWorldCenter(),
             v2 = ego.body.GetLinearVelocity();
 
@@ -98,7 +110,8 @@ var EgoProtagonistLocal = cc.Class.extend({
     },
 
     step: function(event) {
-        var ego = this.opts.ego;
+        var ego = this.ego;
+        if (!ego) return;
         if (this.opts.syncCamera) {
             this.syncCamera(event.dt);
             if (ego.things.turret1) {
@@ -111,4 +124,4 @@ var EgoProtagonistLocal = cc.Class.extend({
     }
 });
 
-module.exports = EgoProtagonistLocal;
+module.exports = ModuleProtagonist;
