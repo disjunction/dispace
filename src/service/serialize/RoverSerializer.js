@@ -21,21 +21,21 @@ var RoverSerializer = ThingSerializer.extend({
 
     serializeInitial: function(thing) {
         var bundle = ThingSerializer.prototype.serializeInitial.call(this, thing);
-        bundle[1].assemblyPlan = thing.assembly.opts.plan;
-        bundle[1].g = thing.g;
+        bundle[2].assemblyPlan = thing.assembly.opts.plan;
+        bundle[2].g = thing.g;
         return bundle;
     },
 
     applyGutsBundle: function(thing, bundle) {
-        thing.g = bundle[1].g;
+        thing.g = bundle[2].g;
     },
 
     unserializeInitial: function(bundle) {
         var rb = this.opts.roverBuilder,
-            assembly = rb.makeAssembly(bundle[1].assemblyPlan),
+            assembly = rb.makeAssembly(bundle[2].assemblyPlan),
             rover = rb.makeRover(assembly);
         this.applyGutsBundle(rover, bundle);
-        this.applyPhisicsBundleToThing(rover, bundle[1].p);
+        this.applyPhisicsBundleToThing(rover, bundle[2].p);
         return rover;
     }
 });

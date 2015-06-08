@@ -188,6 +188,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
 
         switch (event[0]) {
             case 'pup': return this.applyPup(event);
+            case 'things': return this.applyThings(event);
             default:
                 throw new Error('unknown fieldSocketEvent event. ' + event[0]);
         }
@@ -195,21 +196,52 @@ var ModuleDispaceClient = ModuleAbstract.extend({
 
     applyPup: function(event) {
         var serializer = this.fe.serializer.opts.thingSerializer;
-        if (Array.isArray(event) && event[0] == 'pup') {
-            for (var i = 0; i < event[1].length; i++) {
-                var phisicsBundle = event[1][i],
-                    thing = this.thingMap[event[1][i][0]];
-                if (!thing) {
-                    continue;
-                }
-
-                thing.pup = event[1][i][1];
-                //serializer.applyPhisicsBundleToBody(thing, event[1][i][1]);
-
+        for (var i = 0; i < event[1].length; i++) {
+            var phisicsBundle = event[1][i],
+                thing = this.thingMap[event[1][i][0]];
+            if (!thing) {
+                continue;
             }
-            this.fe.simAccumulator = 0;
-            this.fe.stats.simDiff = this.fe.simSum - event[2];
-            this.fe.simSum = event[2];
+
+            thing.pup = event[1][i][1];
+            //serializer.applyPhisicsBundleToBody(thing, event[1][i][1]);
+
+        }
+        this.fe.simAccumulator = 0;
+        this.fe.stats.simDiff = this.fe.simSum - event[2];
+        this.fe.simSum = event[2];
+    },
+
+    /**
+     * Sample things message:
+     * ["things",
+     *     ["mA", "inject", {p: [...], "i": ...}]
+     *     ["mB", "remove"]
+     * ]
+     */
+    applyThings: function(event) {
+        var serializer = this.fe.serializer.opts.thingSerializer;
+        for (var i = 0; i < event[1].length; i++) {
+            var thingId = event[1][i][0],
+                operation = event[1][i][1],
+                payload = event[1][i][2];
+            switch (operation) {
+                case "inject":
+                    if (this.thingMap[thingId]) {
+                        console.error('thing ' + thingId + ' already exists. things.inject ignored');
+                        continue;
+                    }
+                    var thing = serializer.unserializeInitial(event[1][i]);
+                    this.fe.injectThing(thing);
+                    break;
+                case "remove":
+                    if (!this.thingMap[thingId]) {
+                        console.error('thing ' + thingId + ' not found. things.remove ignored');
+                        continue;
+                    }
+                    this.fe.removeThing(this.thingMap[thingId]);
+                    break;
+            }
         }
     }
 });

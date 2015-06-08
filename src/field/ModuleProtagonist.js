@@ -8,9 +8,7 @@ var ModuleProtagonist = cc.Class.extend({
      * opts:
      * * fe
      * * viewport
-     * * ego
      * * syncCamera : boolean
-     * * mouse
      * * hd - hud event dispatcher
      * @param opts object
      */
@@ -22,17 +20,20 @@ var ModuleProtagonist = cc.Class.extend({
         this.cameraMaxShift = 7;
         this.baseScale = 0.5;
         this.opts.fe.fd.addListener('renderEnd', this.step.bind(this));
-        if (this.opts.ego) {
-            this.registerEgo(opts.ego);
-        }
     },
 
-    registerEgo: function(ego) {
-        this.ego = ego;
+    injectFe: function() {},
+
+    registerInteractorApplier: function(interactorApplier) {
+        this.interactorApplier = interactorApplier;
+        this.ego = interactorApplier.ego;
+        this.mouse = interactorApplier.opts.mouseThing;
     },
 
-    unregisterEgo: function() {
+    unregisterInteractorApplier: function() {
+        this.interactorApplier = null;
         this.ego = null;
+        this.mouse = null;
     },
 
     adjustCameraShift: function(velocity, shift) {
@@ -66,7 +67,7 @@ var ModuleProtagonist = cc.Class.extend({
     },
 
     rotateTurret: function(rover, turretThing, turretComponent, dt) {
-        var mouseL = this.opts.viewport.targetToScrolledLocation(this.opts.mouse.l),
+        var mouseL = this.opts.viewport.targetToScrolledLocation(this.mouse.l),
             mouseAngle = geo.segment2Angle(turretThing.l, mouseL),
             closestRotation = geo.closestRotation(turretThing.a, mouseAngle),
             absClosestRotation = Math.abs(closestRotation),

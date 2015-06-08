@@ -13,12 +13,13 @@ var EgoInteractorApplier = cc.Class.extend({
      * * viewport
      * * mouseThing
      * * fe
+     * * ego
      * @param opts object
      */
     ctor: function(opts) {
         this.opts = opts;
         this.setupInteractor();
-        this.ego = opts.protagonist.opts.ego;
+        this.ego = opts.ego;
     },
 
     selectUnderMouse: function(evt, index) {

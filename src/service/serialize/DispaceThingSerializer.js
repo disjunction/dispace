@@ -32,8 +32,8 @@ _p.serializeInitial = function(thing) {
 };
 
 _p.unserializeInitial = function(bundle) {
-    if (bundle[1].type && this.serializers[bundle[1].type]) {
-        return this.serializers[bundle[1].type].unserializeInitial(bundle);
+    if (bundle[2].type && this.serializers[bundle[2].type]) {
+        return this.serializers[bundle[2].type].unserializeInitial(bundle);
     } else {
         return ThingSerializer.prototype.unserializeInitial.call(this, bundle);
     }
