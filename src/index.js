@@ -37,7 +37,8 @@ module.exports = {
         ModuleMayor: require('./field/ModuleMayor'),
         ModuleInsight: require('./field/ModuleInsight'),
         EgoInteractorApplierLocal: require('./field/EgoInteractorApplierLocal'),
-        ModuleProtagonist: require('./field/ModuleProtagonist')
+        ModuleProtagonist: require('./field/ModuleProtagonist'),
+        Shadow: require('./field/Shadow'),
     },
     ui: {
         hud: {

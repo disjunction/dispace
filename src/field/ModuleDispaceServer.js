@@ -9,10 +9,12 @@ var b2 = require('jsbox2d'),
 
 var radius;
 
+var broadcastedTypes = ['rover', 'obstacle'];
+
 /**
  * opts:
  * * gutsManager
- * * socketManager
+ * * fiueldSocketManager
  */
 var ModuleDispaceServer = ModuleAbstract.extend({
     ctor: function(opts) {
@@ -24,10 +26,11 @@ var ModuleDispaceServer = ModuleAbstract.extend({
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
 
         this.fe.fd.addListener('simEnd', this.broadcastPup.bind(this));
+        this.fe.fd.addListener('injectThing', this.injectThing.bind(this));
     },
 
     broadcastPup: function(event) {
-        var socketManager = this.opts.socketManager,
+        var fieldSocketManager = this.opts.fieldSocketManager,
             thingSerializer = this.fe.serializer.opts.thingSerializer,
             pup = [];
         for (var i = 0; i < this.fe.field.things.length; i++) {
@@ -37,9 +40,23 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             }
         }
         if (pup.length > 0) {
-            socketManager.broadcast(['pup', pup, this.fe.simSum]);
+            fieldSocketManager.broadcast(['pup', pup, this.fe.simSum]);
         }
-    }
+    },
+
+    injectThing: function(event) {
+        var thing = event.thing;
+        if (!thing ||
+            !thing.plan ||
+            !thing.plan.type ||
+            broadcastedTypes.indexOf(thing.plan.type) == -1) {
+            return;
+        }
+        var fieldSocketManager = this.opts.fieldSocketManager,
+            thingSerializer = this.fe.serializer.opts.thingSerializer,
+            things = [thingSerializer.serializeInitial(thing)];
+        fieldSocketManager.broadcast(['things', things]);
+    },
 });
 
 module.exports = ModuleDispaceServer;

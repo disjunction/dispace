@@ -5,7 +5,7 @@ var cc = require('cc'),
     flame = require('fgtk/flame'),
     Thing = flame.entity.Thing,
     Field = flame.entity.Field,
-    geo = require('fgtk/smog').util.geo,
+    smog = require('fgtk/smog'),
     ModuleShooter = require('dispace/field/ModuleShooter'),
     ModuleRof = require('dispace/field/ModuleRof'),
     ThingSerializer = flame.service.ThingBuilder,
@@ -53,12 +53,15 @@ _p.makeFieldSerializer = function() {
     return serializer;
 };
 
-_p.makeBasicFe = function() {
+_p.makeBasicFe = function(opts) {
+    opts = opts || {};
+
     this.fe = new flame.engine.FieldEngine({
         cosmosManager: this.cosmosManager,
         assetManager: this.assetManager,
         config: this.config,
-        thingBuilder: this.thingBuilder
+        thingBuilder: this.thingBuilder,
+        uidGenerator: new smog.util.UidGenerator(opts.uidPrefix || 'm')
     });
 
     this.fe.registerModule(new flame.engine.ModuleBox2d({

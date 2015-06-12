@@ -213,7 +213,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
     },
 
     /**
-     * Sample things message:
+     * Sample things message:bash
      * ["things",
      *     ["mA", "inject", {p: [...], "i": ...}]
      *     ["mB", "remove"]
