@@ -4,8 +4,7 @@
 var cc = require('cc'),
     smog = require('fgtk/smog'),
     b2 = require('jsbox2d'),
-    flame = require('fgtk/flame'),
-    ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract');
+    flame = require('fgtk/flame');
 
 /**
  * Server Socket Handler, created for each connection
@@ -20,12 +19,17 @@ var Shadow = cc.Class.extend({
      * * fieldSocketManager
      */
     ctor: function(opts) {
-        this.opts = opts || {};
+        if (!opts.fe) {
+            throw new Error('Shadow requires de in opts');
+        }
+        this.fe = opts.fe;
+        this.opts = opts;
     },
 
-    onConnection: function() {
+    initConnnectionForSibling: function(sibling) {
         var socket = this.opts.socket;
-        this.sibling = new smog.entity.Sibling({});
+        this.sibling = sibling;
+        this.fe.injectSibling(sibling);
         this.opts.fieldSocketManager.push(socket);
 
         console.log('socket ' + socket.socketId + ' connected');
@@ -41,19 +45,38 @@ var Shadow = cc.Class.extend({
             socket.emit('runScene');
         }.bind(this));
 
-        setTimeout(this.delayedNonsense.bind(this), 5000);
+        socket.on('a', function(msg) {
+            this.receiveActivity(msg);
+        }.bind(this));
+    },
+
+    onConnection: function() {
+        this.fe.opts.pumpkinClient.createAnonymousSibling()
+            .then(this.initConnnectionForSibling.bind(this))
+            .catch(console.error.bind(console));
+    },
+
+    receiveActivity: function(msg) {
+        var activityType = msg[0],
+            payload = msg[1],
+            simSum = msg[2]; // not used now
+
+        var siblingId = this.sibling.siblingId;
+        switch (activityType) {
+            case "w":
+                this.opts.fe.m.willMaster.processWillArray(payload, siblingId);
+                break;
+            default:
+                throw new Error('unknown activity type: ' + activityType);
+        }
     },
 
     delayedNonsense: function() {
+        console.log('delayed nonsense');
         var cm = this.opts.fe.opts.cosmosManager;
-        var thing = new flame.entity.Thing({
-            plan: cm.get('thing/flora/tree-blue-round'),
-            l: {
-                x: 5,
-                y: 5
-            },
-            a: 0
-        });
+        var plan = cm.get('assembly/faf-m17-m'),
+            thing = this.opts.fe.opts.roverBuilder.makeRoverByAssemblyPlan(plan);
+        thing.l = {x: 5, y: 5};
         this.opts.fe.injectThing(thing);
     }
 });

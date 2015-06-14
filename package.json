@@ -1,0 +1,10 @@
+{
+    "name": "dispace",
+    "dependencies": {
+        "ffi": "*",
+        "jsonlint": "*",
+        "image-size": "*",
+
+        "jasmine-node": "*"
+    }
+}

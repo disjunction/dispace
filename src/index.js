@@ -34,6 +34,7 @@ module.exports = {
         ModuleDispaceServer: require('./field/ModuleDispaceServer'),
         ModuleRof: require('./field/ModuleRof'),
         ModuleShooter: require('./field/ModuleShooter'),
+        ModuleWillMaster: require('./field/ModuleWillMaster'),
         ModuleMayor: require('./field/ModuleMayor'),
         ModuleInsight: require('./field/ModuleInsight'),
         EgoInteractorApplierLocal: require('./field/EgoInteractorApplierLocal'),

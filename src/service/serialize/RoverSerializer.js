@@ -10,6 +10,9 @@ var flame = require('fgtk/flame'),
  *  Additional rover bundles:
  *  "g": ["i": [5, 10], "a": [7, 20]], // guts object is passed as is
  *
+ *  Interstate bund
+ *  "i": ["a", "l"], // in this example "accelerate" and "turn left"
+ *
  *  "assemblyPlan": {"components": ... }, // custom assembly spec. passed as is, because is needed only when a new rover is added
  *  "assemblyPlanSrc": "assembly/mob/evil_guy", // (not yet implemented) predefined assembly, referenced just by src
  *

@@ -20,13 +20,12 @@ describe('dispace.service.serialize.DispaceThingSerializer', function() {
         rover.id = 'mA';
         var serializedRover = batch.thingSerializer.serializeInitial(rover);
 
-        expect(serializedRover[1].type).toBe('rover');
-        expect(serializedRover[1].p).toEqual([3, 5]);
-        expect(serializedRover[1].planSrc).toBe('thing/rover/hull/faf-m29-hull');
+        expect(serializedRover[2].type).toBe('rover');
+        expect(serializedRover[2].p).toEqual([3, 5, 0]);
+        expect(serializedRover[2].planSrc).toBe('thing/rover/hull/faf-m29-hull');
 
         var newRover = batch.thingSerializer.unserializeInitial(serializedRover);
         expect(newRover.l.x).toBe(3);
         expect(newRover.l.y).toBe(5);
-        console.log(newRover.c);
     });
 });

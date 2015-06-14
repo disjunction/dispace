@@ -6,7 +6,9 @@ var cc = require('cc'),
     Thing = flame.entity.Thing,
     Field = flame.entity.Field,
     smog = require('fgtk/smog'),
+    grass = require('fgtk/grass'),
     ModuleShooter = require('dispace/field/ModuleShooter'),
+    ModuleWillMaster = require('dispace/field/ModuleWillMaster'),
     ModuleRof = require('dispace/field/ModuleRof'),
     ThingSerializer = flame.service.ThingBuilder,
     GutsManager = require('dispace/service/GutsManager'),
@@ -61,7 +63,11 @@ _p.makeBasicFe = function(opts) {
         assetManager: this.assetManager,
         config: this.config,
         thingBuilder: this.thingBuilder,
-        uidGenerator: new smog.util.UidGenerator(opts.uidPrefix || 'm')
+        roverBuilder: this.roverBuilder,
+        itemManager: this.itemManager,
+        gutsManager: this.gutsManager,
+        uidGenerator: new smog.util.UidGenerator(opts.uidPrefix || 'f'),
+        pumpkinClient: grass.pumpkin.Pumpkin.bootstrapLocal().makeClient()
     });
 
     this.fe.registerModule(new flame.engine.ModuleBox2d({
@@ -76,6 +82,9 @@ _p.makeBasicFe = function(opts) {
 
     this.fe.registerModule(new ModuleRof({
     }), 'rof');
+
+    this.fe.registerModule(new ModuleWillMaster({
+    }), 'willMaster');
 
     return this.fe;
 };

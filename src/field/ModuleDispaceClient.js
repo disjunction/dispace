@@ -31,7 +31,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
                 this.displayRover(thing);
 
                 // store important for "us" things,
-                // so that we iterate only through the relevant ones in poststep
+                // so that we iterate only through the relevant ones in simStepEnd
                 this.importantThings.push(thing);
             }
         }.bind(this));
@@ -220,6 +220,8 @@ var ModuleDispaceClient = ModuleAbstract.extend({
      * ]
      */
     applyThings: function(event) {
+        console.log(event);
+
         var serializer = this.fe.serializer.opts.thingSerializer;
         for (var i = 0; i < event[1].length; i++) {
             var thingId = event[1][i][0],
@@ -243,7 +245,18 @@ var ModuleDispaceClient = ModuleAbstract.extend({
                     break;
             }
         }
-    }
+    },
+    setSocket: function(socket) {
+        this.socket = socket;
+    },
+    sendActivity: function(payload) {
+        if (!this.socket) {
+            throw new Error('socket not set whhile sending activity');
+        }
+        this.socket.emit('a', payload);
+        console.log('activity sent');
+        console.log(payload);
+    },
 });
 
 module.exports = ModuleDispaceClient;

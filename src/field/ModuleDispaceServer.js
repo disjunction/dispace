@@ -47,9 +47,8 @@ var ModuleDispaceServer = ModuleAbstract.extend({
     injectThing: function(event) {
         var thing = event.thing;
         if (!thing ||
-            !thing.plan ||
-            !thing.plan.type ||
-            broadcastedTypes.indexOf(thing.plan.type) == -1) {
+            !thing.type ||
+            broadcastedTypes.indexOf(thing.type) == -1) {
             return;
         }
         var fieldSocketManager = this.opts.fieldSocketManager,
