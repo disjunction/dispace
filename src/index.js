@@ -53,5 +53,13 @@ module.exports = {
         UiController: require('./ui/UiController'),
         UiDevBuilder: require('./ui/UiDevBuilder')
 
+    },
+    view: {
+        viewpon: {
+            ViewponAbstract: require('./view/viewpon/ViewponAbstract')
+        },
+        viewhull: {
+            ViewhullPropeller: require('./view/viewhull/ViewhullPropeller')
+        }
     }
 };

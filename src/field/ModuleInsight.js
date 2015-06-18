@@ -1,8 +1,17 @@
+/*jslint node: true */
+"use strict";
+
 var b2 = require('jsbox2d'),
+    cc = require('cc'),
     flame = require('fgtk/flame'),
     Thing = flame.entity.Thing,
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
     geo = require('fgtk/smog').util.geo;
+
+var viewhullMapping = {
+    'propeller': require('dispace/view/viewhull/ViewhullPropeller'),
+    'tracks': require('dispace/view/viewhull/ViewhullTracks')
+};
 
 /**
  * opts:
@@ -18,7 +27,14 @@ var ModuleInsight = ModuleAbstract.extend({
             'i': thingPlanHelper.readValue('#ff0000'),
             's': thingPlanHelper.readValue('#7799ff')
         };
+
+        this.fe.fd.addListener('interstate', function(event) {
+            this.applyInterstate(event);
+        }.bind(this));
+
+        this.viewhulls = {};
     },
+
     displayDamage: function(hit) {
         var thingPlan = {states: {basic: {}}},
             p = this.opts.viewport.scrolledLocation2Target(hit.l);
@@ -62,11 +78,23 @@ var ModuleInsight = ModuleAbstract.extend({
         });
         this.fe.m.c.envision(thing);
 
-        globalLastDamage = thing;
-
         for (i in hit.damage) {
             var node = thing.state.nodes[i];
             node.setPosition(node.plan.damageStart);
+        }
+    },
+
+    applyInterstate: function(event) {
+        var thing = event.thing,
+            interstate = event.interstate;
+        if (thing.plan && thing.plan.viewhullType && viewhullMapping[thing.plan.viewhullType]) {
+            var ViewhullClass = viewhullMapping[thing.plan.viewhullType];
+            if (!this.viewhulls[thing.plan.viewhullType]) {
+                this.viewhulls[thing.plan.viewhullType] = new ViewhullClass({
+                    fe: this.fe
+                });
+            }
+            this.viewhulls[thing.plan.viewhullType].applyInterstate(interstate, thing);
         }
     }
 });
