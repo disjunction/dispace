@@ -10,7 +10,7 @@ var b2 = require('jsbox2d'),
 
 var viewhullMapping = {
     'propeller': require('dispace/view/viewhull/ViewhullPropeller'),
-    'tracks': require('dispace/view/viewhull/ViewhullTracks')
+    'track': require('dispace/view/viewhull/ViewhullTrack')
 };
 
 /**

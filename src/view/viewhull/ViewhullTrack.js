@@ -4,7 +4,7 @@ var cc = require('cc'),
     rofCore = require('fgtk/flame/rof/core'),
     Thing = flame.entity.Thing;
 
-var ViewhullTracks = ViewhullAbstract.extend({
+var ViewhullTrack = ViewhullAbstract.extend({
     applyInterstate: function(newI, thing) {
         var plan = thing.plan,
             modCocos = this.opts.fe.m.c;
@@ -33,4 +33,4 @@ var ViewhullTracks = ViewhullAbstract.extend({
     }
 });
 
-module.exports = ViewhullTracks;
+module.exports = ViewhullTrack;

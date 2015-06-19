@@ -251,11 +251,9 @@ var ModuleDispaceClient = ModuleAbstract.extend({
     },
     sendActivity: function(payload) {
         if (!this.socket) {
-            throw new Error('socket not set whhile sending activity');
+            throw new Error('socket not set while sending activity');
         }
         this.socket.emit('a', payload);
-        console.log('activity sent');
-        console.log(payload);
     },
 });
 
