@@ -37,10 +37,16 @@ var ModuleWillMaster = ModuleAbstract.extend({
                 sibling: sibling,
                 thing: rover
             });
-        sibling.avatar = avatar;
-        rover.avatar = avatar;
+            
         rover.l = cc.p(5,5);
+
         this.fe.injectThing(rover);
+
+        // this message duplicates initial injectSibling
+        // this is done to avoid orphan Things
+        this.fe.injectSibling(sibling);
+
+        this.fe.injectAvatar(avatar);
     },
 
 });

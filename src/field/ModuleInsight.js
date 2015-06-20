@@ -28,9 +28,7 @@ var ModuleInsight = ModuleAbstract.extend({
             's': thingPlanHelper.readValue('#7799ff')
         };
 
-        this.fe.fd.addListener('interstate', function(event) {
-            this.applyInterstate(event);
-        }.bind(this));
+        this.fe.fd.addListener('interstate', this.applyInterstate.bind(this));
 
         this.viewhulls = {};
     },

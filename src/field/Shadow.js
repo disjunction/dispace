@@ -20,9 +20,10 @@ var Shadow = cc.Class.extend({
      */
     ctor: function(opts) {
         if (!opts.fe) {
-            throw new Error('Shadow requires de in opts');
+            throw new Error('Shadow requires fe in opts');
         }
         this.fe = opts.fe;
+        this.thingSerializer = this.fe.serializer.opts.thingSerializer;
         this.opts = opts;
     },
 
@@ -42,7 +43,9 @@ var Shadow = cc.Class.extend({
             console.log('initialField with ' + this.opts.fe.field.things.length + ' objects');
             var serialized = this.opts.fe.serializer.serializeInitial(this.opts.fe.field);
             socket.emit('initialField', serialized);
-            socket.emit('runScene');
+            socket.emit('runScene', {
+                sibling: this.fe.opts.pumpkin.serializer.serializeSibling(sibling)
+            });
         }.bind(this));
 
         socket.on('a', function(msg) {
@@ -65,6 +68,12 @@ var Shadow = cc.Class.extend({
         switch (activityType) {
             case "w":
                 this.opts.fe.m.willMaster.processWillArray(payload, siblingId);
+                break;
+            case "i":
+                if (this.sibling && this.sibling.avatar) {
+                    var thing = this.sibling.avatar.opts.thing;
+                    this.thingSerializer.applyInterstateBundle(thing, payload);
+                }
                 break;
             default:
                 throw new Error('unknown activity type: ' + activityType);

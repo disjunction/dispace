@@ -48,7 +48,7 @@ _p.randomizeInterstate = function(value) {
 
     for (var i = 0; i < this.things.length; i++) {
         var thing = this.things[i];
-        if (!thing.player && Math.random() < 0.05) {
+        if (!thing.avatar && Math.random() < 0.05) {
             randomizeInteractor(thing);
         }
     }

@@ -27,10 +27,10 @@ _p.push = function(socket) {
     this.socketMap[socket.id] = socket;
 };
 
-_p.broadcast = function(event) {
+_p.broadcast = function(event, force) {
     for (var i in this.socketMap) {
         var socket = this.socketMap[i];
-        if (socket.readyForFeed) {
+        if (socket.readyForFeed || force) {
             socket.emit('f', event);
         }
     }

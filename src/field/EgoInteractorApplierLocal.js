@@ -163,11 +163,16 @@ var EgoInteractorApplier = cc.Class.extend({
         }.bind(this);
 
         _p.applyState = function(interState) {
-            me.opts.fe.fd.dispatch({
+            // reusable event object
+            var event = {
                 type: 'interstate',
                 thing: me.ego,
                 interstate: interState
-            });
+            };
+
+            me.opts.fe.fd.dispatch(event);
+            event.type = 'ownInterstate';
+            me.opts.fe.fd.dispatch(event);
         };
 
         var applier = new InteractorApplier();

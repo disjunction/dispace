@@ -25,11 +25,17 @@ var ModuleDispaceServer = ModuleAbstract.extend({
     injectFe: function(fe, name) {
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
 
-        this.fe.fd.addListener('simEnd', this.broadcastPup.bind(this));
-        this.fe.fd.addListener('injectThing', this.injectThing.bind(this));
+        var myEvents = [
+            'simEnd',
+            'injectThing',
+            'injectSibling',
+            'injectAvatar'
+        ];
+
+       this.addNativeListeners(myEvents);
     },
 
-    broadcastPup: function(event) {
+    onSimEnd: function(event) {
         var fieldSocketManager = this.opts.fieldSocketManager,
             thingSerializer = this.fe.serializer.opts.thingSerializer,
             pup = [];
@@ -44,7 +50,7 @@ var ModuleDispaceServer = ModuleAbstract.extend({
         }
     },
 
-    injectThing: function(event) {
+    onInjectThing: function(event) {
         var thing = event.thing;
         if (!thing ||
             !thing.type ||
@@ -56,6 +62,25 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             things = [thingSerializer.serializeInitial(thing)];
         fieldSocketManager.broadcast(['things', things]);
     },
+
+    onInjectSibling: function(event) {
+        var fieldSocketManager = this.opts.fieldSocketManager,
+            sibling = event.sibling,
+            serialSibling = this.fe.opts.pumpkin.serializer.serializeSibling(sibling),
+            siblings = [[sibling.siblingId, "inject", serialSibling]];
+        fieldSocketManager.broadcast(['siblings', siblings], true);
+    },
+
+    onInjectAvatar: function(event) {
+        var avatarOpts = event.avatar.opts,
+            avatarMessage = {
+                thingId: avatarOpts.thing.id,
+                siblingId: avatarOpts.sibling.siblingId
+            },
+            fieldSocketManager = this.opts.fieldSocketManager,
+            avatars = [[avatarOpts.sibling.siblingId, "inject", avatarMessage]];
+        fieldSocketManager.broadcast(['avatars', avatars]);
+    }
 });
 
 module.exports = ModuleDispaceServer;

@@ -15,6 +15,7 @@ var radius;
  */
 var ModuleDispaceClient = ModuleAbstract.extend({
     injectFe: function(fe, name) {
+        this.sibling = null;
         this.thingMap = {};
         this.di = 0; // dispace iteration
         this.importantThings = [];
@@ -62,16 +63,36 @@ var ModuleDispaceClient = ModuleAbstract.extend({
             }
         }.bind(this));
 
-        this.fe.fd.addListener('injectShot', function(event) {
-            this.displayShot(event);
-        }.bind(this));
-
-        this.fe.fd.addListener('injectHit', function(event) {
-            this.injectHit(event);
-        }.bind(this));
+        this.addNativeListeners([
+            "injectShot",
+            "injectHit",
+            "ownInterstate"
+        ]);
     },
 
-    injectHit: function(event) {
+    /**
+     * event:
+     * * sibling: serializedSibling
+     */
+    onRunScene: function(event) {
+        var serializer = this.fe.opts.pumpkin.serializer,
+            sibling = serializer.unserializeSibling(event.sibling);
+        this.fe.injectSibling(sibling);
+        this.sibling = sibling;
+    },
+
+    onOwnInterstate: function(event) {
+        var serializer = this.fe.serializer.opts.thingSerializer,
+            interstateActivity = [
+                "i",
+                serializer.makeIterstateBundle(event.thing),
+                this.fe.simSum
+            ];
+        this.sendActivity(interstateActivity);
+        console.log(interstateActivity);
+    },
+
+    onInjectHit: function(event) {
         this.displayHit(event);
 
 
@@ -107,7 +128,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
         return component.viewpon;
     },
 
-    displayShot: function(event) {
+    onInjectShot: function(event) {
         var viewpon = this.getViewponForComponent(event.shot.subjComponent);
         viewpon.showShot(event.shot);
     },
@@ -189,6 +210,8 @@ var ModuleDispaceClient = ModuleAbstract.extend({
         switch (event[0]) {
             case 'pup': return this.applyPup(event);
             case 'things': return this.applyThings(event);
+            case 'siblings': return this.applySiblings(event);
+            case 'avatars': return this.applyAvatars(event);
             default:
                 throw new Error('unknown fieldSocketEvent event. ' + event[0]);
         }
@@ -220,8 +243,6 @@ var ModuleDispaceClient = ModuleAbstract.extend({
      * ]
      */
     applyThings: function(event) {
-        console.log(event);
-
         var serializer = this.fe.serializer.opts.thingSerializer;
         for (var i = 0; i < event[1].length; i++) {
             var thingId = event[1][i][0],
@@ -246,6 +267,51 @@ var ModuleDispaceClient = ModuleAbstract.extend({
             }
         }
     },
+
+    applySiblings: function(event) {
+        var serializer = this.fe.opts.pumpkin.serializer;
+        for (var i = 0; i < event[1].length; i++) {
+            var siblingId = event[1][i][0],
+                operation = event[1][i][1],
+                payload = event[1][i][2];
+            switch (operation) {
+                case "inject":
+                    var sibling = serializer.unserializeSibling(payload);
+                    this.fe.injectSibling(sibling);
+                    break;
+                default:
+                    throw new Error('unsupported opertation in applySiblings: ' + operation);
+            }
+        }
+    },
+
+    applyAvatars: function(event) {
+        for (var i = 0; i < event[1].length; i++) {
+            var siblingId = event[1][i][0],
+                operation = event[1][i][1],
+                payload = event[1][i][2];
+            switch (operation) {
+                case "inject":
+                    var sibling = this.fe.siblingMap[payload.siblingId],
+                        thing = this.fe.thingMap[payload.thingId];
+                    if (!sibling) {
+                        throw new Error('sibling not found while injecting avatar: ' + payload.siblingId);
+                    }
+                    if (!thing) {
+                        throw new Error('thing not found while injecting avatar: ' + payload.thingId);
+                    }
+                    var avatar = new flame.entity.Avatar({
+                        thing: thing,
+                        sibling: sibling
+                    });
+                    this.fe.injectAvatar(avatar);
+                    break;
+                default:
+                    throw new Error('unsupported opertation in applySiblings: ' + operation);
+            }
+        }
+    },
+
     setSocket: function(socket) {
         this.socket = socket;
     },
