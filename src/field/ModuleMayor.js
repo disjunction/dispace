@@ -11,7 +11,9 @@ var cc = require('cc'),
 var ModuleMayor = ModuleAbstract.extend({
     injectFe: function(fe, name) {
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
-        this.horde = new RoverHordeRandom();
+        this.horde = new RoverHordeRandom({
+            fe: fe
+        });
 
         this.fe.fd.addListener('injectThing', function(event) {
             var thing = event.thing;

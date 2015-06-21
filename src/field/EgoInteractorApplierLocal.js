@@ -19,7 +19,9 @@ var EgoInteractorApplier = cc.Class.extend({
     ctor: function(opts) {
         this.opts = opts;
         this.setupInteractor();
-        this.ego = opts.ego;
+        if (opts.ego) {
+            this.registerEgo(opts.ego);
+        }
     },
 
     selectUnderMouse: function(evt, index) {
@@ -35,7 +37,7 @@ var EgoInteractorApplier = cc.Class.extend({
     },
 
     applyMouseDown: function(evt, index) {
-        var state = this.opts.interactor.state;
+        var state = this.opts.interactor.i.map;
         switch (1) {
             case state.ctrl:
                 return this.selectUnderMouse(evt, index);
@@ -55,57 +57,8 @@ var EgoInteractorApplier = cc.Class.extend({
     },
 
 
-    setupInteractor: function() {
-        keys = this.opts.interactor.layout.keys;
-        keys[Interactor.ARROW_UP] = keys[Interactor.KEY_W] = [{type: 'state', state: rofCore.ACCELERATE}];
-        keys[Interactor.ARROW_DOWN] = keys[Interactor.KEY_S] = [{type: 'state', state: rofCore.DECELERATE}];
-        keys[Interactor.ARROW_LEFT] = keys[Interactor.KEY_A] = [{type: 'state', state: rofCore.TURN_LEFT}];
-        keys[Interactor.ARROW_RIGHT] = keys[Interactor.KEY_D] = [{type: 'state', state: rofCore.TURN_RIGHT}];
-
-        keys[Interactor.LMB] = [
-            {type: 'event', on: 'keyDown', event: 'mouseDown1'},
-            {type: 'event', on: 'keyUp', event: 'mouseUp1'},
-            {type: 'state', state: 'charge1'}
-        ];
-
-        keys[Interactor.RMB] = [
-            {type: 'event', on: 'keyDown', event: 'mouseDown2'},
-            {type: 'event', on: 'keyUp', event: 'mouseUp2'},
-            {type: 'state', state: 'charge2'}
-        ];
-
-        keys[Interactor.KEY_Q] = [{type: 'state', state: 'strafeLeft'}];
-        keys[Interactor.KEY_E] = [{type: 'state', state: 'strafeRight'}];
-
-        keys[Interactor.CTRL] = [
-            {type: 'state', state: 'ctrl'},
-            {type: 'event', on: 'keyUp', event: 'ctrlUp'},
-            {type: 'event', on: 'keyDown', event: 'ctrlDown'}
-        ];
-        keys[Interactor.SHIFT] = [
-            {type: 'state', state: 'shift'},
-            {type: 'event', on: 'keyUp', event: 'shiftUp'},
-            {type: 'event', on: 'keyDown', event: 'shiftDown'}
-        ];
-
-        keys[Interactor.KEY_T] = [
-            {type: 'event', on: 'keyUp', event: 'target'}
-        ];
-
-        keys[Interactor.MINUS] = keys[Interactor.CHROME_MINUS] = [{type: 'event', on: 'keyUp', event: 'zoomOut'}];
-        keys[Interactor.EQUAL] = keys[Interactor.CHROME_EQUAL] = [{type: 'event', on: 'keyUp', event: 'zoomIn'}];
-
-        keys[Interactor.SCROLL] = [
-            {type: 'event', on: 'up', event: 'zoomIn'},
-            {type: 'event', on: 'down', event: 'zoomOut'}
-        ];
-
+    setupInteractorListeners: function(dispatcher) {
         var me = this;
-
-        function InteractorApplier() {
-        }
-
-        var _p = InteractorApplier.prototype;
 
         function updateCamera() {
             if (me.opts.protagonist.baseScale < 0.2) {
@@ -116,67 +69,103 @@ var EgoInteractorApplier = cc.Class.extend({
             me.opts.viewport.scaleCameraTo(me.opts.protagonist.baseScale);
         }
 
-        _p.applyEvent = function(evt, name) {
-            switch(name) {
-                case 'target':
-                    console.log(this.opts.interactor.state); break;
-
-                case 'mouseDown1':
-                    me.applyMouseDown(evt, 1); break;
-
-                case 'mouseDown2':
-                    me.applyMouseDown(evt, 2); break;
-
-                case 'mouseUp1':
-                    me.applyMouseUp(evt, 1); break;
-
-                case 'mouseUp2':
-                    me.applyMouseUp(evt, 2); break;
-
-                case 'testClick':
-                    var location = me.opts.viewport.targetToScrolledLocation(me.opts.mouseThing.l);
-                    var plan = me.opts.fe.opts.cosmosManager.getResource('thing/bg/util/red-lamp'),
-                        thing = new Thing({
-                            plan: plan,
-                            l: location
-                        });
-                    me.opts.fe.injectThing(thing);
-
-                    break;
-                case 'zoomIn':
-                    me.opts.protagonist.baseScale *= 1.25;
-                    updateCamera();
-                    break;
-                case 'zoomOut':
-                    me.opts.protagonist.baseScale /= 1.25;
-                    updateCamera();
-                    break;
-                case 'mouseMove':
-                    if (me.opts.mouseThing) {
-                        mouse = me.opts.mouseThing;
-                        mouse.l.x = evt._x;
-                        mouse.l.y = evt._y;
-                        mouse.state.nodes.main.setPosition(mouse.l);
-                    }
-                    break;
-            }
-        }.bind(this);
-
-        _p.applyState = function(interState) {
-            // reusable event object
-            var event = {
+        dispatcher.addListener("interstateChanged", function(event) {
+            var proxyEvent = {
                 type: 'interstate',
                 thing: me.ego,
-                interstate: interState
+                interstate: event.i
             };
 
-            me.opts.fe.fd.dispatch(event);
-            event.type = 'ownInterstate';
-            me.opts.fe.fd.dispatch(event);
-        };
+            me.opts.fe.fd.dispatch(proxyEvent);
+            proxyEvent.type = 'ownInterstate';
+            me.opts.fe.fd.dispatch(proxyEvent);
+        });
 
-        var applier = new InteractorApplier();
-        this.opts.interactor.applier = applier;
+        dispatcher.addListener("mouseMove", function(event) {
+            if (me.opts.mouseThing) {
+                mouse = me.opts.mouseThing;
+                mouse.l.x = event.event._x;
+                mouse.l.y = event.event._y;
+                mouse.state.nodes.main.setPosition(mouse.l);
+            }
+        });
+
+        dispatcher.addListener("mouseDown1", function(event) {
+            me.applyMouseDown(event.event, 1);
+        });
+        dispatcher.addListener("mouseDown2", function(event) {
+            me.applyMouseDown(event.event, 2);
+        });
+        dispatcher.addListener("mouseUp1", function(event) {
+            me.applyMouseUp(event.event, 1);
+        });
+        dispatcher.addListener("mouseUp2", function(event) {
+            me.applyMouseUp(event.event, 2);
+        });
+        dispatcher.addListener("zoomIn", function(event) {
+            me.opts.protagonist.baseScale *= 1.25;
+            updateCamera();
+        });
+        dispatcher.addListener("zoomOut", function(event) {
+            me.opts.protagonist.baseScale /= 1.25;
+            updateCamera();
+        });
+    },
+
+    registerEgo: function(ego) {
+        this.ego = ego;
+        this.ego.i = this.opts.interactor.i;
+    },
+
+    setupInteractor: function() {
+        var interactor = this.opts.interactor;
+        console.log('interactor');
+        console.log(interactor);
+
+        this.setupInteractorListeners(interactor.dispatcher);
+
+        events = interactor.layout.events;
+        states = interactor.layout.states;
+
+        states[Interactor.ARROW_UP] = states[Interactor.KEY_W] = rofCore.ACCELERATE;
+        states[Interactor.ARROW_DOWN] = states[Interactor.KEY_S] = rofCore.DECELERATE;
+        states[Interactor.ARROW_LEFT] = states[Interactor.KEY_A] = rofCore.TURN_LEFT;
+        states[Interactor.ARROW_RIGHT] = states[Interactor.KEY_D] = rofCore.TURN_RIGHT;
+
+        events[Interactor.LMB] = {
+            keyDown: 'mouseDown1',
+            keyUp: 'mouseUp1'
+        };
+        states[Interactor.LMB] = 'charge1';
+
+        events[Interactor.RMB] = {
+            keyDown: 'mouseDown2',
+            keyUp: 'mouseUp2'
+        };
+        states[Interactor.RMB] = 'charge2';
+
+
+        states[Interactor.KEY_Q] = 'strafeLeft';
+        states[Interactor.KEY_E] = 'strafeRight';
+
+        events[Interactor.CTRL] = {
+            keyDown: "ctrlDown",
+            keyUp: "ctrlUp"
+        };
+        states[Interactor.CTRL] = "ctrl";
+
+        events[Interactor.SHIFT] = {
+            keyDown: "shiftDown",
+            keyUp: "shiftUp"
+        };
+        states[Interactor.CTRL] = "shift";
+
+        events[Interactor.MINUS] = events[Interactor.CHROME_MINUS] = {keyUp: "zoomOut"};
+        events[Interactor.EQUAL] = events[Interactor.CHROME_EQUAL] = {keyUp: "zoomIn"};
+        events[Interactor.SCROLL] = {
+            scrollDown: "zoomOut",
+            scrollUp: "zoomIn"
+        };
     }
 });
 

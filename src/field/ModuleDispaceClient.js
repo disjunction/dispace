@@ -89,7 +89,6 @@ var ModuleDispaceClient = ModuleAbstract.extend({
                 this.fe.simSum
             ];
         this.sendActivity(interstateActivity);
-        console.log(interstateActivity);
     },
 
     onInjectHit: function(event) {

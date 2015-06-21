@@ -19,21 +19,21 @@ _p.push = function(thing) {
 };
 
 _p.randomizeInterstate = function(value) {
+    var me = this;
+
     function randomizeInteractor(thing) {
         var i = thing.i;
-        if (Math.random() < 0.2) {
-            i[core.ACCELERATE] = true;
-        } else {
-            delete i[core.ACCELERATE];
-        }
+
+        i.set(core.ACCELERATE, (Math.random() < 0.2));
+
         if (Math.random() < 0.2) {
             if (Math.random() < 0.2) {
-                i[core.TURN_LEFT] = true;
+                i.set(core.TURN_LEFT, true);
             } else if (Math.random() < 0.4) {
-                i[core.TURN_RIGHT] = true;
+                i.set(core.TURN_RIGHT, true);
             } else {
-                delete i[core.TURN_LEFT];
-                delete i[core.TURN_RIGHT];
+                i.set(core.TURN_LEFT, false);
+                i.set(core.TURN_RIGHT, false);
             }
         }
 
@@ -43,6 +43,16 @@ _p.randomizeInterstate = function(value) {
             } else {
                 thing.c.turret1.mode = 'none';
             }
+        }
+
+        if (i.changed) {
+            var proxyEvent = {
+                type: 'interstate',
+                thing: thing,
+                interstate: i
+            };
+            i.changed = false;
+            me.opts.fe.fd.dispatch(proxyEvent);
         }
     }
 

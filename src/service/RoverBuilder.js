@@ -1,4 +1,6 @@
 var cc = require('cc'),
+    flame = require('fgtk/flame'),
+    Interstate = flame.view.Interactor.Interstate,
     Assembly = require('dispace/entity/Assembly'),
     Rover = require('dispace/entity/thing/Rover');
 /**
@@ -49,7 +51,7 @@ var RoverBuilder = cc.Class.extend({
             }
         }
 
-        rover.i = {};
+        rover.i = new Interstate();
 
         // short alias for accessing components
         rover.c = assembly.opts.components;

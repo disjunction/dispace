@@ -8,24 +8,25 @@ var ViewhullTrack = ViewhullAbstract.extend({
     applyInterstate: function(newI, thing) {
         var plan = thing.plan,
             modCocos = this.opts.fe.m.c;
+        var map = newI.map;
         switch (true) {
-            case newI[rofCore.DECELERATE] && thing.stateName != 'driveBackward':
+            case map[rofCore.DECELERATE] && thing.stateName != 'driveBackward':
                 modCocos.changeState(thing, 'driveBackward');
                 break;
             case (thing.stateName != 'driveForward' &&
                  (
-                     newI[rofCore.ACCELERATE] == 1||
-                     newI[rofCore.TURN_LEFT]  == 1||
-                     newI[rofCore.TURN_RIGHT] == 1
+                     map[rofCore.ACCELERATE] ||
+                     map[rofCore.TURN_LEFT] ||
+                     map[rofCore.TURN_RIGHT]
                 )):
                 modCocos.changeState(thing, 'driveForward');
                 break;
             case (thing.stateName != 'stop' &&
                  !(
-                     newI[rofCore.ACCELERATE] == 1||
-                     newI[rofCore.TURN_LEFT]  == 1||
-                     newI[rofCore.TURN_RIGHT] == 1 ||
-                     newI[rofCore.DECELERATE] == 1
+                     map[rofCore.ACCELERATE] ||
+                     map[rofCore.TURN_LEFT] ||
+                     map[rofCore.TURN_RIGHT] ||
+                     map[rofCore.DECELERATE]
                 )):
                 modCocos.changeState(thing, 'stop');
                 break;

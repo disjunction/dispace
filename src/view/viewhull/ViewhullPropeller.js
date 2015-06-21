@@ -8,29 +8,36 @@ var ViewhullPropeller = ViewhullAbstract.extend({
     applyInterstate: function(newI, thing) {
         var plan = thing.plan,
             modCocos = this.opts.fe.m.c;
+
+        var map = newI.map;
+
         switch (true) {
-            case thing.stateName != 'driveLeft' && newI[rofCore.TURN_LEFT] == 1:
-                modCocos.changeState(thing, 'driveLeft');
+            case map[rofCore.TURN_LEFT]:
+                if (thing.stateName != 'driveLeft') {
+                    modCocos.changeState(thing, 'driveLeft');
+                }
                 break;
 
-            case thing.stateName != 'driveRight' && newI[rofCore.TURN_RIGHT] == 1:
-                modCocos.changeState(thing, 'driveRight');
+            case map[rofCore.TURN_RIGHT]:
+                if (thing.stateName != 'driveRight') {
+                    modCocos.changeState(thing, 'driveRight');
+                }
                 break;
 
             case (thing.stateName != 'driveForward' &&
                  (
-                     newI[rofCore.ACCELERATE] == 1||
-                     newI[rofCore.DECELERATE]  == 1
+                     map[rofCore.ACCELERATE] ||
+                     map[rofCore.DECELERATE]
                 )):
                 modCocos.changeState(thing, 'driveForward');
                 break;
 
             case (thing.stateName != 'stop' &&
                  !(
-                     newI[rofCore.ACCELERATE] == 1||
-                     newI[rofCore.TURN_LEFT]  == 1||
-                     newI[rofCore.TURN_RIGHT] == 1 ||
-                     newI[rofCore.DECELERATE] == 1
+                     map[rofCore.ACCELERATE] ||
+                     map[rofCore.TURN_LEFT]  ||
+                     map[rofCore.TURN_RIGHT] ||
+                     map[rofCore.DECELERATE]
                 )):
                 modCocos.changeState(thing, 'stop');
                 break;

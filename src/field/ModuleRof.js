@@ -49,41 +49,15 @@ var ModuleRof = ModuleAbstract.extend({
             thing.mover = this.driver.makeMover(thing, moverConfig);
         } catch (e) {
             console.error('ModuleRof failed to injectThing: ' + thing.id);
+            console.error(e);
         }
     },
 
     driveAll: function() {
-        function randomizeInteractor(thing) {
-            var i = thing.i;
-            if (Math.random() < 0.2) {
-                i[core.ACCELERATE] = true;
-            } else {
-                delete i[core.ACCELERATE];
-            }
-            if (Math.random() < 0.2) {
-                if (Math.random() < 0.2) {
-                    i[core.TURN_LEFT] = true;
-                } else if (Math.random() < 0.4) {
-                    i[core.TURN_RIGHT] = true;
-                } else {
-                    delete i[core.TURN_LEFT];
-                    delete i[core.TURN_RIGHT];
-                }
-            }
-
-            if (Math.random() < 0.2) {
-                //thing.c.turret1.mode = 'charge';
-            }
-        }
 
         for (var i = 0; i < this.rovers.length; i++) {
             var thing = this.rovers[i];
             this.driver.drive(thing);
-            if (!thing.player && Math.random() < 0.05) {
-                if (this.opts.randomMove) {
-                    //randomizeInteractor(thing);
-                }
-            }
         }
     }
 });

@@ -45,6 +45,23 @@ var MoverConfigBuilder = cc.Class.extend({
         return mc;
     },
 
+    /**
+     * @param {object} mc - moverConfig
+     * @param {object} hc - hullConfig
+     * @param {object} ec - engineConfig
+     */
+    makeAirCussionMoverConfig: function(mc, hc, ec) {
+        var engineAccel = ec.acceleration,
+            multiplierTorque = hc.multiplierTorque || 0.2;
+
+        mc.wheelTorque = engineAccel * multiplierTorque;
+        mc.accelTurn = hc.accelTurn || mc.accelBackward / 2;
+        mc.engineAngle = hc.engineAngle || 30;
+        mc.engineAngleAdditional = hc.engineAngleAdditional || mc.engineAngle;
+        mc.engineX = hc.engineX || 30;
+        return mc;
+    },
+
     combineComponentMoverConfig: function(component) {
         var o1 = component.opts.mover,
             o2 = component.params.mover;
@@ -65,7 +82,7 @@ var MoverConfigBuilder = cc.Class.extend({
         switch (mc.chasis) {
             case 'track':
                 return  this.makeTrackMoverConfig(mc, hullConfig, engineConfig);
-            case 'airCussion':
+            case 'airCushion':
                 return  this.makeAirCussionMoverConfig(mc, hullConfig, engineConfig);
             default:
                 throw new Error('unknown chasis: ' + mc.chasis);
