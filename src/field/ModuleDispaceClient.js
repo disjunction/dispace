@@ -208,6 +208,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
 
         switch (event[0]) {
             case 'pup': return this.applyPup(event);
+            case 'iup': return this.applyIup(event);
             case 'things': return this.applyThings(event);
             case 'siblings': return this.applySiblings(event);
             case 'avatars': return this.applyAvatars(event);
@@ -216,11 +217,26 @@ var ModuleDispaceClient = ModuleAbstract.extend({
         }
     },
 
+    applyIup: function(event) {
+        var serializer = this.fe.serializer.opts.thingSerializer;
+        for (var i = 0; i < event[1].length; i++) {
+            var thing = this.fe.thingMap[event[1][i][0]];
+            if (!thing) {
+                continue;
+            }
+            serializer.applyInterstateBundle(thing, event[1][i][1]);
+            this.fe.fd.dispatch({
+                type: 'interstate',
+                thing: thing,
+                interstate: thing.i
+            });
+        }
+    },
+
     applyPup: function(event) {
         var serializer = this.fe.serializer.opts.thingSerializer;
         for (var i = 0; i < event[1].length; i++) {
-            var phisicsBundle = event[1][i],
-                thing = this.thingMap[event[1][i][0]];
+            var thing = this.thingMap[event[1][i][0]];
             if (!thing) {
                 continue;
             }

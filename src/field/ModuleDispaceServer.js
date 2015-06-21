@@ -29,7 +29,8 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             'simEnd',
             'injectThing',
             'injectSibling',
-            'injectAvatar'
+            'injectAvatar',
+            'interstate'
         ];
 
        this.addNativeListeners(myEvents);
@@ -80,6 +81,24 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             fieldSocketManager = this.opts.fieldSocketManager,
             avatars = [[avatarOpts.sibling.siblingId, "inject", avatarMessage]];
         fieldSocketManager.broadcast(['avatars', avatars]);
+    },
+
+    /**
+     * event:
+     * * thing
+     * * i
+     */
+    onInterstate: function(event) {
+        var fieldSocketManager = this.opts.fieldSocketManager,
+            thingSerializer = this.fe.serializer.opts.thingSerializer;
+        fieldSocketManager.broadcast([
+            'iup',
+            [[
+                event.thing.id,
+                thingSerializer.makeIterstateBundle(event.thing)
+            ]],
+            this.fe.simSum
+        ]);
     }
 });
 
