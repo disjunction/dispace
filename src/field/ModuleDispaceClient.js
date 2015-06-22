@@ -22,6 +22,8 @@ var ModuleDispaceClient = ModuleAbstract.extend({
 
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
 
+        this.roverSerializer = this.fe.serializer.opts.thingSerializer.serializers.rover;
+
         this.fe.fd.addListener('injectThing', function(event) {
             var thing = event.thing;
             if (thing.id) {
@@ -66,7 +68,8 @@ var ModuleDispaceClient = ModuleAbstract.extend({
         this.addNativeListeners([
             "injectShot",
             "injectHit",
-            "ownInterstate"
+            "ownInterstate",
+            "controlRover"
         ]);
     },
 
@@ -125,6 +128,22 @@ var ModuleDispaceClient = ModuleAbstract.extend({
             });
         }
         return component.viewpon;
+    },
+
+    onControlRover: function(event) {
+        var bundle = {
+            thingId: event.thing.id,
+        };
+        if (event.turret1) {
+            bundle.turret1 = this.roverSerializer.makeTurretBundle(event.turret1);
+        }
+        if (event.turret2) {
+            bundle.turret2 = this.roverSerializer.makeTurretBundle(event.turret2);
+        }
+
+        this.sendActivity(["w", [
+            ["wa", "controlRover", bundle]
+        ], 0]);
     },
 
     onInjectShot: function(event) {
@@ -209,6 +228,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
         switch (event[0]) {
             case 'pup': return this.applyPup(event);
             case 'iup': return this.applyIup(event);
+            case 'rup': return this.applyRup(event);
             case 'things': return this.applyThings(event);
             case 'siblings': return this.applySiblings(event);
             case 'avatars': return this.applyAvatars(event);
@@ -248,6 +268,31 @@ var ModuleDispaceClient = ModuleAbstract.extend({
         this.fe.simAccumulator = 0;
         this.fe.stats.simDiff = this.fe.simSum - event[2];
         this.fe.simSum = event[2];
+    },
+
+    applyRup: function(event) {
+        var serializer = this.fe.serializer.opts.thingSerializer,
+            thing;
+
+        function applyTurret(name, bundle) {
+            var turretTHing = thing.c[name].thing;
+            turretTHing.aa = bundle[0];
+            turretTHing.o = bundle[1];
+        }
+
+        for (var i = 0; i < event[1].length; i++) {
+            thing = this.fe.thingMap[event[1][i][0]];
+            var controlBundle = event[1][i][1];
+            if (!thing) {
+                continue;
+            }
+            if (controlBundle.t1) {
+                applyTurret('turret1', controlBundle.t1);
+            }
+            if (controlBundle.t2) {
+                applyTurret('turret2', controlBundle.t2);
+            }
+        }
     },
 
     /**

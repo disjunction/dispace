@@ -29,6 +29,13 @@ var RoverSerializer = ThingSerializer.extend({
         return bundle;
     },
 
+    makeTurretBundle: function(turretThing) {
+        return [
+            this.outAngle(turretThing.aa),
+            this.outVelocity(turretThing.o)
+        ];
+    },
+
     applyGutsBundle: function(thing, bundle) {
         thing.g = bundle[2].g;
     },

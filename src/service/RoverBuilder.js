@@ -82,6 +82,7 @@ var RoverBuilder = cc.Class.extend({
                 'component'
             );
             components[i].setMark(mark);
+            components[i].role = i;
         }
         return new Assembly({
             components: components,

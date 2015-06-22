@@ -38,7 +38,7 @@ var EgoInteractorApplier = cc.Class.extend({
 
     applyMouseDown: function(evt, index) {
         var state = this.opts.interactor.i.map;
-        switch (1) {
+        switch (true) {
             case state.ctrl:
                 return this.selectUnderMouse(evt, index);
             default:
@@ -119,9 +119,7 @@ var EgoInteractorApplier = cc.Class.extend({
 
     setupInteractor: function() {
         var interactor = this.opts.interactor;
-        console.log('interactor');
-        console.log(interactor);
-
+        
         this.setupInteractorListeners(interactor.dispatcher);
 
         events = interactor.layout.events;
@@ -158,7 +156,7 @@ var EgoInteractorApplier = cc.Class.extend({
             keyDown: "shiftDown",
             keyUp: "shiftUp"
         };
-        states[Interactor.CTRL] = "shift";
+        states[Interactor.SHIFT] = "shift";
 
         events[Interactor.MINUS] = events[Interactor.CHROME_MINUS] = {keyUp: "zoomOut"};
         events[Interactor.EQUAL] = events[Interactor.CHROME_EQUAL] = {keyUp: "zoomIn"};

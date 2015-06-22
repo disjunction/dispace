@@ -1,12 +1,15 @@
 var cc = require('cc'),
     b2 = require('jsbox2d'),
     geo = require('fgtk/smog').util.geo,
+    ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
     Interactor = require('fgtk/flame/view/Interactor');
 
-var ModuleProtagonist = cc.Class.extend({
+/**
+ * should be added somewhere in the end of init
+ */
+var ModuleProtagonist = ModuleAbstract.extend({
     /**
      * opts:
-     * * fe
      * * viewport
      * * syncCamera : boolean
      * * hd - hud event dispatcher
@@ -19,10 +22,12 @@ var ModuleProtagonist = cc.Class.extend({
         this.cameraScaleThreshold = 5;
         this.cameraMaxShift = 7;
         this.baseScale = 0.5;
-        this.opts.fe.fd.addListener('renderEnd', this.step.bind(this));
     },
 
-    injectFe: function() {},
+    injectFe: function(fe, name) {
+        ModuleAbstract.prototype.injectFe.call(this, fe, name);
+        this.fe.fd.addListener('renderEnd', this.step.bind(this));
+    },
 
     registerInteractorApplier: function(interactorApplier) {
         this.interactorApplier = interactorApplier;
@@ -73,16 +78,31 @@ var ModuleProtagonist = cc.Class.extend({
             absClosestRotation = Math.abs(closestRotation),
             omega = turretComponent.params.omegaRad;
 
-        if (absClosestRotation < 0.01) {
-            turretThing.o = 0;
+        // tiny angle changes can be ignored as long as the turret rotates in the right direction
+        // it will auto-lock by next condition as soon as it crosses the target angle
+        if (absClosestRotation < 0.01 && turretThing.o && geo.sign(turretThing.o) != geo.sign(closestRotation)) {
+            return;
+        }
+
+
+        if (absClosestRotation < 0.02) {
+            if (turretThing.o !== 0) {
+                turretThing.o = 0;
+                turretThing.turretChanged = true;
+            }
             return;
         }
 
         if (absClosestRotation < omega * dt) {
             turretThing.o = 0;
             turretThing.aa = mouseAngle - rover.a;
+            turretThing.turretChanged = true;
         } else {
-            turretThing.o = geo.sign(closestRotation) * omega;
+            var newO = geo.sign(closestRotation) * omega;
+            if (turretThing.o != newO) {
+                turretThing.turretChanged = true;
+            }
+            turretThing.o = newO;
         }
     },
 
@@ -111,16 +131,39 @@ var ModuleProtagonist = cc.Class.extend({
     },
 
     step: function(event) {
-        var ego = this.ego;
+        var me = this,
+            ego = this.ego,
+            controlEvent;
+
         if (!ego) return;
+
+        function callRotateTurrent(turretThing, turretComponent) {
+            me.rotateTurret(me.ego, turretThing, turretComponent, event.dt);
+            if (turretThing.turretChanged) {
+                turretThing.turretChanged = false;
+                if (controlEvent === undefined) {
+                    controlEvent = {
+                        type: 'controlRover',
+                        thing: ego,
+                    };
+                }
+                controlEvent[turretComponent.role] = turretThing;
+            }
+        }
+
         if (this.opts.syncCamera) {
             this.syncCamera(event.dt);
+
             if (ego.things.turret1) {
-                this.rotateTurret(ego, ego.things.turret1, ego.assembly.opts.components.turret1, event.dt);
+                callRotateTurrent(ego.things.turret1, ego.assembly.opts.components.turret1);
             }
             if (ego.things.turret2) {
-                this.rotateTurret(ego, ego.things.turret2, ego.assembly.opts.components.turret2, event.dt);
+                callRotateTurrent(ego.things.turret2, ego.assembly.opts.components.turret1);
             }
+        }
+
+        if (controlEvent !== undefined) {
+            this.fe.fd.dispatch(controlEvent);
         }
     }
 });

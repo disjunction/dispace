@@ -28,6 +28,37 @@ var ModuleWillMaster = ModuleAbstract.extend({
         }
     },
 
+    controlRover: function(willId, siblingId, params) {
+        var thing = this.fe.thingMap[params.thingId],
+            proxyEvent = {
+                type: 'controlRover',
+                thing: thing
+            };
+
+        function applyTurret(name, bundle) {
+            if (thing.c && thing.c[name]) {
+                thing.c[name].thing.aa = bundle[0];
+                thing.c[name].thing.o = bundle[1];
+                proxyEvent[name] = thing.c[name].thing;
+            }
+        }
+
+        if (!thing) {
+            console.error('unknown thing ' + params.thingId);
+            return;
+        }
+
+        if (params.turret1) {
+            applyTurret('turret1', params.turret1);
+        }
+
+        if (params.turret2) {
+            applyTurret('turret2', params.turret1);
+        }
+
+        this.fe.fd.dispatch(proxyEvent);
+    },
+
     spawnRover: function(willId, siblingId, params) {
         var cm = this.fe.opts.cosmosManager,
             assemblyPlan = cm.get(params.assemblySrc),
@@ -37,7 +68,7 @@ var ModuleWillMaster = ModuleAbstract.extend({
                 sibling: sibling,
                 thing: rover
             });
-            
+
         rover.l = cc.p(5,5);
 
         this.fe.injectThing(rover);

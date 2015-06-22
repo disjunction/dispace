@@ -26,11 +26,12 @@ var ModuleDispaceServer = ModuleAbstract.extend({
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
 
         var myEvents = [
-            'simEnd',
-            'injectThing',
-            'injectSibling',
-            'injectAvatar',
-            'interstate'
+            "simEnd",
+            "injectThing",
+            "injectSibling",
+            "injectAvatar",
+            "interstate",
+            "controlRover"
         ];
 
        this.addNativeListeners(myEvents);
@@ -96,6 +97,35 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             [[
                 event.thing.id,
                 thingSerializer.makeIterstateBundle(event.thing)
+            ]],
+            this.fe.simSum
+        ]);
+    },
+
+    /**
+     * event:
+     * * thing
+     * * turret1: turret1 thing
+     * * turret2: turret2 thing
+     */
+    onControlRover: function(event) {
+        var fieldSocketManager = this.opts.fieldSocketManager,
+            thingSerializer = this.fe.serializer.opts.thingSerializer,
+            roverSerializer = this.fe.serializer.opts.thingSerializer.serializers.rover;
+
+        var rupBundle = {};
+        if (event.turret1) {
+            rupBundle.t1 = roverSerializer.makeTurretBundle(event.turret1);
+        }
+        if (event.turret2) {
+            rupBundle.t2 = roverSerializer.makeTurretBundle(event.turret2);
+        }
+
+        fieldSocketManager.broadcast([
+            'rup',
+            [[
+                event.thing.id,
+                rupBundle
             ]],
             this.fe.simSum
         ]);
