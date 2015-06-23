@@ -25,6 +25,10 @@ var ModuleMayor = ModuleAbstract.extend({
         this.fe.fd.addListener('simStepEnd', function(event) {
             this.horde.randomizeInterstate();
         }.bind(this));
+
+        this.fe.fd.addListener('removeThing', function(event) {
+            this.horde.removeThing(event.thing);
+        }.bind(this));
     }
 });
 

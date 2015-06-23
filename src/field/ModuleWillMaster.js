@@ -53,7 +53,7 @@ var ModuleWillMaster = ModuleAbstract.extend({
         }
 
         if (params.turret2) {
-            applyTurret('turret2', params.turret1);
+            applyTurret('turret2', params.turret2);
         }
 
         this.fe.fd.dispatch(proxyEvent);

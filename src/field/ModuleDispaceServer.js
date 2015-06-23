@@ -98,7 +98,7 @@ var ModuleDispaceServer = ModuleAbstract.extend({
                 event.thing.id,
                 thingSerializer.makeIterstateBundle(event.thing)
             ]],
-            this.fe.simSum
+            thingSerializer.outFloat(this.fe.simSum)
         ]);
     },
 
@@ -127,7 +127,7 @@ var ModuleDispaceServer = ModuleAbstract.extend({
                 event.thing.id,
                 rupBundle
             ]],
-            this.fe.simSum
+            roverSerializer.outFloat(this.fe.simSum)
         ]);
     }
 });

@@ -73,6 +73,10 @@ var ModuleDispaceClient = ModuleAbstract.extend({
         ]);
     },
 
+    registerEgo: function(ego) {
+        this.ego = ego;
+    },
+
     /**
      * event:
      * * sibling: serializedSibling
@@ -222,7 +226,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
 
     processFieldSocketEvent: function(event) {
         if (!Array.isArray(event)) {
-            throw new Error('unexpected fieldSocketEvent format. ' + typeof event);
+            throw new Error('unexpected fieldSockwsswetEvent format. ' + typeof event);
         }
 
         switch (event[0]) {
@@ -272,16 +276,22 @@ var ModuleDispaceClient = ModuleAbstract.extend({
 
     applyRup: function(event) {
         var serializer = this.fe.serializer.opts.thingSerializer,
-            thing;
+            thing, thingId;
+
+        //console.log(event);
 
         function applyTurret(name, bundle) {
-            var turretTHing = thing.c[name].thing;
-            turretTHing.aa = bundle[0];
-            turretTHing.o = bundle[1];
+            var turretThing = thing.c[name].thing;
+            turretThing.aa = bundle[0];
+            turretThing.o = bundle[1];
         }
 
         for (var i = 0; i < event[1].length; i++) {
-            thing = this.fe.thingMap[event[1][i][0]];
+            thingId = event[1][i][0];
+            if (this.ego && this.ego.id == thingId) {
+                continue;
+            }
+            thing = this.fe.thingMap[thingId];
             var controlBundle = event[1][i][1];
             if (!thing) {
                 continue;

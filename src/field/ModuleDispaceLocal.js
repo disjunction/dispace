@@ -71,6 +71,10 @@ var ModuleDispaceLocal = ModuleAbstract.extend({
         }.bind(this));
     },
 
+    registerEgo: function(ego) {
+        this.ego = ego;
+    },
+
     injectHit: function(event) {
         this.displayHit(event);
 

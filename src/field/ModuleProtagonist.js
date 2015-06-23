@@ -80,12 +80,13 @@ var ModuleProtagonist = ModuleAbstract.extend({
 
         // tiny angle changes can be ignored as long as the turret rotates in the right direction
         // it will auto-lock by next condition as soon as it crosses the target angle
+
         if (absClosestRotation < 0.01 && turretThing.o && geo.sign(turretThing.o) != geo.sign(closestRotation)) {
             return;
         }
 
 
-        if (absClosestRotation < 0.02) {
+        if (absClosestRotation < 0.015) {
             if (turretThing.o !== 0) {
                 turretThing.o = 0;
                 turretThing.turretChanged = true;
@@ -158,7 +159,7 @@ var ModuleProtagonist = ModuleAbstract.extend({
                 callRotateTurrent(ego.things.turret1, ego.assembly.opts.components.turret1);
             }
             if (ego.things.turret2) {
-                callRotateTurrent(ego.things.turret2, ego.assembly.opts.components.turret1);
+                callRotateTurrent(ego.things.turret2, ego.assembly.opts.components.turret2);
             }
         }
 
