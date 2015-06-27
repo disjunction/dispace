@@ -5,69 +5,29 @@ var b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
     Thing = flame.entity.Thing,
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
-    ViewponAbstract = require('dispace/view/viewpon/ViewponAbstract');
+    ViewponAbstract = require('dispace/view/viewpon/ViewponAbstract'),
+    ShotSerializer = require('dispace/service/serialize/ShotSerializer');
 
 var radius;
 
 /**
+ * receives and allies messages from server
+ * sends updates about ego to the server
+ *
  * opts:
- * * gutsManager
  */
 var ModuleDispaceClient = ModuleAbstract.extend({
     injectFe: function(fe, name) {
         this.sibling = null;
-        this.thingMap = {};
-        this.di = 0; // dispace iteration
-        this.importantThings = [];
 
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
 
         this.roverSerializer = this.fe.serializer.opts.thingSerializer.serializers.rover;
-
-        this.fe.fd.addListener('injectThing', function(event) {
-            var thing = event.thing;
-            if (thing.id) {
-                this.thingMap[thing.id] = thing;
-            }
-
-            if (thing.type && thing.type == 'rover') {
-                this.displayRover(thing);
-
-                // store important for "us" things,
-                // so that we iterate only through the relevant ones in simStepEnd
-                this.importantThings.push(thing);
-            }
-        }.bind(this));
-
-        this.fe.fd.addListener('moveThing', function(event) {
-            var thing = event.thing;
-            if (thing.type && thing.type == 'rover') {
-                this.stepAwakeRover(thing, event.dt);
-            }
-        }.bind(this));
-
-        // mark start of the iteraction
-        this.fe.fd.addListener('simStepCall', function(event) {
-            this.di++;
-        }.bind(this));
-
-        // process things, which were not triggered by other events
-        // this is done in a separate loop, to save double redraw on move and then rotate
-        // these should be low-cost operations
-        this.fe.fd.addListener('simStepEnd', function(event) {
-            for (var i = 0; i < this.importantThings.length; i++) {
-                var thing = this.importantThings[i];
-                if (thing.di != this.di) {
-                    if (thing.type && thing.type == 'rover') {
-                        this.stepSleepyRover(thing, event.dt);
-                    }
-                }
-            }
-        }.bind(this));
+        this.shotSerializer = new ShotSerializer({
+            fe: fe
+        });
 
         this.addNativeListeners([
-            "injectShot",
-            "injectHit",
             "ownInterstate",
             "controlRover"
         ]);
@@ -93,45 +53,9 @@ var ModuleDispaceClient = ModuleAbstract.extend({
             interstateActivity = [
                 "i",
                 serializer.makeIterstateBundle(event.thing),
-                this.fe.simSum
+                serializer.outFloat(this.fe.simSum)
             ];
         this.sendActivity(interstateActivity);
-    },
-
-    onInjectHit: function(event) {
-        this.displayHit(event);
-
-
-        if (event.hit.objThing.g) {
-            var objThing = event.hit.objThing;
-            this.opts.gutsManager.applyDamage(event.hit.damage, objThing.g);
-            if (event.hit.affects) {
-                for (var i = 0; i < event.hit.affects.length; i++) {
-                    if (event.hit.affects[i] == 'explode') {
-                        objThing.inert = true;
-                        if (objThing.plan.states.explode) {
-                            this.fe.m.c.changeState(objThing, 'explode');
-                        }
-                        if (objThing.things) {
-                            for (var j in objThing.things) {
-                                this.fe.m.c.removeThing(objThing.things[j]);
-                            }
-                            objThing.things = null;
-                        }
-                    }
-                }
-            }
-        }
-    },
-
-    getViewponForComponent: function(component) {
-        if (!component.viewpon) {
-            component.viewpon = new ViewponAbstract({
-                fe: this.fe,
-                viewponPlan: this.fe.opts.cosmosManager.getResource(component.opts.viewponSrc)
-            });
-        }
-        return component.viewpon;
     },
 
     onControlRover: function(event) {
@@ -150,89 +74,16 @@ var ModuleDispaceClient = ModuleAbstract.extend({
         ], 0]);
     },
 
-    onInjectShot: function(event) {
-        var viewpon = this.getViewponForComponent(event.shot.subjComponent);
-        viewpon.showShot(event.shot);
-    },
-
-    displayHit: function(event) {
-        var viewpon = this.getViewponForComponent(event.hit.subjComponent);
-        viewpon.showHit(event.hit);
-        this.fe.m.insight.displayDamage(event.hit);
-    },
-
-    displayRover: function(thing) {
-        // alias for socket definition
-        thing.sockets = thing.assembly.opts.components.hull.opts.sockets;
-
-        for (var i in thing.things) {
-            var subthing = thing.things[i];
-            this.fe.m.c.envision(subthing);
-        }
-
-        this.stepAwakeRover(thing, 0);
-    },
-
-    rotateComponent: function(thing, dt) {
-        if (!thing.aa) {
-            thing.aa = 0;
-        }
-        thing.aa += thing.o * dt;
-    },
-
-    stepSubthing: function(thing, subthing, dt) {
-        if (subthing.o) this.rotateComponent(subthing, dt);
-        subthing.a = thing.a + subthing.aa;
-        this.fe.m.c.syncStateFromThing(subthing);
-    },
-
-    stepComponent: function(thing, component, dt) {
-        if (component.opts.subtype == 'turret') {
-            if (component.mode == 'charge') {
-                this.fe.m.shooter.attemptShoot(thing, component);
-            }
-        }
-    },
-
-    stepSleepyRover: function(rover, dt) {
-        var i;
-        for (i in rover.things) {
-            this.stepSubthing(rover, rover.things[i], dt);
-        }
-        for (i in rover.c) { // step component
-            this.stepComponent(rover, rover.c[i], dt);
-        }
-    },
-
-    stepAwakeRover: function(rover, dt) {
-        var cos = Math.cos(rover.a),
-            sin = Math.sin(rover.a);
-        rover.di = this.di;
-
-        var i;
-        for (i in rover.things) {
-            var subthing = rover.things[i],
-                radius = rover.sockets[i].radius;
-
-            subthing.l.x = rover.l.x + radius * cos;
-            subthing.l.y = rover.l.y + radius * sin;
-            this.stepSubthing(rover, subthing, dt);
-
-        }
-        for (i in rover.c) { // step component
-            this.stepComponent(rover, rover.c[i], dt);
-        }
-    },
-
     processFieldSocketEvent: function(event) {
         if (!Array.isArray(event)) {
             throw new Error('unexpected fieldSockwsswetEvent format. ' + typeof event);
         }
 
         switch (event[0]) {
-            case 'pup': return this.applyPup(event);
             case 'iup': return this.applyIup(event);
+            case 'pup': return this.applyPup(event);
             case 'rup': return this.applyRup(event);
+            case 'fev': return this.applyFev(event);
             case 'things': return this.applyThings(event);
             case 'siblings': return this.applySiblings(event);
             case 'avatars': return this.applyAvatars(event);
@@ -260,14 +111,12 @@ var ModuleDispaceClient = ModuleAbstract.extend({
     applyPup: function(event) {
         var serializer = this.fe.serializer.opts.thingSerializer;
         for (var i = 0; i < event[1].length; i++) {
-            var thing = this.thingMap[event[1][i][0]];
+            var thing = this.fe.thingMap[event[1][i][0]];
             if (!thing) {
                 continue;
             }
 
             thing.pup = event[1][i][1];
-            //serializer.applyPhisicsBundleToBody(thing, event[1][i][1]);
-
         }
         this.fe.simAccumulator = 0;
         this.fe.stats.simDiff = this.fe.simSum - event[2];
@@ -277,8 +126,6 @@ var ModuleDispaceClient = ModuleAbstract.extend({
     applyRup: function(event) {
         var serializer = this.fe.serializer.opts.thingSerializer,
             thing, thingId;
-
-        //console.log(event);
 
         function applyTurret(name, bundle) {
             var turretThing = thing.c[name].thing;
@@ -306,6 +153,50 @@ var ModuleDispaceClient = ModuleAbstract.extend({
     },
 
     /**
+     * event:
+     * ["fev",
+     *    ["shot", [serializedShot]],
+     *    ["gup", [thingId, [serializedGuts]]]
+     *    ...
+     * ]
+     */
+    applyFev: function(event) {
+
+        var events = event[1];
+        for (var i = 0; i < events.length; i++) {
+            var payload = events[i][1];
+            switch (events[i][0]) {
+                case "shot":
+                    this.fe.fd.dispatch({
+                        type: "shot",
+                        shot: this.shotSerializer.unserializeShot(payload)
+                    });
+                    break;
+                case "hit":
+                    this.fe.fd.dispatch({
+                        type: "hit",
+                        hit: this.shotSerializer.unserializeHit(payload)
+                    });
+                    break;
+                case "teff":
+                    var thing = this.fe.thingMap[payload[0]];
+                    if (thing) {
+                        this.fe.fd.dispatch({
+                            type: "teff",
+                            thing: thing,
+                            teff: payload[1]
+                        });
+                    } else {
+                        console.warn('unknown thing while unserializing teff: ' + payload[1]);
+                    }
+                    break;
+                default:
+                    throw new Error("unknown fev: " + events[i][0]);
+            }
+        }
+    },
+
+    /**
      * Sample things message:bash
      * ["things",
      *     ["mA", "inject", {p: [...], "i": ...}]
@@ -320,19 +211,19 @@ var ModuleDispaceClient = ModuleAbstract.extend({
                 payload = event[1][i][2];
             switch (operation) {
                 case "inject":
-                    if (this.thingMap[thingId]) {
-                        console.error('thing ' + thingId + ' already exists. things.inject ignored');
+                    if (this.fe.thingMap[thingId]) {
+                        console.warn('thing ' + thingId + ' already exists. things.inject ignored');
                         continue;
                     }
                     var thing = serializer.unserializeInitial(event[1][i]);
                     this.fe.injectThing(thing);
                     break;
                 case "remove":
-                    if (!this.thingMap[thingId]) {
-                        console.error('thing ' + thingId + ' not found. things.remove ignored');
+                    if (!this.fe.thingMap[thingId]) {
+                        console.warn('thing ' + thingId + ' not found. things.remove ignored');
                         continue;
                     }
-                    this.fe.removeThing(this.thingMap[thingId]);
+                    this.fe.removeThing(this.fe.thingMap[thingId]);
                     break;
             }
         }
@@ -385,6 +276,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
     setSocket: function(socket) {
         this.socket = socket;
     },
+
     sendActivity: function(payload) {
         if (!this.socket) {
             throw new Error('socket not set while sending activity');

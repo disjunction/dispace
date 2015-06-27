@@ -3,16 +3,20 @@
 
 var cc = require('cc'),
     smog = require('fgtk/smog'),
+    geo = smog.util.geo,
     b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract');
 
-var ModuleShooter = cc.Class.extend({
+var ModuleShooter = ModuleAbstract.extend({
     ctor: function(opts) {
         this.opts = opts || {};
+        this.shootingThings = [];
     },
 
     injectFe: function(fe, name) {
+        ModuleAbstract.prototype.injectFe.call(this, fe, name);
+
         this.di = 0; // dispace iteration
         this.importantThings = [];
 
@@ -27,6 +31,12 @@ var ModuleShooter = cc.Class.extend({
                 }
             }.bind(this)
         });
+
+        this.addNativeListeners([
+            "injectThing",
+            "removeThing",
+            "simStepCall"
+        ]);
     },
 
     /**
@@ -39,20 +49,34 @@ var ModuleShooter = cc.Class.extend({
         if (subjComponent.lastShot + subjComponent.params.chargeTime < this.fe.timeSum) {
             var shotResult = this.shoot(subjThing, subjComponent);
             this.fe.fd.dispatch({
-                type: 'injectShot',
+                type: 'shot',
                 shot: shotResult.shot
             });
             if (shotResult.hit) {
                 this.fe.fd.dispatch({
-                    type: 'injectHit',
+                    type: 'hit',
                     hit: shotResult.hit
                 });
 
+                if (shotResult.hit.teff) {
+                    this.fe.fd.dispatch({
+                        type: 'teff',
+                        thing: shotResult.hit.objThing,
+                        teff: shotResult.hit.teff
+                    });
+                }
+
                 if (shotResult.hit.isKill) {
+                    shotResult.hit.objThing.inert = true;
+                    /*
                     this.fe.scheduler.scheduleIn(0.5, {
                         type: 'removeThing',
                         thing: shotResult.hit.objThing
                     });
+                    */
+                   this.fe.scheduler.scheduleIn(0.5, function() {
+                       this.fe.removeThing(shotResult.hit.objThing);
+                   }.bind(this));
                 }
 
             }
@@ -93,7 +117,7 @@ var ModuleShooter = cc.Class.extend({
                 result.s = readDamageValue(effect.electric);
             }
 
-            this.fe.m.d.opts.gutsManager.correctDamage(result, objThing.g);
+            this.fe.opts.gutsManager.correctDamage(result, objThing.g);
             return result;
         } else {
             return smog.EMPTY;
@@ -108,6 +132,8 @@ var ModuleShooter = cc.Class.extend({
 
         this.fe.m.b.rayCastFromThing(this.ray, turretThing, range, subjComponent.opts.radius);
 
+        var impulse, recoil, recoilNormal;
+
         if (this.ray.isHit) {
             var endPoint = cc.clone(this.ray.results[0].p);
             result.hit = {
@@ -120,7 +146,7 @@ var ModuleShooter = cc.Class.extend({
 
             if (result.hit.damage.i && result.hit.objThing.g && result.hit.damage.i >= result.hit.objThing.g.i[0]) {
                 result.hit.isKill = true;
-                result.hit.affects = ['explode'];
+                result.hit.teff = ['+explode'];
             }
 
             result.shot = {
@@ -143,6 +169,37 @@ var ModuleShooter = cc.Class.extend({
         }
 
         return result;
+    },
+
+
+    /**
+     * create a a list for those ones, which can shoot
+     */
+    onInjectThing: function(event) {
+        var components = event.thing.c;
+        if (!components) return;
+        if (components.turret1 || components.turret1) {
+            this.shootingThings.push(event.thing);
+        }
+    },
+
+    onRemoveThing: function(event) {
+        var index = this.shootingThings.indexOf(event.thing);
+        if (index >= 0) {
+            this.shootingThings.splice(index, 1);
+        }
+    },
+
+    onSimStepCall: function(event) {
+        for (var i = 0; i < this.shootingThings.length; i++) {
+            var thing = this.shootingThings[i];
+            for (var j in thing.c) {
+                var component = thing.c[j];
+                if (component.opts.subtype == 'turret' && thing.i.map[j]) {
+                    this.fe.m.shooter.attemptShoot(thing, component);
+                }
+            }
+        }
     }
 });
 

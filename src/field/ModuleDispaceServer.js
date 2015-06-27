@@ -5,7 +5,9 @@ var b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
     Thing = flame.entity.Thing,
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
-    ViewponAbstract = require('dispace/view/viewpon/ViewponAbstract');
+    ViewponAbstract = require('dispace/view/viewpon/ViewponAbstract'),
+    ShotSerializer = require('dispace/service/serialize/ShotSerializer');
+
 
 var radius;
 
@@ -20,21 +22,46 @@ var ModuleDispaceServer = ModuleAbstract.extend({
     ctor: function(opts) {
         ModuleAbstract.prototype.ctor.call(this, opts);
         this.previous = {};
+
+        this.shotSerializer = new ShotSerializer({
+            fe: this.fe
+        });
+
+        // collects events in one simStep, so that it's sent as one message
+        this.fevBuffer = [];
     },
 
     injectFe: function(fe, name) {
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
 
         var myEvents = [
+            "simStepEnd",
             "simEnd",
             "injectThing",
+            "removeThing",
             "injectSibling",
             "injectAvatar",
             "interstate",
-            "controlRover"
+            "controlRover",
+            "shot",
+            "hit",
+            "teff",
         ];
 
        this.addNativeListeners(myEvents);
+    },
+
+    onSimStepEnd: function(event) {
+        // fev is sent on simStepEnd to get the shots as fast as possible
+        // to client side, but still as a single envelope with gup etc.
+        var fieldSocketManager = this.opts.fieldSocketManager;
+        if (this.fevBuffer.length > 0) {
+            fieldSocketManager.broadcast([
+                'fev',
+                this.fevBuffer
+            ]);
+            this.fevBuffer = [];
+        }
     },
 
     onSimEnd: function(event) {
@@ -65,6 +92,15 @@ var ModuleDispaceServer = ModuleAbstract.extend({
         fieldSocketManager.broadcast(['things', things]);
     },
 
+    onRemoveThing: function(event) {
+        var fieldSocketManager = this.opts.fieldSocketManager;
+        fieldSocketManager.broadcast([
+            'things', [
+                [event.thing.id, 'remove']
+            ]
+        ]);
+    },
+
     onInjectSibling: function(event) {
         var fieldSocketManager = this.opts.fieldSocketManager,
             sibling = event.sibling,
@@ -92,6 +128,7 @@ var ModuleDispaceServer = ModuleAbstract.extend({
     onInterstate: function(event) {
         var fieldSocketManager = this.opts.fieldSocketManager,
             thingSerializer = this.fe.serializer.opts.thingSerializer;
+
         fieldSocketManager.broadcast([
             'iup',
             [[
@@ -129,7 +166,34 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             ]],
             roverSerializer.outFloat(this.fe.simSum)
         ]);
-    }
+    },
+
+    onShot: function(event) {
+        this.fevBuffer.push([
+            "shot",
+            this.shotSerializer.serializeShot(event)
+        ]);
+    },
+
+    onHit: function(event) {
+        this.fevBuffer.push([
+            "hit",
+            this.shotSerializer.serializeHit(event)
+        ]);
+    },
+
+    /**
+     * event:
+     * * type: 'teff'
+     * * thing: thing
+     * * teff: ["+explode", "-shock"]
+     */
+    onTeff: function(event) {
+        this.fevBuffer.push([
+            "teff",
+            [event.thing.id, event.teff]
+        ]);
+    },
 });
 
 module.exports = ModuleDispaceServer;

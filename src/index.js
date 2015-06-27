@@ -31,6 +31,7 @@ module.exports = {
         },
         ModuleDispaceLocal: require('./field/ModuleDispaceLocal'),
         ModuleDispaceClient: require('./field/ModuleDispaceClient'),
+        ModuleDispaceEngine: require('./field/ModuleDispaceEngine'),
         ModuleDispaceServer: require('./field/ModuleDispaceServer'),
         ModuleRof: require('./field/ModuleRof'),
         ModuleShooter: require('./field/ModuleShooter'),

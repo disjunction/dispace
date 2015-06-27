@@ -5,7 +5,7 @@ var flame = require('fgtk/flame'),
     ThingSerializer = flame.service.serialize.ThingSerializer;
 
 var serializerMapping = {
-    'rover': require('./RoverSerializer')
+    'rover': require('./RoverSerializer'),
 };
 
 /**

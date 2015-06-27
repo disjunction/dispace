@@ -84,9 +84,6 @@ _p.makeBasicFe = function(opts) {
     this.fe.registerModule(new ModuleDispaceEngine({
     }), 'de');
 
-    this.fe.registerModule(new ModuleShooter({
-    }), 'shooter');
-
     this.fe.registerModule(new ModuleRof({
     }), 'rof');
 
@@ -94,6 +91,15 @@ _p.makeBasicFe = function(opts) {
     }), 'willMaster');
 
     return this.fe;
+};
+
+_p.makeServer = function(opts) {
+    var fe = this.makeBasicFe();
+
+    fe.registerModule(new ModuleShooter({
+    }), 'shooter');
+
+    return fe;
 };
 
 module.exports = Bootstrap;

@@ -37,23 +37,21 @@ var EgoInteractorApplier = cc.Class.extend({
     },
 
     applyMouseDown: function(evt, index) {
-        var state = this.opts.interactor.i.map;
+        var interstate = this.opts.interactor.i;
         switch (true) {
-            case state.ctrl:
+            case interstate.map.ctrl:
+                interstate.set('turret' + index, false);
+                this.opts.interactor.fireChanged();
                 return this.selectUnderMouse(evt, index);
             default:
-                var turret = (index == 1) ? this.ego.c.turret1 : this.ego.c.turret2;
-                if (turret) {
-                    turret.mode  = 'charge';
-                }
+                interstate.set('turret' + index, true);
+                this.opts.interactor.fireChanged();
         }
     },
 
     applyMouseUp: function(evt, index) {
-        var turret = (index == 1) ? this.ego.c.turret1 : this.ego.c.turret2;
-        if (turret) {
-            turret.mode  = 'none';
-        }
+        this.opts.interactor.i.set('turret' + index, false);
+        this.opts.interactor.fireChanged();
     },
 
 
@@ -119,7 +117,7 @@ var EgoInteractorApplier = cc.Class.extend({
 
     setupInteractor: function() {
         var interactor = this.opts.interactor;
-        
+
         this.setupInteractorListeners(interactor.dispatcher);
 
         events = interactor.layout.events;
@@ -134,14 +132,11 @@ var EgoInteractorApplier = cc.Class.extend({
             keyDown: 'mouseDown1',
             keyUp: 'mouseUp1'
         };
-        states[Interactor.LMB] = 'charge1';
 
         events[Interactor.RMB] = {
             keyDown: 'mouseDown2',
             keyUp: 'mouseUp2'
         };
-        states[Interactor.RMB] = 'charge2';
-
 
         states[Interactor.KEY_Q] = 'strafeLeft';
         states[Interactor.KEY_E] = 'strafeRight';
