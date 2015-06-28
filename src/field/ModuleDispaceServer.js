@@ -29,10 +29,14 @@ var ModuleDispaceServer = ModuleAbstract.extend({
 
         // collects events in one simStep, so that it's sent as one message
         this.fevBuffer = [];
+
     },
 
     injectFe: function(fe, name) {
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
+
+        this.thingSerializer = this.fe.opts.fieldSerializer.opts.thingSerializer;
+        this.roverSerializer = this.thingSerializer.serializers.rover;
 
         var myEvents = [
             "simStepEnd",
@@ -66,7 +70,7 @@ var ModuleDispaceServer = ModuleAbstract.extend({
 
     onSimEnd: function(event) {
         var fieldSocketManager = this.opts.fieldSocketManager,
-            thingSerializer = this.fe.serializer.opts.thingSerializer,
+            thingSerializer = this.thingSerializer,
             pup = [];
         for (var i = 0; i < this.fe.field.things.length; i++) {
             var thing = this.fe.field.things[i];
@@ -87,7 +91,7 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             return;
         }
         var fieldSocketManager = this.opts.fieldSocketManager,
-            thingSerializer = this.fe.serializer.opts.thingSerializer,
+            thingSerializer = this.thingSerializer,
             things = [thingSerializer.serializeInitial(thing)];
         fieldSocketManager.broadcast(['things', things]);
     },
@@ -127,7 +131,7 @@ var ModuleDispaceServer = ModuleAbstract.extend({
      */
     onInterstate: function(event) {
         var fieldSocketManager = this.opts.fieldSocketManager,
-            thingSerializer = this.fe.serializer.opts.thingSerializer;
+            thingSerializer = this.thingSerializer;
 
         fieldSocketManager.broadcast([
             'iup',
@@ -147,8 +151,8 @@ var ModuleDispaceServer = ModuleAbstract.extend({
      */
     onControlRover: function(event) {
         var fieldSocketManager = this.opts.fieldSocketManager,
-            thingSerializer = this.fe.serializer.opts.thingSerializer,
-            roverSerializer = this.fe.serializer.opts.thingSerializer.serializers.rover;
+            thingSerializer = this.thingSerializer,
+            roverSerializer = this.roverSerializer;
 
         var rupBundle = {};
         if (event.turret1) {

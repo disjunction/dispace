@@ -23,7 +23,7 @@ var Shadow = cc.Class.extend({
             throw new Error('Shadow requires fe in opts');
         }
         this.fe = opts.fe;
-        this.thingSerializer = this.fe.serializer.opts.thingSerializer;
+        this.thingSerializer = this.fe.opts.fieldSerializer.opts.thingSerializer;
         this.opts = opts;
     },
 
@@ -41,7 +41,7 @@ var Shadow = cc.Class.extend({
         });
         socket.on('sup', function(msg) {
             console.log('initialField with ' + this.opts.fe.field.things.length + ' objects');
-            var serialized = this.opts.fe.serializer.serializeInitial(this.opts.fe.field);
+            var serialized = this.opts.fe.opts.fieldSerializer.serializeInitial(this.opts.fe.field);
             socket.emit('initialField', serialized);
             socket.emit('runScene', {
                 sibling: this.fe.opts.pumpkin.serializer.serializeSibling(sibling)

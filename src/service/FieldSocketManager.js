@@ -7,7 +7,6 @@ var smog = require('fgtk/smog'),
 /**
  * opts:
  * * fe
- * * doomDispatcher
  */
 function FieldSocketManager(opts) {
     this.opts = opts;

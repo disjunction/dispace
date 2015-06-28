@@ -7,16 +7,24 @@ var cc = require('cc'),
     Field = flame.entity.Field,
     smog = require('fgtk/smog'),
     grass = require('fgtk/grass'),
-    ModuleDispaceEngine = require('dispace/field/ModuleDispaceEngine'),
-    ModuleShooter = require('dispace/field/ModuleShooter'),
-    ModuleWillMaster = require('dispace/field/ModuleWillMaster'),
-    ModuleRof = require('dispace/field/ModuleRof'),
+
     ThingSerializer = flame.service.ThingBuilder,
     GutsManager = require('dispace/service/GutsManager'),
     RoverBuilder = require('dispace/service/RoverBuilder'),
     ItemManager = require('dispace/service/ItemManager'),
     FieldSerializer = flame.service.serialize.FieldSerializer,
-    DispaceThingSerializer = require('dispace/service/serialize/DispaceThingSerializer');
+    FieldSocketManager = require('dispace/service/FieldSocketManager'),
+    DispaceThingSerializer = require('dispace/service/serialize/DispaceThingSerializer'),
+
+    ModuleDispaceClient = require('dispace/field/ModuleDispaceClient'),
+    ModuleDispaceEngine = require('dispace/field/ModuleDispaceEngine'),
+    ModuleDispaceServer = require('dispace/field/ModuleDispaceServer'),
+    ModuleInsight = require('dispace/field/ModuleInsight'),
+    ModuleMayor = require('dispace/field/ModuleMayor'),
+    ModuleProtagonist = require('dispace/field/ModuleProtagonist'),
+    ModuleRof = require('dispace/field/ModuleRof'),
+    ModuleShooter = require('dispace/field/ModuleShooter'),
+    ModuleWillMaster = require('dispace/field/ModuleWillMaster');
 
 /**
  * A factory for common bigger structures
@@ -59,9 +67,10 @@ _p.makeFieldSerializer = function() {
 _p.makeBasicFe = function(opts) {
     opts = opts || {};
 
-    var pumpkin = grass.pumpkin.Pumpkin.bootstrapLocal();
+    var pumpkin = grass.pumpkin.Pumpkin.bootstrapLocal(),
+        fieldSerializer = this.makeFieldSerializer();
 
-    this.fe = new flame.engine.FieldEngine({
+    var fe = this.fe = new flame.engine.FieldEngine({
         cosmosManager: this.cosmosManager,
         assetManager: this.assetManager,
         config: this.config,
@@ -71,33 +80,110 @@ _p.makeBasicFe = function(opts) {
         gutsManager: this.gutsManager,
         uidGenerator: new smog.util.UidGenerator(opts.uidPrefix || 'f'),
         pumpkin: pumpkin,
-        pumpkinClient: pumpkin.makeClient()
+        pumpkinClient: pumpkin.makeClient(),
+        fieldSerializer: fieldSerializer,
     });
 
-    this.fe.registerModule(new flame.engine.ModuleBox2d({
+    fe.registerModule(new flame.engine.ModuleBox2d({
         cosmosManager: this.cosmosManager,
         assetManager: this.assetManager,
         config: this.config
     }), 'b');
     this.world = this.fe.m.b.makeWorld();
 
-    this.fe.registerModule(new ModuleDispaceEngine({
-    }), 'de');
-
-    this.fe.registerModule(new ModuleRof({
-    }), 'rof');
-
-    this.fe.registerModule(new ModuleWillMaster({
-    }), 'willMaster');
+    fe.registerModule(new ModuleDispaceEngine({}), 'de');
+    fe.registerModule(new ModuleRof({}), 'rof');
+    fe.registerModule(new ModuleWillMaster({}), 'willMaster');
 
     return this.fe;
+};
+
+// master modules are the ones, which are not needed on client side,
+// unlsess it's a local single playre mode
+_p.registerMasterModules = function(opts) {
+    var fe = this.fe;
+    fe.registerModule(new ModuleShooter({}), 'shooter');
+    fe.registerModule(new ModuleMayor({}), 'mayor');
 };
 
 _p.makeServer = function(opts) {
     var fe = this.makeBasicFe();
 
-    fe.registerModule(new ModuleShooter({
-    }), 'shooter');
+    this.fieldSocketManager = new FieldSocketManager({
+        fe: this.fe,
+    });
+
+    // server modules
+
+    this.registerMasterModules(opts);
+
+    this.fe.registerModule(new ModuleDispaceServer({
+        fieldSocketManager: this.fieldSocketManager
+    }), 'd');
+
+    return fe;
+};
+
+_p.makeVisual = function(opts) {
+    var fe = this.makeBasicFe(opts);
+
+    // visual core classes
+
+    this.nb = new flame.view.cocos.CocosNodeBuilder({
+        assetManager: this.assetManager,
+        cosmosManager: this.cosmosManager
+    });
+
+    this.stateBuilder = new flame.view.StateBuilder({
+        nb : this.nb
+    });
+
+    this.viewport = new flame.view.cocos.CocosViewport({
+        config: this.config,
+        nb : this.nb,
+        canvasId: 'canvas-cocos2d'
+    });
+
+
+    // visual modules
+
+    fe.registerModule(new flame.engine.ModuleCocos({
+        viewport: this.viewport,
+        stateBuilder: this.stateBuilder,
+        config: this.config,
+        containerPlans: {
+            effects: this.cosmosManager.get('container/effects')
+        }
+    }),  'c');
+
+    fe.registerModule(new ModuleInsight({
+        viewport: this.viewport,
+    }), 'insight');
+
+    this.protagonist = new ModuleProtagonist({
+        viewport: this.viewport,
+        syncCamera: true,
+        mouse: this.mouse
+    });
+    this.fe.registerModule(this.protagonist, 'p');
+
+    return fe;
+};
+
+_p.makeClient = function(opts) {
+    var fe = this.makeVisual(opts);
+
+    fe.registerModule(new ModuleDispaceClient({
+        gutsManager: this.gutsManager
+    }), 'd');
+
+    return fe;
+};
+
+_p.makeLocal = function(opts) {
+    var fe = this.makeVisual(opts);
+
+    this.registerMasterModules(opts);
 
     return fe;
 };

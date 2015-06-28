@@ -22,7 +22,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
 
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
 
-        this.roverSerializer = this.fe.serializer.opts.thingSerializer.serializers.rover;
+
         this.shotSerializer = new ShotSerializer({
             fe: fe
         });
@@ -31,6 +31,9 @@ var ModuleDispaceClient = ModuleAbstract.extend({
             "ownInterstate",
             "controlRover"
         ]);
+
+        this.thingSerializer = this.fe.opts.fieldSerializer.opts.thingSerializer;
+        this.roverSerializer = this.thingSerializer.serializers.rover;
     },
 
     registerEgo: function(ego) {
@@ -49,7 +52,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
     },
 
     onOwnInterstate: function(event) {
-        var serializer = this.fe.serializer.opts.thingSerializer,
+        var serializer = this.thingSerializer,
             interstateActivity = [
                 "i",
                 serializer.makeIterstateBundle(event.thing),
@@ -93,7 +96,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
     },
 
     applyIup: function(event) {
-        var serializer = this.fe.serializer.opts.thingSerializer;
+        var serializer = this.thingSerializer;
         for (var i = 0; i < event[1].length; i++) {
             var thing = this.fe.thingMap[event[1][i][0]];
             if (!thing) {
@@ -109,7 +112,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
     },
 
     applyPup: function(event) {
-        var serializer = this.fe.serializer.opts.thingSerializer;
+        var serializer = this.thingSerializer;
         for (var i = 0; i < event[1].length; i++) {
             var thing = this.fe.thingMap[event[1][i][0]];
             if (!thing) {
@@ -124,7 +127,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
     },
 
     applyRup: function(event) {
-        var serializer = this.fe.serializer.opts.thingSerializer,
+        var serializer = this.thingSerializer,
             thing, thingId;
 
         function applyTurret(name, bundle) {
@@ -204,7 +207,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
      * ]
      */
     applyThings: function(event) {
-        var serializer = this.fe.serializer.opts.thingSerializer;
+        var serializer = this.thingSerializer;
         for (var i = 0; i < event[1].length; i++) {
             var thingId = event[1][i][0],
                 operation = event[1][i][1],

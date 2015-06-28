@@ -51,7 +51,6 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
     stepSubthing: function(thing, subthing, dt) {
         if (subthing.o) this.rotateComponent(subthing, dt);
         subthing.a = thing.a + subthing.aa;
-        //this.fe.m.c.syncStateFromThing(subthing);
     },
 
 
@@ -67,8 +66,7 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
             sin = Math.sin(rover.a);
         rover.di = this.di;
 
-        var i;
-        for (i in rover.things) {
+        for (var i in rover.things) {
             var subthing = rover.things[i],
                 radius = rover.sockets[i].radius;
 
