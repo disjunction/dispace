@@ -111,6 +111,11 @@ var EgoInteractorApplier = cc.Class.extend({
     },
 
     registerEgo: function(ego) {
+        if (this.ego && this.ego.i ) {
+            // hack: disconnect the old ego from current interractor
+            this.ego.i = new Interactor.Interstate();
+        }
+
         this.ego = ego;
         this.ego.i = this.opts.interactor.i;
     },

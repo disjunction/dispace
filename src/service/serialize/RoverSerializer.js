@@ -12,7 +12,7 @@ var flame = require('fgtk/flame'),
  *
  *  Interstate bund
  *  "i": ["a", "l"], // in this example "accelerate" and "turn left"
- *
+ *  "s": "spawn" // current state
  *  "assemblyPlan": {"components": ... }, // custom assembly spec. passed as is, because is needed only when a new rover is added
  *  "assemblyPlanSrc": "assembly/mob/evil_guy", // (not yet implemented) predefined assembly, referenced just by src
  *
@@ -26,6 +26,9 @@ var RoverSerializer = ThingSerializer.extend({
         var bundle = ThingSerializer.prototype.serializeInitial.call(this, thing);
         bundle[2].assemblyPlan = thing.assembly.opts.plan;
         bundle[2].g = thing.g;
+        if (thing.s) {
+            bundle[2].s = thing.s;
+        }
         return bundle;
     },
 
@@ -42,11 +45,15 @@ var RoverSerializer = ThingSerializer.extend({
 
     unserializeInitial: function(bundle) {
         var rb = this.opts.roverBuilder,
-            assembly = rb.makeAssembly(bundle[2].assemblyPlan),
+            payload = bundle[2],
+            assembly = rb.makeAssembly(payload.assemblyPlan),
             rover = rb.makeRover(assembly);
         this.applyGutsBundle(rover, bundle);
-        this.applyPhisicsBundleToThing(rover, bundle[2].p);
+        this.applyPhisicsBundleToThing(rover, payload.p);
         rover.id = bundle[0];
+        if (payload.s) {
+            rover.s = payload.s;
+        }
         return rover;
     }
 });
