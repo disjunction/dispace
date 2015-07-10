@@ -59,6 +59,16 @@ var Shadow = cc.Class.extend({
             .catch(console.error.bind(console));
     },
 
+    onDisconnect: function() {
+        var socket = this.opts.socket;
+        if (this.sibling && this.sibling.avatar) {
+            var thing = this.sibling.avatar.opts.thing;
+            console.log('removing avatar thging ' + thing.id);
+            this.fe.removeThing(thing);
+        }
+        console.log('socket ' + socket.socketId + ' disconnected');
+    },
+
     receiveActivity: function(msg) {
         var activityType = msg[0],
             payload = msg[1],

@@ -27,6 +27,20 @@ var UiController = cc.Class.extend({
         this.elements[name] = element;
     },
 
+    unregisterElement: function(name) {
+        var element = this.elements[name];
+        if (element && element.unregister) {
+            element.unregister();
+        }
+        delete this.elements[name];
+    },
+
+    unregister: function() {
+        for (var i in this.elements) {
+            this.unregisterElement(i);
+        }
+    },
+
     update: function(dt) {
         for (var i in this.elements) {
             this.elements[i].update(dt);

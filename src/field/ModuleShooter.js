@@ -46,6 +46,10 @@ var ModuleShooter = ModuleAbstract.extend({
      * @returns {shotResult|null}
      */
     attemptShoot: function(subjThing, subjComponent) {
+        if (subjThing.inert) {
+            return null;
+        }
+
         if (subjComponent.lastShot + subjComponent.params.chargeTime < this.fe.timeSum) {
             var shotResult = this.shoot(subjThing, subjComponent);
             this.fe.fd.dispatch({
@@ -68,12 +72,7 @@ var ModuleShooter = ModuleAbstract.extend({
 
                 if (shotResult.hit.isKill) {
                     shotResult.hit.objThing.inert = true;
-                    /*
-                    this.fe.scheduler.scheduleIn(0.5, {
-                        type: 'removeThing',
-                        thing: shotResult.hit.objThing
-                    });
-                    */
+
                    this.fe.scheduler.scheduleIn(0.5, function() {
                        this.fe.removeThing(shotResult.hit.objThing);
                    }.bind(this));

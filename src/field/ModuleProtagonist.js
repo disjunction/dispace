@@ -2,7 +2,8 @@ var cc = require('cc'),
     b2 = require('jsbox2d'),
     geo = require('fgtk/smog').util.geo,
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
-    Interactor = require('fgtk/flame/view/Interactor');
+    Interactor = require('fgtk/flame/view/Interactor'),
+    UiController = require('dispace/ui/UiController');
 
 /**
  * should be added somewhere in the end of init
@@ -22,23 +23,36 @@ var ModuleProtagonist = ModuleAbstract.extend({
         this.cameraScaleThreshold = 5;
         this.cameraMaxShift = 7;
         this.baseScale = 0.5;
+
+        this.uiController = new UiController({});
     },
 
     injectFe: function(fe, name) {
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
-        this.fe.fd.addListener('renderEnd', this.step.bind(this));
+
+        this.addNativeListeners([
+            "loopEnd",
+            "removeThing",
+        ]);
     },
 
     registerInteractorApplier: function(interactorApplier) {
+        if (this.interactorApplier) {
+            this.unregisterInteractorApplier();
+        }
+
         this.interactorApplier = interactorApplier;
+        this.interactorApplier.opts.interactor.i.enabled = true;
         this.ego = interactorApplier.ego;
         this.mouse = interactorApplier.opts.mouseThing;
     },
 
     unregisterInteractorApplier: function() {
-        this.interactorApplier = null;
+        console.log('unregistering');
+        this.interactorApplier.opts.interactor.i.enabled = false;
         this.ego = null;
         this.mouse = null;
+        this.uiController.unregister();
     },
 
     adjustCameraShift: function(velocity, shift) {
@@ -131,7 +145,7 @@ var ModuleProtagonist = ModuleAbstract.extend({
         this.adjustCameraScale();
     },
 
-    step: function(event) {
+    onLoopEnd: function(event) {
         var me = this,
             ego = this.ego,
             controlEvent;
@@ -166,7 +180,15 @@ var ModuleProtagonist = ModuleAbstract.extend({
         if (controlEvent !== undefined) {
             this.fe.fd.dispatch(controlEvent);
         }
-    }
+
+        this.uiController.update(event.dt);
+    },
+
+    onRemoveThing: function(event) {
+        if (event.thing == this.ego) {
+            this.unregisterInteractorApplier();
+        }
+    },
 });
 
 module.exports = ModuleProtagonist;

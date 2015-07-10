@@ -51,6 +51,12 @@ var TurretPointerHudComponent = SelfUpdater.extend({
         });
     },
 
+    unregister: function() {
+        if (this.cursorThing) {
+            this.opts.fe.removeThing(this.cursorThing);
+        }
+    },
+
     doUpdate: function(dt) {
         var aniInterval = 0.2,
             fixedInterval = aniInterval * 0.85;

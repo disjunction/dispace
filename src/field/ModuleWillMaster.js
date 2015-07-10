@@ -69,6 +69,12 @@ var ModuleWillMaster = ModuleAbstract.extend({
                 thing: rover
             });
 
+        // if there is already another avatar for the same sibling,
+        // then first remove the old one
+        if (sibling.avatar) {
+            this.fe.removeThing(sibling.avatar.opts.thing);
+        }
+
         rover.l = cc.p(5,5);
 
         this.fe.injectThing(rover);

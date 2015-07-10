@@ -120,6 +120,11 @@ var EgoInteractorApplier = cc.Class.extend({
         this.ego.i = this.opts.interactor.i;
     },
 
+    unregisterEgo: function(ego) {
+        delete this.ego.i;
+        this.ego = null;
+    },
+
     setupInteractor: function() {
         var interactor = this.opts.interactor;
 

@@ -157,7 +157,7 @@ var ModuleInsight = ModuleAbstract.extend({
                         for (var j in thing.things) {
                             this.fe.m.c.removeThing(thing.things[j]);
                         }
-                        thing.things = null;
+                        //thing.things = null;
                     }
                     break;
                 default:

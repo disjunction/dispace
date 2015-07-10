@@ -37,9 +37,11 @@ _p.initTurretPointer = function(uiController, ego, turretComponent, cursorPlanSr
 };
 
 _p.initHud = function(uiController, ego) {
+    var selector = $('#panel-dev-1 .panel-body');
+    selector.html('');
     // dev1 hud
     this.dev1 = new PropMonitor({
-        selector: $('#panel-dev-1 .panel-body'),
+        selector: selector,
         thing: ego,
         interval: 1
     });
