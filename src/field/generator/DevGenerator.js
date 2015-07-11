@@ -84,9 +84,26 @@ _p.placeRandomRovers = function(params){
         assemblyPlans.push(rawAssemblies[i]);
     }
 
-    for (i = 0; i < params.count; i++) {
-        var assemblyPlan = assemblyPlans[Math.floor(Math.random()*assemblyPlans.length)],
-            rover = this.roverBuilder.makeRoverByAssemblyPlan(assemblyPlan);
+    var count = params.count;
+    params.count = 1;
+    for (i = 0; i < count; i++) {
+        params.assemblyPlan = assemblyPlans[Math.floor(Math.random()*assemblyPlans.length)];
+        this.placeRovers(params);
+    }
+};
+
+/**
+ * params:
+ * * assemblyPlan
+ * * count
+ * * x
+ * * y
+ * * width
+ * * height
+ */
+_p.placeRovers = function(params){
+    for (var i = 0; i < params.count; i++) {
+        var rover = this.roverBuilder.makeRoverByAssemblyPlan(params.assemblyPlan);
         rover.l = {
             x: Math.random() * params.width + params.x,
             y: Math.random() * params.height + params.y
@@ -94,18 +111,6 @@ _p.placeRandomRovers = function(params){
         rover.a = Math.random() * geo.PI2;
         this.field.things.push(rover);
     }
-};
-
-_p.createEdges = function(){
-    var edgeThing = new Thing();
-
-    var size = this.size,
-        points = [];
-    points.push(new b2.Vec2(size.width, size.height));
-    points.push(new b2.Vec2(0, size.height));
-    points.push(new b2.Vec2(0, 0));
-    points.push(new b2.Vec2(size.width, 0));
-    this.opts.fe.m.b.makeLoopEdges(points, edgeThing);
 };
 
 module.exports = DevGenerator;
