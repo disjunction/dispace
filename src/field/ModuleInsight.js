@@ -102,6 +102,10 @@ var ModuleInsight = ModuleAbstract.extend({
     onInterstate: function(event) {
         var thing = event.thing,
             interstate = event.interstate;
+
+        if (thing.inert) {
+            return;
+        }
         if (thing.plan && thing.plan.viewhullType && viewhullMapping[thing.plan.viewhullType]) {
             var ViewhullClass = viewhullMapping[thing.plan.viewhullType];
             if (!this.viewhulls[thing.plan.viewhullType]) {
