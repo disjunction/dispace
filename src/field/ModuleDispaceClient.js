@@ -29,11 +29,17 @@ var ModuleDispaceClient = ModuleAbstract.extend({
 
         this.addNativeListeners([
             "ownInterstate",
-            "controlRover"
+            "controlRover",
+            "will",
         ]);
 
         this.thingSerializer = this.fe.opts.fieldSerializer.opts.thingSerializer;
         this.roverSerializer = this.thingSerializer.serializers.rover;
+    },
+
+    registerSibling: function(sibling) {
+        this.sibling = sibling;
+        this.fe.m.p.registerSibling(sibling);
     },
 
     registerEgo: function(ego) {
@@ -49,6 +55,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
             sibling = serializer.unserializeSibling(event.sibling);
         this.fe.injectSibling(sibling);
         this.sibling = sibling;
+        this.fe.m.p.registerSibling(sibling);
     },
 
     onOwnInterstate: function(event) {
@@ -74,6 +81,12 @@ var ModuleDispaceClient = ModuleAbstract.extend({
 
         this.sendActivity(["w", [
             ["wa", "controlRover", bundle]
+        ], 0]);
+    },
+
+    onWill: function(event) {
+        this.sendActivity(["w", [
+            ['wa', event.operation, event.params || null]
         ], 0]);
     },
 

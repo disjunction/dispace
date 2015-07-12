@@ -1,6 +1,11 @@
+/*jslint node: true */
+"use strict";
+
 var cc = require('cc'),
     b2 = require('jsbox2d'),
-    geo = require('fgtk/smog').util.geo,
+    smog = require('fgtk/smog'),
+    geo = smog.util.geo,
+    util = smog.util.util,
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
     Interactor = require('fgtk/flame/view/Interactor'),
     UiController = require('dispace/ui/UiController');
@@ -33,7 +38,12 @@ var ModuleProtagonist = ModuleAbstract.extend({
         this.addNativeListeners([
             "loopEnd",
             "removeThing",
+            "injectSibling",
         ]);
+    },
+
+    registerSibling: function(sibling) {
+        this.sibling = sibling;
     },
 
     registerInteractorApplier: function(interactorApplier) {
@@ -56,6 +66,7 @@ var ModuleProtagonist = ModuleAbstract.extend({
     },
 
     adjustCameraShift: function(velocity, shift) {
+        var delta;
         if (velocity * shift < 0)  {
             delta = 0.05;
         } else {
@@ -145,6 +156,21 @@ var ModuleProtagonist = ModuleAbstract.extend({
         this.adjustCameraScale();
     },
 
+    reconfigureBySibling: function(sibling) {
+        var settings = sibling.settings,
+            config = this.fe.opts.config;
+        for (var i in settings) {
+            config[i] = util.combineObjects(config[i], settings[i]);
+        }
+
+        var audioEngine = this.opts.viewport.getAudioEngine();
+        if (audioEngine) {
+            if (config.audio && undefined !== config.audio.effectVolume) {
+                audioEngine.setEffectsVolume(config.audio.effectVolume);
+            }
+        }
+    },
+
     onLoopEnd: function(event) {
         var me = this,
             ego = this.ego,
@@ -190,6 +216,12 @@ var ModuleProtagonist = ModuleAbstract.extend({
     onRemoveThing: function(event) {
         if (event.thing == this.ego) {
             this.unregisterInteractorApplier();
+        }
+    },
+
+    onInjectSibling: function(event) {
+        if (event.sibling == this.sibling) {
+            this.reconfigureBySibling(event.sibling);
         }
     },
 });

@@ -9,6 +9,7 @@ var DispaceField = Field.extend({
     ctor: function(opts) {
         Field.prototype.ctor.call(this, opts);
         this.spawnPoints = [];
+        this.quests = [];
     }
 });
 

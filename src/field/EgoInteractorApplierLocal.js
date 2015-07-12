@@ -68,6 +68,9 @@ var EgoInteractorApplier = cc.Class.extend({
         }
 
         dispatcher.addListener("interstateChanged", function(event) {
+            if (!me.ego) {
+                return;
+            }
             var proxyEvent = {
                 type: 'interstate',
                 thing: me.ego,
@@ -107,6 +110,20 @@ var EgoInteractorApplier = cc.Class.extend({
         dispatcher.addListener("zoomOut", function(event) {
             me.opts.protagonist.baseScale /= 1.25;
             updateCamera();
+        });
+        dispatcher.addListener("spawnLast", function(event) {
+            var sibling = me.opts.protagonist.sibling,
+                settings = sibling.settings;
+            if (settings.last && settings.last.assemblyName) {
+                me.opts.fe.fd.dispatch({
+                    type: "will",
+                    operation: "spawnRover",
+                    params: {
+                        assemblySrc: settings.last.assemblyName
+                    },
+                    sibling: sibling
+                });
+            }
         });
     },
 
@@ -162,6 +179,10 @@ var EgoInteractorApplier = cc.Class.extend({
             keyUp: "shiftUp"
         };
         states[Interactor.SHIFT] = "shift";
+
+        events[Interactor.KEY_P] = {
+            keyUp: "spawnLast"
+        };
 
         events[Interactor.MINUS] = events[Interactor.CHROME_MINUS] = {keyUp: "zoomOut"};
         events[Interactor.EQUAL] = events[Interactor.CHROME_EQUAL] = {keyUp: "zoomIn"};

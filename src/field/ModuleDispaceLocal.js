@@ -13,7 +13,13 @@ var radius;
  * * gutsManager
  */
 var ModuleDispaceLocal = ModuleAbstract.extend({
-
+    injectFe: function() {
+        throw new Error('you dont want to use me!!!');
+    },
+    registerSibling: function(sibling) {
+        this.sibling = sibling;
+        this.fe.m.p.registerSibling(sibling);
+    },
 
     registerEgo: function(ego) {
         this.ego = ego;

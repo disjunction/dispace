@@ -4,9 +4,10 @@
 var cc = require('cc'),
     flame = require('fgtk/flame'),
     Thing = flame.entity.Thing,
-    Field = flame.entity.Field,
     smog = require('fgtk/smog'),
     grass = require('fgtk/grass'),
+
+    DispaceField = require('dispace/entity/DispaceField'),
 
     ThingSerializer = flame.service.ThingBuilder,
     GutsManager = require('dispace/service/GutsManager'),
@@ -24,7 +25,9 @@ var cc = require('cc'),
     ModuleProtagonist = require('dispace/field/ModuleProtagonist'),
     ModuleRof = require('dispace/field/ModuleRof'),
     ModuleShooter = require('dispace/field/ModuleShooter'),
-    ModuleWillMaster = require('dispace/field/ModuleWillMaster');
+    ModuleWillMaster = require('dispace/field/ModuleWillMaster'),
+
+    ModuleUi = require('dispace/ui/ModuleUi');
 
 /**
  * A factory for common bigger structures
@@ -82,6 +85,8 @@ _p.makeBasicFe = function(opts) {
         pumpkin: pumpkin,
         pumpkinClient: pumpkin.makeClient(),
         fieldSerializer: fieldSerializer,
+
+        field: new DispaceField(),
     });
 
     fe.registerModule(new flame.engine.ModuleBox2d({
@@ -141,9 +146,9 @@ _p.makeVisual = function(opts) {
     this.viewport = new flame.view.cocos.CocosViewport({
         config: this.config,
         nb : this.nb,
-        canvasId: 'canvas-cocos2d'
+        canvasId: 'canvas-cocos2d',
+        webpage: new flame.view.Webpage()
     });
-
 
     // visual modules
 
@@ -166,6 +171,10 @@ _p.makeVisual = function(opts) {
         mouse: this.mouse
     });
     this.fe.registerModule(this.protagonist, 'p');
+
+    this.ui = new ModuleUi({
+        viewport: this.viewport
+    });
 
     return fe;
 };

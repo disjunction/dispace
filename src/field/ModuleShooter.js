@@ -19,9 +19,6 @@ var ModuleShooter = ModuleAbstract.extend({
 
         this.di = 0; // dispace iteration
         this.importantThings = [];
-
-        ModuleAbstract.prototype.injectFe.call(this, fe, name);
-
         this.shooterIid = 0;
 
         this.ray = new flame.engine.ray.RayClosestFilterFunction({

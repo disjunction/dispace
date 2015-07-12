@@ -10,10 +10,28 @@ var ModuleWillMaster = ModuleAbstract.extend({
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
     },
 
+    // this should be called only by local client
+    registerDirectWill: function() {
+        this.addNativeListeners([
+            "will"
+        ]);
+    },
+
     processWillArray: function(willArray, siblingId) {
         for (var i = 0; i < willArray.length; i++) {
             this.processWill(willArray[i], siblingId);
         }
+    },
+
+    /**
+     * TODO processWill() should call this, not vice-versa
+     */
+    onWill: function(event) {
+        this.processWill([
+            'wa', // FIXME :)
+            event.operation,
+            event.params || null
+        ], event.sibling.siblingId);
     },
 
     processWill: function(will, siblingId) {
@@ -91,7 +109,7 @@ var ModuleWillMaster = ModuleAbstract.extend({
 
         this.fe.injectAvatar(avatar);
 
-        this.fe.scheduler.scheduleIn(2, {
+        this.fe.scheduler.scheduleIn(1.5, {
             type: "inert",
             thing: rover,
             inert: false
