@@ -2,13 +2,24 @@
 "use strict";
 
 var cc = require('cc'),
+    smog = require('fgtk/smog'),
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
-    RoverHordeRandom = require('dispace/ai/mayor/RoverHordeRandom');
+    RoverHordeRandom = require('dispace/ai/mayor/RoverHordeRandom'),
+    EventDispatcher = smog.util.EventDispatcher,
+    SchedulingQueue = smog.util.SchedulingQueue,
+    EventScheduler = smog.util.EventScheduler;
 
 /**
  * should be added somewhere in the end of init
  */
 var ModuleMayor = ModuleAbstract.extend({
+    ctor: function(opts) {
+        ModuleAbstract.prototype.ctor.call(this, opts);
+
+        this.ed = new EventDispatcher();
+        this.scheduler = new EventScheduler(this.fd, new SchedulingQueue());
+    },
+
     injectFe: function(fe, name) {
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
         this.horde = new RoverHordeRandom({

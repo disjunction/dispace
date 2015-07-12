@@ -27,7 +27,8 @@ module.exports = {
     },
     field: {
         generator: {
-            DevGenerator: require('./field/generator/DevGenerator')
+            DevGenerator: require('./field/generator/DevGenerator'),
+            PlanGenerator: require('./field/generator/PlanGenerator')
         },
         ModuleDispaceLocal: require('./field/ModuleDispaceLocal'),
         ModuleDispaceClient: require('./field/ModuleDispaceClient'),

@@ -5,6 +5,11 @@ var cc = require('cc'),
     flame = require('fgtk/flame'),
     core = flame.rof.core;
 
+/**
+ * opts:
+ * * mayor: ModuleMayor
+ * * fe
+ */
 var RoverHordeRandom = cc.Class.extend({
     ctor: function(opts) {
         this.opts = opts;

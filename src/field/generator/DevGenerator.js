@@ -10,7 +10,8 @@ var cc = require('cc'),
     GutsManager = require('dispace/service/GutsManager'),
     ItemManager = require('dispace/service/ItemManager'),
     RoverBuilder = require('dispace/service/RoverBuilder'),
-    geo = require('fgtk/smog').util.geo;
+    geo = require('fgtk/smog').util.geo,
+    AbstractGenerator = require('./AbstractGenerator');
 
 /**
  * opts:
@@ -19,54 +20,9 @@ var cc = require('cc'),
  * @param {object} opts
  * @returns {DevGenerator}
  */
-function DevGenerator(opts) {
-    this.opts = opts;
-
-    this.field = opts.field || new Field();
-
-    this.size = {width: 128, height: 128};
-
-    this.cosmosManager = this.opts.fe.opts.cosmosManager;
-    this.itemManager = new ItemManager({
-        cosmosManager: this.cosmosManager
-    });
-    this.thingBuilder = new flame.service.ThingBuilder({
-    });
-
-    this.gutsManager = new GutsManager({
-    });
-
-    this.roverBuilder = new RoverBuilder({
-        itemManager: this.itemManager,
-        thingBuilder: this.thingBuilder,
-        gutsManager: this.gutsManager
-    });
-}
+var DevGenerator =  AbstractGenerator.extend();
 
 var _p = DevGenerator.prototype;
-
-/**
- * params:
- * * thingPlan
- * * count
- * * x
- * * y
- * * width
- * * height
- */
-_p.placeRandom = function(params){
-    for (var i = 0; i < params.count; i++) {
-        var thing = new Thing({
-            plan: params.thingPlan,
-            l: {
-                x: Math.random() * params.width + params.x,
-                y: Math.random() * params.height + params.y
-            },
-            a: Math.random() * geo.PI2
-        });
-        this.field.things.push(thing);
-    }
-};
 
 /**
  * params:

@@ -25,6 +25,7 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
             "simStepEnd",
             "hit",
             "shot",
+            "inert",
         ]);
     },
 
@@ -133,6 +134,12 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
             var turretThing = subjComponent.thing,
                 recoilForce = geo.vector(subjComponent.params.recoil, turretThing.a + geo.PI);
             subjThing.body.ApplyForce(recoilForce, turretThing.l, true);
+        }
+    },
+
+    onInert: function(event) {
+        if (event.thing) {
+            event.thing.inert = event.inert;
         }
     }
 });

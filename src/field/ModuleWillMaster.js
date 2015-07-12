@@ -75,7 +75,13 @@ var ModuleWillMaster = ModuleAbstract.extend({
             this.fe.removeThing(sibling.avatar.opts.thing);
         }
 
+        rover.inert = true;
         rover.l = cc.p(5,5);
+
+
+        if (rover.plan.states.spawn) {
+            rover.s = "spawn";
+        }
 
         this.fe.injectThing(rover);
 
@@ -84,6 +90,12 @@ var ModuleWillMaster = ModuleAbstract.extend({
         this.fe.injectSibling(sibling);
 
         this.fe.injectAvatar(avatar);
+
+        this.fe.scheduler.scheduleIn(2, {
+            type: "inert",
+            thing: rover,
+            inert: false
+        });
     },
 
 });

@@ -167,7 +167,8 @@ var ModuleDispaceClient = ModuleAbstract.extend({
 
         var events = event[1];
         for (var i = 0; i < events.length; i++) {
-            var payload = events[i][1];
+            var payload = events[i][1],
+                thing;
             switch (events[i][0]) {
                 case "shot":
                     this.fe.fd.dispatch({
@@ -182,7 +183,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
                     });
                     break;
                 case "teff":
-                    var thing = this.fe.thingMap[payload[0]];
+                    thing = this.fe.thingMap[payload[0]];
                     if (thing) {
                         this.fe.fd.dispatch({
                             type: "teff",
@@ -192,6 +193,14 @@ var ModuleDispaceClient = ModuleAbstract.extend({
                     } else {
                         console.warn('unknown thing while unserializing teff: ' + payload[1]);
                     }
+                    break;
+                case "inert":
+                    thing = this.fe.thingMap[payload[0]];
+                    this.fe.fd.dispatch({
+                        type: "inert",
+                        thing: thing,
+                        inert: payload[1]
+                    });
                     break;
                 default:
                     throw new Error("unknown fev: " + events[i][0]);
