@@ -140,7 +140,8 @@ _p.makeVisual = function(opts) {
     });
 
     this.stateBuilder = new flame.view.StateBuilder({
-        nb : this.nb
+        nb : this.nb,
+        config: this.config
     });
 
     this.viewport = new flame.view.cocos.CocosViewport({
