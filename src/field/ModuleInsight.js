@@ -103,7 +103,7 @@ var ModuleInsight = ModuleAbstract.extend({
         var thing = event.thing,
             interstate = event.interstate;
 
-        if (thing.inert) {
+        if (thing.inert || !interstate.enabled) {
             return;
         }
         if (thing.plan && thing.plan.viewhullType && viewhullMapping[thing.plan.viewhullType]) {
