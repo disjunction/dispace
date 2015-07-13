@@ -16,6 +16,8 @@ var cc = require('cc'),
     FieldSerializer = flame.service.serialize.FieldSerializer,
     FieldSocketManager = require('dispace/service/FieldSocketManager'),
     DispaceThingSerializer = require('dispace/service/serialize/DispaceThingSerializer'),
+    FriendOrFoe = require('dispace/ai/FriendOrFoe'),
+
 
     ModuleDispaceClient = require('dispace/field/ModuleDispaceClient'),
     ModuleDispaceEngine = require('dispace/field/ModuleDispaceEngine'),
@@ -85,6 +87,7 @@ _p.makeBasicFe = function(opts) {
         pumpkin: pumpkin,
         pumpkinClient: pumpkin.makeClient(),
         fieldSerializer: fieldSerializer,
+        fof: new FriendOrFoe(),
 
         field: new DispaceField(),
     });

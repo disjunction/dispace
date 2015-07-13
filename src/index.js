@@ -3,7 +3,8 @@ module.exports = {
     ai: {
         mayor: {
             RoverHordeRandom: require('./ai/mayor/RoverHordeRandom')
-        }
+        },
+        FriendOrFoe: require('./ai/FriendOrFoe')
     },
     entity: {
         item: {

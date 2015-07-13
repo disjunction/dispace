@@ -1,7 +1,8 @@
 var cc = require('cc'),
     geo = require('fgtk/smog').util.geo,
     SelfUpdater = require('dispace/ui/SelfUpdater'),
-    flame = require('fgtk/flame');
+    flame = require('fgtk/flame'),
+    FriendOrFoe = require('dispace/ai/FriendOrFoe');
 
 var TurretPointerHudComponent = SelfUpdater.extend({
     /**
@@ -25,12 +26,28 @@ var TurretPointerHudComponent = SelfUpdater.extend({
         });
         this.opts.fe.m.c.envision(this.cursorThing);
 
-        var node = this.cursorThing.state.nodes.main;
+        this.aniNode = this.cursorThing.state.nodes.main;
+
+        this.fof = this.opts.fe.opts.fof;
+
+        /*
         var tint = cc.sequence(
             cc.tintTo(1, 255, 0, 0),
             cc.tintTo(1, 0, 255, 0),
             cc.tintTo(1, 0, 0, 255)
         );
+        */
+
+        this.aniNeutral = cc.sequence(
+            cc.tintTo(0.5, 100, 100, 100),
+            cc.tintTo(0.5, 255, 255, 255)
+        ).repeatForever();
+
+        this.aniFoe = cc.sequence(
+            cc.tintTo(0.5, 200, 50, 50),
+            cc.tintTo(0.5, 255, 50, 50)
+        ).repeatForever();
+
 
         this.p1 = cc.p(0, 0);
         this.p2 = cc.p(0, 0);
@@ -38,7 +55,8 @@ var TurretPointerHudComponent = SelfUpdater.extend({
         this.a1 = 0;
         this.a2 = 0;
 
-        node.runAction(tint.repeatForever());
+        this.currentAction = this.aniNeutral;
+        this.aniNode.runAction(this.currentAction);
 
         this.radius = opts.turretComponent.params.range;
 
@@ -75,6 +93,19 @@ var TurretPointerHudComponent = SelfUpdater.extend({
         if (this.ray.isHit) {
             var p = this.ray.results[0].p;
             p = this.opts.viewport.scrolledLocation2Target(p);
+
+            if (this.ray.results[0].thing) {
+                var relation = this.fof.getRelation(this.ego, this.ray.results[0].thing);
+                if (relation == FriendOrFoe.NEUTRAL && this.currentAction != this.aniNeutral) {
+                    node.stopAction(this.currentAction);
+                    this.currentAction = this.aniNeutral;
+                    node.runAction(this.currentAction);
+                } else if (relation == FriendOrFoe.FOE && this.currentAction != this.aniFoe) {
+                    node.stopAction(this.currentAction);
+                    this.currentAction = this.aniFoe;
+                    node.runAction(this.currentAction);
+                }
+            }
 
 
             if (!node.visible) {

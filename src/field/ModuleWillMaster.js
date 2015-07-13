@@ -96,12 +96,19 @@ var ModuleWillMaster = ModuleAbstract.extend({
         rover.inert = true;
         rover.l = cc.p(5,5);
 
-
+        /*
         if (rover.plan.states.spawn) {
             rover.s = "spawn";
         }
+        */
 
         this.fe.injectThing(rover);
+
+        this.fe.fd.dispatch({
+            type: "teff",
+            thing: rover,
+            teff: ["+spawn"]
+        });
 
         // this message duplicates initial injectSibling
         // this is done to avoid orphan Things

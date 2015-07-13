@@ -10,8 +10,9 @@ var b2 = require('jsbox2d'),
     geo = require('fgtk/smog').util.geo;
 
 var viewhullMapping = {
-    'propeller': require('dispace/view/viewhull/ViewhullPropeller'),
-    'track': require('dispace/view/viewhull/ViewhullTrack')
+    "abstract": require("dispace/view/viewhull/ViewhullAbstract"),
+    "propeller": require("dispace/view/viewhull/ViewhullPropeller"),
+    "track": require("dispace/view/viewhull/ViewhullTrack")
 };
 
 /**
@@ -99,6 +100,19 @@ var ModuleInsight = ModuleAbstract.extend({
         }
     },
 
+    getViewhullForThing: function(thing) {
+        if (thing.plan && thing.plan.viewhullType && viewhullMapping[thing.plan.viewhullType]) {
+            if (!this.viewhulls[thing.plan.viewhullType]) {
+                var ViewhullClass = viewhullMapping[thing.plan.viewhullType];
+                this.viewhulls[thing.plan.viewhullType] = new ViewhullClass({
+                    fe: this.fe
+                });
+            }
+            return this.viewhulls[thing.plan.viewhullType];
+        }
+        return null;
+    },
+
     onInterstate: function(event) {
         var thing = event.thing,
             interstate = event.interstate;
@@ -106,14 +120,9 @@ var ModuleInsight = ModuleAbstract.extend({
         if (thing.inert || !interstate.enabled) {
             return;
         }
-        if (thing.plan && thing.plan.viewhullType && viewhullMapping[thing.plan.viewhullType]) {
-            var ViewhullClass = viewhullMapping[thing.plan.viewhullType];
-            if (!this.viewhulls[thing.plan.viewhullType]) {
-                this.viewhulls[thing.plan.viewhullType] = new ViewhullClass({
-                    fe: this.fe
-                });
-            }
-            this.viewhulls[thing.plan.viewhullType].applyInterstate(interstate, thing);
+        var viewhull = this.getViewhullForThing(thing);
+        if (viewhull) {
+            viewhull.applyInterstate(interstate, thing);
         }
     },
 
@@ -163,6 +172,10 @@ var ModuleInsight = ModuleAbstract.extend({
                         }
                         //thing.things = null;
                     }
+                    break;
+                case "+spawn":
+                    var viewhull = this.getViewhullForThing(thing);
+                    if (viewhull) viewhull.spawn(thing);
                     break;
                 default:
                     throw new Error('uknown teff while processing in Insight: ' + effect);

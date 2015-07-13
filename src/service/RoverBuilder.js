@@ -57,6 +57,11 @@ var RoverBuilder = cc.Class.extend({
         rover.c = assembly.opts.components;
         rover.g = this.opts.gutsManager.makeGutsByAssembly(assembly);
         rover.sockets = assembly.opts.components.hull.opts.sockets;
+
+        if (rover.c.hull.params) {
+            rover.bodyExtra = rover.c.hull.params;
+        }
+
         this.opts.gutsManager.fullRecover(rover.g);
 
         return rover;
