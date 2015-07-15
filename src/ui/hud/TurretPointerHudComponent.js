@@ -44,8 +44,8 @@ var TurretPointerHudComponent = SelfUpdater.extend({
         ).repeatForever();
 
         this.aniFoe = cc.sequence(
-            cc.tintTo(0.5, 200, 50, 50),
-            cc.tintTo(0.5, 255, 50, 50)
+            cc.tintTo(0.5, 255, 130, 130),
+            cc.tintTo(0.5, 200, 50, 50)
         ).repeatForever();
 
 

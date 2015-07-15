@@ -19,6 +19,10 @@ var PlanGenerator =  AbstractGenerator.extend({
             }
         }
 
+        if (fieldPlan.spawnPoints) {
+            this.field.spawnPoints = fieldPlan.spawnPoints;
+        }
+
         return this.field;
     },
 

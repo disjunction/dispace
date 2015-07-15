@@ -3,6 +3,8 @@
 
 var cc = require('cc'),
     flame = require('fgtk/flame'),
+    smog = require('fgtk/smog'),
+    Cospeak = smog.Cospeak,
     ModuleAbstract = flame.engine.ModuleAbstract;
 
 var ModuleWillMaster = ModuleAbstract.extend({
@@ -77,6 +79,28 @@ var ModuleWillMaster = ModuleAbstract.extend({
         this.fe.fd.dispatch(proxyEvent);
     },
 
+    findSpawnPoint: function(rover) {
+        var faction = rover.assembly.opts.plan.faction,
+            spawnPoints = this.fe.field.spawnPoints;
+        if (faction && spawnPoints) {
+            for (var i in spawnPoints) {
+                var factions = spawnPoints[i].factions;
+                if (!factions) continue;
+                if (factions[0] == "*" || factions.indexOf(faction) >= 0) {
+                    var l = Cospeak.readPoint(spawnPoints[i].l);
+                    rover.l = l;
+                    if (spawnPoints[i].a) {
+                        rover.a = Cospeak.readAngle(spawnPoints[i].a);
+                    }
+                    return;
+                }
+            }
+        }
+
+        rover.l = cc.p(5,5);
+
+    },
+
     spawnRover: function(willId, siblingId, params) {
         var cm = this.fe.opts.cosmosManager,
             assemblyPlan = cm.get(params.assemblySrc),
@@ -94,7 +118,7 @@ var ModuleWillMaster = ModuleAbstract.extend({
         }
 
         rover.inert = true;
-        rover.l = cc.p(5,5);
+        this.findSpawnPoint(rover);
 
         /*
         if (rover.plan.states.spawn) {

@@ -8,8 +8,16 @@ var cc = require('cc'),
 var DispaceField = Field.extend({
     ctor: function(opts) {
         Field.prototype.ctor.call(this, opts);
-        this.spawnPoints = [];
+        this.spawnPoints = null;
         this.quests = [];
+    },
+
+    pushField: function(field) {
+        console.log('pushing', field);
+        Field.prototype.pushField.call(this, field);
+        if (field.spawnPoints) {
+            this.spawnPoints = field.spawnPoints;
+        }
     }
 });
 
