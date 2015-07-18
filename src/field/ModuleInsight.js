@@ -12,7 +12,8 @@ var b2 = require('jsbox2d'),
 var viewhullMapping = {
     "abstract": require("dispace/view/viewhull/ViewhullAbstract"),
     "propeller": require("dispace/view/viewhull/ViewhullPropeller"),
-    "track": require("dispace/view/viewhull/ViewhullTrack")
+    "track": require("dispace/view/viewhull/ViewhullTrack"),
+    "smartTrack": require("dispace/view/viewhull/ViewhullSmartTrack"),
 };
 
 /**
@@ -101,14 +102,15 @@ var ModuleInsight = ModuleAbstract.extend({
     },
 
     getViewhullForThing: function(thing) {
-        if (thing.plan && thing.plan.viewhullType && viewhullMapping[thing.plan.viewhullType]) {
-            if (!this.viewhulls[thing.plan.viewhullType]) {
-                var ViewhullClass = viewhullMapping[thing.plan.viewhullType];
-                this.viewhulls[thing.plan.viewhullType] = new ViewhullClass({
+        if (thing.plan && thing.plan.viewhull && viewhullMapping[thing.plan.viewhull.className]) {
+            var className = thing.plan.viewhull.className;
+            if (!this.viewhulls[className]) {
+                var ViewhullClass = viewhullMapping[className];
+                this.viewhulls[className] = new ViewhullClass({
                     fe: this.fe
                 });
             }
-            return this.viewhulls[thing.plan.viewhullType];
+            return this.viewhulls[className];
         }
         return null;
     },
@@ -184,6 +186,10 @@ var ModuleInsight = ModuleAbstract.extend({
     },
 
     displayRover: function(thing) {
+        if (thing.plan.viewhull) {
+            var viewhull = this.getViewhullForThing(thing);
+            if (viewhull) viewhull.onEnvision(thing);
+        }
         for (var i in thing.things) {
             var subthing = thing.things[i];
             this.fe.m.c.envision(subthing);

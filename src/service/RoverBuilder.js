@@ -1,5 +1,7 @@
 var cc = require('cc'),
     flame = require('fgtk/flame'),
+    smog = require('fgtk/smog'),
+    Cospeak = smog.Cospeak,
     Interstate = flame.view.Interactor.Interstate,
     Assembly = require('dispace/entity/Assembly'),
     Rover = require('dispace/entity/thing/Rover');
@@ -23,6 +25,21 @@ var RoverBuilder = cc.Class.extend({
         var assembly = this.makeAssembly(assemblyPlan);
         return this.makeRover(assembly);
     },
+
+    /**
+     * prepare polar coordinates for the sockets
+     * to optimize subthing synching in ModuleDispaceEngine
+     */
+    prepareSockets: function(rover) {
+        for (var i in rover.sockets) {
+            var socket = rover.sockets[i];
+            if (socket.l) {
+                var l = Cospeak.readPoint(socket.l);
+                socket.pl = {r: cc.pLength(l), f: cc.pToAngle(l)};
+            }
+        }
+    },
+
     makeRover: function(assembly) {
         var hull = assembly.opts.components.hull,
             hullPlan = this.cosmosManager.getResource(hull.opts.planSrc),
@@ -57,6 +74,8 @@ var RoverBuilder = cc.Class.extend({
         rover.c = assembly.opts.components;
         rover.g = this.opts.gutsManager.makeGutsByAssembly(assembly);
         rover.sockets = assembly.opts.components.hull.opts.sockets;
+
+        this.prepareSockets(rover);
 
         if (rover.c.hull.params) {
             rover.bodyExtra = rover.c.hull.params;

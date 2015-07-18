@@ -160,9 +160,7 @@ _p.makeVisual = function(opts) {
         viewport: this.viewport,
         stateBuilder: this.stateBuilder,
         config: this.config,
-        containerPlans: {
-            effects: this.cosmosManager.get('container/effects')
-        }
+        containerPlans: this.cosmosManager.getAllInDirectory('container', false, true)
     }),  'c');
 
     fe.registerModule(new ModuleInsight({

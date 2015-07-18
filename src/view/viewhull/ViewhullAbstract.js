@@ -27,6 +27,10 @@ var ViewhullAbstract = cc.Class.extend({
     applyInterstate: function() {
 
     },
+
+    onEnvision: function(thing) {
+
+    }
 });
 
 module.exports = ViewhullAbstract;

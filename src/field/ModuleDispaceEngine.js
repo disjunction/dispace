@@ -69,10 +69,15 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
 
         for (var i in rover.things) {
             var subthing = rover.things[i],
-                radius = rover.sockets[i].radius;
+                pl = rover.sockets[i].pl;
 
-            subthing.l.x = rover.l.x + radius * cos;
-            subthing.l.y = rover.l.y + radius * sin;
+            if (pl.f === 0) {
+                subthing.l.x = rover.l.x + pl.r * cos;
+                subthing.l.y = rover.l.y + pl.r * sin;
+            } else {
+                subthing.l.x = rover.l.x + pl.r * Math.cos(rover.a + pl.f);
+                subthing.l.y = rover.l.y + pl.r * Math.sin(rover.a + pl.f);
+            }
             this.stepSubthing(rover, subthing, dt);
         }
     },
