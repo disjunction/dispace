@@ -57,8 +57,8 @@ var ViewhullSmartTrack = ViewhullAbstract.extend({
                      map[rofCore.TURN_RIGHT] ||
                      map[rofCore.DECELERATE]
                 ):
-                modCocos.changeState(thing.things.leftTrack, 'basic', true);
-                modCocos.changeState(thing.things.rightTrack, 'basic', true);
+                modCocos.changeState(thing.things.leftTrack, 'stop', true);
+                modCocos.changeState(thing.things.rightTrack, 'stop', true);
                 break;
         }
     }
