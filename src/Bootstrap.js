@@ -26,6 +26,7 @@ var cc = require('cc'),
     ModuleMayor = require('dispace/field/ModuleMayor'),
     ModuleProtagonist = require('dispace/field/ModuleProtagonist'),
     ModuleRof = require('dispace/field/ModuleRof'),
+    ModuleServerStats = require('dispace/field/ModuleServerStats'),
     ModuleShooter = require('dispace/field/ModuleShooter'),
     ModuleWillMaster = require('dispace/field/ModuleWillMaster'),
 
@@ -124,6 +125,9 @@ _p.makeServer = function(opts) {
     // server modules
 
     this.registerMasterModules(opts);
+
+    this.fe.registerModule(new ModuleServerStats({
+    }), 'serverStats');
 
     this.fe.registerModule(new ModuleDispaceServer({
         fieldSocketManager: this.fieldSocketManager

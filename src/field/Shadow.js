@@ -3,6 +3,7 @@
 
 var cc = require('cc'),
     smog = require('fgtk/smog'),
+    util = smog.util.util,
     b2 = require('jsbox2d'),
     flame = require('fgtk/flame');
 
@@ -64,9 +65,18 @@ var Shadow = cc.Class.extend({
         if (this.sibling && this.sibling.avatar) {
             var thing = this.sibling.avatar.opts.thing;
             console.log('removing avatar thging ' + thing.id);
+            this.fe.removeAvatar(this.sibling.avatar);
             this.fe.removeThing(thing);
         }
+
+        if (this.sibling) {
+            console.log('removing sibling ' + this.sibling.siblingId);
+            this.fe.removeSibling(this.sibling);
+        }
+
         console.log('socket ' + socket.socketId + ' disconnected');
+
+        console.log('siblings online ' + util.getKeys(this.fe.siblingMap).length);
     },
 
     receiveActivity: function(msg) {

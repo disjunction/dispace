@@ -27,11 +27,13 @@ Other events:
  * inert
  * injectAvatar
  * injectQuest
- * injectThing
  * injectSibling
+ * injectThing
  * interstate
  * moveThing
  * questUpdate
+ * removeAvatar
+ * removeSibling
  * removeThing
  * ownInterstate - client-side interstate
  * shot

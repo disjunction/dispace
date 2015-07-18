@@ -20,6 +20,7 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
         this.addNativeListeners([
             "injectThing",
             "injectAvatar",
+            "removeAvatar",
             "moveThing",
             "simStepCall",
             "simStepEnd",
@@ -47,6 +48,13 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
         var avatar = event.avatar;
         avatar.opts.sibling.avatar = avatar;
         avatar.opts.thing.avatar = avatar;
+    },
+
+
+    onRemoveAvatar: function(event) {
+        var avatar = event.avatar;
+        avatar.opts.sibling.avatar = null;
+        avatar.opts.thing.avatar = null;
     },
 
     stepSubthing: function(thing, subthing, dt) {
