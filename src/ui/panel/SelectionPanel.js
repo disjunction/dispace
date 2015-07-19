@@ -21,9 +21,11 @@ var SelectionPanel = PropMonitor.extend({
         // GLOBAL!!! yeah
         selected = thing;
 
+        /*
         this.addProp('type', function() {
             return this.thing.type;
         }.bind(this));
+
         this.addProp('coord', function() {
             return this.thing.l;
         }.bind(this));
@@ -35,6 +37,7 @@ var SelectionPanel = PropMonitor.extend({
             }
 
         }.bind(this));
+        */
 
         if (thing.g) {
             if (thing.g.i) {
@@ -50,6 +53,11 @@ var SelectionPanel = PropMonitor.extend({
             if (thing.g.s) {
                 this.addProp('shield', function() {
                     return this.formatGutFiller(this.thing.g.s);
+                }.bind(this));
+            }
+            if (thing.g.e) {
+                this.addProp('energy', function() {
+                    return this.formatGutFiller(this.thing.g.e);
                 }.bind(this));
             }
         }

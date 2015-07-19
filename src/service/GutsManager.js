@@ -10,7 +10,8 @@ var GutsManager = cc.Class.extend({
 
     makeGutsByAssembly: function(assembly) {
         var g = {
-            i: [1, 1]  // infrastructure can not be zero
+            i: [1, 1],  // infrastructure can not be zero
+            e: [0, 0] // ... and energy neither
         };
 
         function addGut(name, value) {
@@ -32,6 +33,9 @@ var GutsManager = cc.Class.extend({
                 }
                 if (c.params.shield) {
                     addGut('s', c.params.shield);
+                }
+                if (c.params.energy) {
+                    addGut('e', c.params.energy);
                 }
             }
         }

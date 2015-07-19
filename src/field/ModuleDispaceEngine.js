@@ -142,11 +142,18 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
         var subjComponent = event.shot.subjComponent,
             subjThing = event.shot.subjThing;
 
-        // push the subjThing in the direction opposit to shot
-        if (subjThing && subjThing.body && subjComponent && subjComponent.params.recoil) {
-            var turretThing = subjComponent.thing,
-                recoilForce = geo.vector(subjComponent.params.recoil, turretThing.a + geo.PI);
-            subjThing.body.ApplyForce(recoilForce, turretThing.l, true);
+        if (subjThing && !subjThing.removed) {
+
+            if (event.shot.subjEnergy) {
+                subjThing.g.e[0] = event.shot.subjEnergy;
+            }
+
+            // push the subjThing in the direction opposit to shot
+            if (subjThing.body && subjComponent && subjComponent.params.recoil) {
+                var turretThing = subjComponent.thing,
+                    recoilForce = geo.vector(subjComponent.params.recoil, turretThing.a + geo.PI);
+                subjThing.body.ApplyForce(recoilForce, turretThing.l, true);
+            }
         }
     },
 

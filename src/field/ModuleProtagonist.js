@@ -39,6 +39,7 @@ var ModuleProtagonist = ModuleAbstract.extend({
             "loopEnd",
             "removeThing",
             "injectSibling",
+            "gutsUpdate",
         ]);
     },
 
@@ -224,6 +225,14 @@ var ModuleProtagonist = ModuleAbstract.extend({
             this.reconfigureBySibling(event.sibling);
         }
     },
+
+    onGutsUpdate: function(event) {
+        var barPanel = this.fe.m.p.uiController.elements.selectionBarPanel1;
+        if (barPanel && barPanel.thing == this.ego) {
+            barPanel.doUpdate(true);
+        }
+
+    }
 });
 
 module.exports = ModuleProtagonist;

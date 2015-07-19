@@ -3,15 +3,22 @@
 
 var cc = require('cc'),
     smog = require('fgtk/smog'),
+    SchedulingQueue = smog.util.SchedulingQueue,
     geo = smog.util.geo,
     b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract');
 
+var energyRecoveryEvent = {
+    type: "gutsUpdate",
+    thing: null
+};
+
 var ModuleShooter = ModuleAbstract.extend({
     ctor: function(opts) {
         this.opts = opts || {};
         this.shootingThings = [];
+        this.energyQueue = new SchedulingQueue();
     },
 
     injectFe: function(fe, name) {
@@ -36,6 +43,40 @@ var ModuleShooter = ModuleAbstract.extend({
         ]);
     },
 
+    spendEnergy: function(thing, energy) {
+        if (!energy) {
+            return;
+        }
+
+        thing.g.e[0] -= +energy;
+
+        var hullParams = thing.c.hull.params;
+        if (!thing.charging && hullParams.energyRecoveryAmount) {
+            var period = hullParams.energyRecoveryPeriod || 1;
+            this.energyQueue.schedule(this.fe.simSum + period, thing);
+            thing.charging = true;
+        }
+    },
+
+    recoverEnergy: function() {
+        var things = this.energyQueue.fetchArray(this.fe.simSum);
+        for (var i = 0; i < things.length; i++) {
+            var thing = things[i];
+            if (thing.inert || thing.removed) continue;
+            var e = thing.g.e;
+            if (e[0] >= e[1]) continue;
+            e[0] = Math.min(e[0] + thing.c.hull.params.energyRecoveryAmount, e[1]);
+            if (e[0] < e[1]) {
+                var period = thing.c.hull.params.energyRecoveryPeriod || 1;
+                this.energyQueue.schedule(this.fe.simSum + period, thing);
+            } else {
+                thing.charging = false;
+            }
+            energyRecoveryEvent.thing = thing;
+            this.fe.fd.dispatch(energyRecoveryEvent);
+        }
+    },
+
     /**
      * a wrapper around the shoot, which checks first the conditions and only then fires
      * @param {Thing} subjThing
@@ -43,11 +84,13 @@ var ModuleShooter = ModuleAbstract.extend({
      * @returns {shotResult|null}
      */
     attemptShoot: function(subjThing, subjComponent) {
-        if (subjThing.inert) {
+        if (subjThing.inert || subjThing.removed) {
             return null;
         }
 
-        if (subjComponent.lastShot + subjComponent.params.chargeTime < this.fe.timeSum) {
+        if (subjComponent.lastShot + subjComponent.params.chargeTime < this.fe.timeSum &&
+            subjThing.g.e[0] >= subjComponent.params.energyCost) {
+
             var shotResult = this.shoot(subjThing, subjComponent);
             this.fe.fd.dispatch({
                 type: 'shot',
@@ -122,6 +165,9 @@ var ModuleShooter = ModuleAbstract.extend({
 
     shoot: function(subjThing, subjComponent) {
         this.shooterIid = subjThing.__instanceId;
+
+        this.spendEnergy(subjThing, subjComponent.params.energyCost);
+
         var result = {},
             range = subjComponent.params.range,
             turretThing = subjComponent.thing;
@@ -187,6 +233,8 @@ var ModuleShooter = ModuleAbstract.extend({
     },
 
     onSimStepCall: function(event) {
+        this.recoverEnergy();
+
         for (var i = 0; i < this.shootingThings.length; i++) {
             var thing = this.shootingThings[i];
             for (var j in thing.c) {

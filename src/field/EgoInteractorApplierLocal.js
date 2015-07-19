@@ -30,7 +30,7 @@ var EgoInteractorApplier = cc.Class.extend({
             thing = thingFinder.findThingAtLocation(l);
 
         var ui = this.opts.uiController;
-        var panel = (index == 1) ? ui.elements.selectionPanel1 : ui.elements.selectionPanel2;
+        var panel = (index == 1) ? ui.elements.selectionBarPanel1 : ui.elements.selectionBarPanel2;
         if (panel) {
             panel.setThing(thing);
         }
@@ -184,12 +184,14 @@ var EgoInteractorApplier = cc.Class.extend({
             keyUp: "spawnLast"
         };
 
-        events[Interactor.MINUS] = events[Interactor.CHROME_MINUS] = {keyUp: "zoomOut"};
-        events[Interactor.EQUAL] = events[Interactor.CHROME_EQUAL] = {keyUp: "zoomIn"};
-        events[Interactor.SCROLL] = {
-            scrollDown: "zoomOut",
-            scrollUp: "zoomIn"
-        };
+        if (this.opts.fe.m.mayor || fe.m.c.opts.viewport.opts.webpage.host.indexOf('.local') >= 0) {
+            events[Interactor.MINUS] = events[Interactor.CHROME_MINUS] = {keyUp: "zoomOut"};
+            events[Interactor.EQUAL] = events[Interactor.CHROME_EQUAL] = {keyUp: "zoomIn"};
+            events[Interactor.SCROLL] = {
+                scrollDown: "zoomOut",
+                scrollUp: "zoomIn"
+            };
+        }
     }
 });
 

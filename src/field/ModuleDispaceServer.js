@@ -51,6 +51,7 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             "hit",
             "teff",
             "inert",
+            "gutsUpdate",
         ];
 
        this.addNativeListeners(myEvents);
@@ -204,6 +205,13 @@ var ModuleDispaceServer = ModuleAbstract.extend({
         this.fevBuffer.push([
             "inert",
             [event.thing.id, event.inert]
+        ]);
+    },
+
+    onGutsUpdate: function(event) {
+        this.fevBuffer.push([
+            "gup",
+            [event.thing.id, event.thing.g]
         ]);
     },
 });

@@ -14,12 +14,13 @@ var ShotSerializer = AbstractSerializer.extend({
      * see ModuleShooter for details about shot event
      *
      * event:
-     * * isHit: boolean
-     * * l1: point
-     * * l2: point
-     * * subjComponent: component,
-     * * subjThing: thing
-     * * fraction: float
+     * 0: isHit: boolean
+     * 1: l1: point
+     * 2: l2: point
+     * 3: subjComponent: component,
+     * 4: subjThing: thing
+     * 5: fraction: float
+     * 6: subjEnergy: int
      */
     serializeShot: function(event) {
         var o = event.shot;
@@ -29,10 +30,16 @@ var ShotSerializer = AbstractSerializer.extend({
             [this.outCoord(o.l2.x), this.outCoord(o.l2.y)],
             o.subjComponent.role,
             o.subjThing.id,
-            this.outFloat(o.fraction)
+            this.outFloat(o.fraction),
+            o.subjThing.g.e[0],
         ];
     },
 
+    /**
+     * * * 2: subEnergy         // full amount energy left after shot
+     * @param  {[type]} serial [description]
+     * @return {[type]}        [description]
+     */
     unserializeShot: function(serial) {
         var subjThing = this.opts.fe.thingMap[serial[4]];
         if (!subjThing) {
@@ -50,7 +57,8 @@ var ShotSerializer = AbstractSerializer.extend({
             l2: cc.p(serial[2][0], serial[2][1]),
             subjComponent: subjComponent,
             subjThing: subjThing,
-            fraction: serial[5]
+            fraction: serial[5],
+            subjEnergy: serial[6],
         };
     },
 

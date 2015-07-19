@@ -10,6 +10,14 @@ var b2 = require('jsbox2d'),
 
 var radius;
 
+var reusableEvents = {
+    "gutsUpdate": {
+        type: "gutsUpdate",
+        thing: null
+    },
+};
+
+
 /**
  * receives and allies messages from server
  * sends updates about ego to the server
@@ -112,9 +120,13 @@ var ModuleDispaceClient = ModuleAbstract.extend({
         var serializer = this.thingSerializer;
         for (var i = 0; i < event[1].length; i++) {
             var thing = this.fe.thingMap[event[1][i][0]];
-            if (!thing) {
+            if (!thing || thing.removed) {
                 continue;
             }
+            if (thing == this.ego) {
+                continue;
+            }
+
             serializer.applyInterstateBundle(thing, event[1][i][1]);
             this.fe.fd.dispatch({
                 type: 'interstate',
@@ -214,6 +226,12 @@ var ModuleDispaceClient = ModuleAbstract.extend({
                         thing: thing,
                         inert: payload[1]
                     });
+                    break;
+                case "gup":
+                    thing = this.fe.thingMap[payload[0]];
+                    thing.g = payload[1];
+                    reusableEvents.gutsUpdate.thing = thing;
+                    this.fe.fd.dispatch(reusableEvents.gutsUpdate);
                     break;
                 default:
                     throw new Error("unknown fev: " + events[i][0]);

@@ -4,7 +4,7 @@
 var cc = require('cc'),
     UiController = require('./UiController'),
     PropMonitor = require('./panel/PropMonitor'),
-    SelectionPanel = require('./panel/SelectionPanel'),
+    SelectionBarPanel = require('./panel/SelectionBarPanel'),
     TurretPointerHudComponent = require('./hud/TurretPointerHudComponent');
 
 /**
@@ -73,12 +73,12 @@ _p.initHud = function(uiController, ego) {
     uiController.registerElement('dev1', this.dev1);
 
 
-    this.selectionPanel1 = new SelectionPanel({
+    this.selectionBarPanel1 = new SelectionBarPanel({
         selector: $('#panel-selection-1 .panel-body'),
-        interval: 0.5
+        interval: 0.3
     });
-    this.selectionPanel1.setThing(ego);
-    uiController.registerElement('selectionPanel1', this.selectionPanel1);
+    this.selectionBarPanel1.setThing(ego);
+    uiController.registerElement('selectionBarPanel1', this.selectionBarPanel1);
 
     this.initTurretPointer(uiController, ego,
         ego.assembly.opts.components.turret1,

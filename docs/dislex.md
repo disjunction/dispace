@@ -99,7 +99,7 @@ Feed message normally has the following structure
 
 Possible fevTypes:
 
- * gup - guts update, e.g. decrease of energy
+ * gup - guts update, e.g. increase of energy
  * shot
  * hit
  * inert - thing getting / recovering from inert state
@@ -119,6 +119,12 @@ Usually full contents of the quest params are passed
 
     ["fev", [
         ["qup", [questId, {p1: v1, p2: v2, ... }]]
+    ]]
+
+###### fev, fevType=gup - guts update
+
+    ["fev", [
+        ["gup", [thingId, [gutsBundle]]]
     ]]
 
 
