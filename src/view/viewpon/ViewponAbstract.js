@@ -12,7 +12,7 @@ var ViewponAbstract = cc.Class.extend({
     ctor: function(opts) {
         this.opts = opts;
 
-        this.audioEngine = this.opts.fe.m.c.opts.viewport.getAudioEngine();
+        this.viewport = this.opts.fe.m.c.opts.viewport;
         this.assetManager = this.opts.fe.opts.assetManager;
     },
 
@@ -30,7 +30,7 @@ var ViewponAbstract = cc.Class.extend({
             if (distance >= subplan.distanceRange[0] && distance <= subplan.distanceRange[1]) {
                 this.showShotBySubplan(shot, subplan);
                 if (!shot.isHit) {
-                    this.playMissSound();
+                    this.playMissSound(shot.subjComponent.thing.l);
                 }
                 return;
             }
@@ -56,17 +56,19 @@ var ViewponAbstract = cc.Class.extend({
         return thing;
     },
 
-    playMissSound: function() {
-        this.audioEngine.playEffect(this.assetManager.resolveSrc('sound/generic/miss.wav'));
+    playMissSound: function(l) {
+        var absoluteSrc = this.assetManager.resolveSrc('sound/generic/miss.wav');
+        this.viewport.playLocalEffect(l, absoluteSrc);
     },
-    playHitSound: function(totalDamage) {
+    playHitSound: function(l, totalDamage) {
         var soundSrc = 'sound/generic/boom1.wav';
         if (totalDamage > 50) {
             soundSrc = 'sound/generic/boom45.wav';
         } else if (totalDamage > 0) {
             soundSrc = 'sound/generic/boom23.wav';
         }
-        this.audioEngine.playEffect(this.assetManager.resolveSrc(soundSrc));
+        var absoluteSrc = this.assetManager.resolveSrc(soundSrc);
+        this.viewport.playLocalEffect(l, absoluteSrc);
     },
 
     showHit: function(hit) {
@@ -81,7 +83,7 @@ var ViewponAbstract = cc.Class.extend({
             var subplan = damages[i];
             if (totalDamage >= subplan.damageRange[0] && totalDamage <= subplan.damageRange[1]) {
                 this.showHitBySubplan(hit, subplan);
-                this.playHitSound(totalDamage);
+                this.playHitSound(hit.l, totalDamage);
                 break;
             }
         }

@@ -4,6 +4,11 @@
 var cc = require('cc'),
     AbstractGenerator = require('./AbstractGenerator');
 
+var hordeMapping = {
+    "HordeRandom": require('dispace/ai/horde/HordeRandom'),
+    "HordeDumby": require('dispace/ai/horde/HordeDumby'),
+};
+
 /**
  * Generates fields based on field plans
  */
@@ -23,7 +28,30 @@ var PlanGenerator =  AbstractGenerator.extend({
             this.field.spawnPoints = fieldPlan.spawnPoints;
         }
 
+        if (fieldPlan.ai) {
+            this.processAi(this.field, fieldPlan);
+        }
+
         return this.field;
+    },
+
+    processAi: function(field, fieldPlan) {
+        if (fieldPlan.ai.hordes) {
+            for (var i in fieldPlan.ai.hordes) {
+                var hordePlan = fieldPlan.ai.hordes[i],
+                    HordeClass = hordeMapping[hordePlan.className];
+                if (!HordeClass) {
+                    throw new Error('unknown horde class "' + hordePlan.className + '" for horde: ' + i);
+                }
+                var opts = {
+                    name: i,
+                    plan: hordePlan,
+                    fe: this.opts.fe,
+                };
+                var horde = new HordeClass(opts);
+                field.ai.hordes[i] = horde;
+            }
+        }
     },
 
     runProcedure: function(procedure, fieldPlan) {

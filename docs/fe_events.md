@@ -20,12 +20,18 @@ FE loop:
  * simEnd
  * loopEnd
 
-Other events:
+Client Events:
+ * ownInterstate - client-side interstate
+
+Master Events:
+
+Omni-Side Events:
 
  * controlRover - turret rotation
  * hit
  * inert
  * injectAvatar
+ * injectField
  * injectQuest
  * injectSibling
  * injectThing
@@ -35,7 +41,6 @@ Other events:
  * removeAvatar
  * removeSibling
  * removeThing
- * ownInterstate - client-side interstate
  * shot
  * teff
  * will

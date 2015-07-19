@@ -4,7 +4,6 @@
 var cc = require('cc'),
     smog = require('fgtk/smog'),
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
-    RoverHordeRandom = require('dispace/ai/mayor/RoverHordeRandom'),
     EventDispatcher = smog.util.EventDispatcher,
     SchedulingQueue = smog.util.SchedulingQueue,
     EventScheduler = smog.util.EventScheduler;
@@ -17,30 +16,104 @@ var ModuleMayor = ModuleAbstract.extend({
         ModuleAbstract.prototype.ctor.call(this, opts);
 
         this.ed = new EventDispatcher();
-        this.scheduler = new EventScheduler(this.fd, new SchedulingQueue());
+        this.hordeQueue = new SchedulingQueue();
+        this.hordes = {};
     },
 
     injectFe: function(fe, name) {
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
-        this.horde = new RoverHordeRandom({
-            fe: fe
-        });
 
-        this.fe.fd.addListener('injectThing', function(event) {
-            var thing = event.thing;
-            if (thing.type == 'rover' && !thing.player) {
-                this.horde.push(event.thing);
+        this.addNativeListeners([
+            "injectField",
+            "injectThing",
+            "removeThing",
+            "simStepEnd"
+        ]);
+    },
+
+    attemptCapture: function(thing) {
+        if (thing.type != 'rover' || !thing.ai || thing.horde) {
+            return false;
+        }
+
+        for (var i in this.hordes) {
+            if (this.hordes[i].captureThing) {
+                if (this.hordes[i].captureThing(thing)) {
+                    thing.horde = this.hordes[i];
+                    return true;
+                }
             }
-        }.bind(this));
+        }
+    },
 
-        this.fe.fd.addListener('simStepEnd', function(event) {
-            this.horde.randomizeInterstate();
-        }.bind(this));
+    onInjectField: function(event) {
+        var ai = event.field.ai;
+        if (ai && ai.hordes) {
+            for (var i in ai.hordes) {
+                this.hordes[i] = ai.hordes[i];
+                this.hordes[i].registerMayor(this);
+            }
+        }
+    },
 
-        this.fe.fd.addListener('removeThing', function(event) {
-            this.horde.removeThing(event.thing);
-        }.bind(this));
-    }
+    onInjectThing: function(event) {
+        var thing = event.thing;
+        this.attemptCapture(thing);
+    },
+
+    onRemoveThing: function(event) {
+        var thing = event.thing;
+        if (thing.horde) {
+            thing.horde.removeThing(thing);
+            thing.horde = null;
+        }
+    },
+
+    onSimStepEnd: function(event) {
+        var horde = this.hordeQueue.fetch(this.fe.simSum + event.dt);
+        if (horde) {
+            horde.step(event);
+        }
+    },
+
+    runInterstateAction: function(thing, action) {
+        var i = thing.i;
+        thing.i.setArray(action);
+        if (i.changed) {
+            var proxyEvent = {
+                type: 'interstate',
+                thing: thing,
+                interstate: i
+            };
+            i.changed = false;
+            this.fe.fd.dispatch(proxyEvent);
+        }
+    },
+
+    runBehavior: function(behavior) {
+        var thing = behavior.thing;
+        if (thing.removed) {
+            return;
+        }
+        for (var i = 0; i < behavior.actions.length; i++) {
+            var action = behavior.actions[i];
+            if (action == "think") {
+                if (thing.horde && thing.horde.think) {
+                    thing.horde.think(thing);
+                }
+            }
+            if (!thing.inert && Array.isArray(action)) {
+                switch (action[0]) {
+                    case "i":
+                        this.runInterstateAction(thing, action[1]);
+                        break;
+                    default:
+                        throw new Error('unexpected behavior action ' + action[0]);
+                }
+            }
+        }
+    },
+
 });
 
 module.exports = ModuleMayor;

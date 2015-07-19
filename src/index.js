@@ -1,8 +1,9 @@
 module.exports = {
     Bootstrap: require('./Bootstrap'),
     ai: {
-        mayor: {
-            RoverHordeRandom: require('./ai/mayor/RoverHordeRandom')
+        horde: {
+            HordeRandom: require('./ai/horde/HordeRandom'),
+            HordeDumby: require('./ai/horde/HordeDumby')
         },
         FriendOrFoe: require('./ai/FriendOrFoe')
     },
@@ -14,7 +15,8 @@ module.exports = {
         thing: {
             Rover: require('./entity/thing/Rover')
         },
-        Assembly: require('./entity/Assembly')
+        Assembly: require('./entity/Assembly'),
+        DispaceField: require('./entity/DispaceField')
     },
     service: {
         serialize: {

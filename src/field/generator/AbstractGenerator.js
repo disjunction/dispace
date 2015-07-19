@@ -66,6 +66,7 @@ _p.attemptPlaceThing = function(thing, params) {
  * * l: center point (cospeak)
  * * size: (cospeak), default = 0
  * * form: enum("rect", "circle"), default = "rect"
+ * * ai: boolean
  */
 _p.cluster = function(params){
     var plans = this.cosmosManager.getByArray(params.planSrcList);
@@ -75,6 +76,9 @@ _p.cluster = function(params){
             plan = util.randomElement(plans);
         if (plan.from.substring(0, 9) == 'assembly/') {
             thing = this.roverBuilder.makeRoverByAssemblyPlan(plan);
+            if (params.ai) {
+                thing.ai = params.ai;
+            }
         } else {
             thing = this.thingBuilder.makeThing({
                 plan: plan

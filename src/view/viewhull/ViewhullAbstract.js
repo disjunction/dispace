@@ -16,6 +16,17 @@ var ViewhullAbstract = cc.Class.extend({
 
     },
 
+    explode: function(thing) {
+        if (thing.plan.states.explode) {
+            this.moduleCocos.changeState(thing, 'explode');
+        }
+        if (thing.things) {
+            for (var j in thing.things) {
+                this.moduleCocos.removeThing(thing.things[j]);
+            }
+        }
+    },
+
     spawn: function(thing) {
         var spawnPlan = this.cosmosManager.get('thing/effect/transition/spawn'),
             state = this.stateBuilder.makeState(spawnPlan, 'spawn-sprite'),

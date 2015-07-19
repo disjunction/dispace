@@ -2,33 +2,29 @@
 "use strict";
 
 var cc = require('cc'),
+    HordeAbstract = require('./HordeAbstract'),
     flame = require('fgtk/flame'),
     core = flame.rof.core;
 
 /**
  * opts:
- * * mayor: ModuleMayor
  * * fe
  */
-var RoverHordeRandom = cc.Class.extend({
-    ctor: function(opts) {
-        this.opts = opts;
-        this.things = [];
-    }
+var HordeRandom = HordeAbstract.extend({
+    step: function(event) {
+        this.randomizeInterstate();
+        this.scheduleNextStep();
+    },
+
+    captureThing: function(thing) {
+        console.log('captured');
+        this.pushThing(thing);
+        return true;
+    },
 });
 
-var _p = RoverHordeRandom.prototype;
+var _p = HordeRandom.prototype;
 
-_p.push = function(thing) {
-    this.things.push(thing);
-};
-
-_p.removeThing = function(thing) {
-    var index = this.things.indexOf(thing);
-    if (index >= 0) {
-        this.things.splice(index, 1);
-    }
-};
 
 _p.randomizeInterstate = function(value) {
     var me = this;
@@ -76,4 +72,4 @@ _p.randomizeInterstate = function(value) {
     }
 };
 
-module.exports = RoverHordeRandom;
+module.exports = HordeRandom;

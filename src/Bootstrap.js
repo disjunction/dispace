@@ -155,7 +155,8 @@ _p.makeVisual = function(opts) {
         config: this.config,
         nb : this.nb,
         canvasId: 'canvas-cocos2d',
-        webpage: new flame.view.Webpage()
+        webpage: new flame.view.Webpage(),
+        audibility: 50,
     });
 
     // visual modules

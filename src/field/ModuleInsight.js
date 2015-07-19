@@ -160,23 +160,17 @@ var ModuleInsight = ModuleAbstract.extend({
     },
 
     onTeff: function(event) {
-        var thing = event.thing;
+        var thing = event.thing,
+            viewhull;
         for (var i = 0; i < event.teff.length; i++) {
             var effect = event.teff[i];
             switch (effect) {
                 case "+explode":
-                    if (thing.plan.states.explode) {
-                        this.fe.m.c.changeState(thing, 'explode');
-                    }
-                    if (thing.things) {
-                        for (var j in thing.things) {
-                            this.fe.m.c.removeThing(thing.things[j]);
-                        }
-                        //thing.things = null;
-                    }
+                    viewhull = this.getViewhullForThing(thing);
+                    if (viewhull) viewhull.explode(thing);
                     break;
                 case "+spawn":
-                    var viewhull = this.getViewhullForThing(thing);
+                    viewhull = this.getViewhullForThing(thing);
                     if (viewhull) viewhull.spawn(thing);
                     break;
                 default:

@@ -1,11 +1,18 @@
- * auto-respawn
+# high
+
  * quests
  * restart quest on demand
  * centry guns
  * ai
------
- * split avatar and sibling hud (?)
+ * name in sibling settings
+
+# medium
+
+ * use teff for inert, introduce invuln effect
  * reconnect
  * stats postback
------ server release
+
+# low
+
  * switch to browserify / grunt
+ * switch to radio instead of EventDispatcher

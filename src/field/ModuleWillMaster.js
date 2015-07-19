@@ -117,6 +117,8 @@ var ModuleWillMaster = ModuleAbstract.extend({
             this.fe.removeThing(sibling.avatar.opts.thing);
         }
 
+        // prevent the new thing to be captured by a horde
+
         rover.inert = true;
         this.findSpawnPoint(rover);
 
