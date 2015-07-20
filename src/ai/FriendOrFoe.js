@@ -16,11 +16,19 @@ var FriendOrFoe = cc.Class.extend({
     },
 
     getRelation: function(subjThing, objThing) {
-        if (objThing.type == 'rover') {
-            return relations.FOE;
+        if (!subjThing || !objThing) {
+            return relations.NEUTRAL;
         }
 
-        return relations.NEUTRAL;
+        if (subjThing.type != 'rover' || objThing.type != 'rover' || !subjThing.assembly || !objThing.assembly) {
+            return relations.NEUTRAL;
+        }
+
+        if (subjThing.assembly.opts.plan.faction == objThing.assembly.opts.plan.faction) {
+            return relations.FRIEND;
+        } else {
+            return relations.FOE;
+        }
     },
 });
 

@@ -99,12 +99,12 @@ Feed message normally has the following structure
 
 Possible fevTypes:
 
+ * proxy - message will be passed to client as is. Used for rare events
  * gup - guts update, e.g. increase of energy
  * shot
  * hit
  * inert - thing getting / recovering from inert state
  * teff - thing effects
- * qup - see below
 
 These different effects are in one "fev" message because they
 are often generated simulataneously, e.g. by shooter, thus we could
@@ -113,13 +113,19 @@ in theory save traffic and improve consistency when passing them this way
 The Server collects them during the simStep and fires onSimStepEnd (not entire loop!).
 
 
-###### fev, fevType=qup -quest update
+###### fev, fevType=proxy
 
-Usually full contents of the quest params are passed
+Proxy events must not contain any references, but only basic types (strings, ints, etc.)
 
     ["fev", [
-        ["qup", [questId, {p1: v1, p2: v2, ... }]]
+        ["proxy", {originalEvent}]
     ]]
+
+Events which are usually proxied:
+
+ * alert
+ * injectQuest
+ * updateQuest
 
 ###### fev, fevType=gup - guts update
 

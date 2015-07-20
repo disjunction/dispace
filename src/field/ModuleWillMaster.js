@@ -113,7 +113,12 @@ var ModuleWillMaster = ModuleAbstract.extend({
 
         // if there is already another avatar for the same sibling,
         // then first remove the old one
-        if (sibling.avatar) {
+        if (sibling.avatar && !sibling.avatar.opts.thing.removed) {
+            this.fe.fd.dispatch({
+                type: "respawn",
+                thing: sibling.avatar.opts.thing
+            });
+
             this.fe.removeThing(sibling.avatar.opts.thing);
         }
 

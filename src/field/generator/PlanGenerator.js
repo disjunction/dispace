@@ -9,6 +9,10 @@ var hordeMapping = {
     "HordeDumby": require('dispace/ai/horde/HordeDumby'),
 };
 
+var questMapping = {
+    "QuestGuildDrones": require('dispace/field/quest/QuestGuildDrones'),
+};
+
 /**
  * Generates fields based on field plans
  */
@@ -31,6 +35,7 @@ var PlanGenerator =  AbstractGenerator.extend({
         if (fieldPlan.ai) {
             this.processAi(this.field, fieldPlan);
         }
+        this.processQuests(this.field, fieldPlan);
 
         return this.field;
     },
@@ -50,6 +55,28 @@ var PlanGenerator =  AbstractGenerator.extend({
                 };
                 var horde = new HordeClass(opts);
                 field.ai.hordes[i] = horde;
+            }
+        }
+    },
+
+    /**
+     * FIXME this looks so much alike processAi  it should be a reusable code
+     */
+    processQuests: function(field, fieldPlan) {
+        if (fieldPlan.quests) {
+            for (var i in fieldPlan.quests) {
+                var questPlan = fieldPlan.quests[i],
+                    QuestClass = questMapping[questPlan.className];
+                if (!QuestClass) {
+                    throw new Error('unknown quest class "' + questPlan.className + '" for quest: ' + i);
+                }
+                var opts = {
+                    name: i,
+                    plan: questPlan,
+                    fe: this.opts.fe,
+                };
+                var quest = new QuestClass(opts);
+                field.quests[i] = quest;
             }
         }
     },

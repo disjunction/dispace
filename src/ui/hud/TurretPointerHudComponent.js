@@ -48,6 +48,10 @@ var TurretPointerHudComponent = SelfUpdater.extend({
             cc.tintTo(0.5, 200, 50, 50)
         ).repeatForever();
 
+        this.aniFriend = cc.sequence(
+            cc.tintTo(0.5, 200, 255, 150),
+            cc.tintTo(0.5, 150, 230, 50)
+        ).repeatForever();
 
         this.p1 = cc.p(0, 0);
         this.p2 = cc.p(0, 0);
@@ -95,7 +99,7 @@ var TurretPointerHudComponent = SelfUpdater.extend({
             p = this.opts.viewport.scrolledLocation2Target(p);
 
             if (this.ray.results[0].thing) {
-                var relation = this.fof.getRelation(this.ego, this.ray.results[0].thing);
+                var relation = this.fof.getRelation(this.opts.ego, this.ray.results[0].thing);
                 if (relation == FriendOrFoe.NEUTRAL && this.currentAction != this.aniNeutral) {
                     node.stopAction(this.currentAction);
                     this.currentAction = this.aniNeutral;
@@ -103,6 +107,10 @@ var TurretPointerHudComponent = SelfUpdater.extend({
                 } else if (relation == FriendOrFoe.FOE && this.currentAction != this.aniFoe) {
                     node.stopAction(this.currentAction);
                     this.currentAction = this.aniFoe;
+                    node.runAction(this.currentAction);
+                } else if (relation == FriendOrFoe.FRIEND && this.currentAction != this.aniFriend) {
+                    node.stopAction(this.currentAction);
+                    this.currentAction = this.aniFriend;
                     node.runAction(this.currentAction);
                 }
             }

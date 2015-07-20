@@ -17,7 +17,6 @@ var HordeRandom = HordeAbstract.extend({
     },
 
     captureThing: function(thing) {
-        console.log('captured');
         this.pushThing(thing);
         return true;
     },

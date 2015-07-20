@@ -19,6 +19,8 @@ var ModuleProtagonist = ModuleAbstract.extend({
      * * viewport
      * * syncCamera : boolean
      * * hd - hud event dispatcher
+     * * dynamicCamera
+     *
      * @param opts object
      */
     ctor: function(opts) {
@@ -146,15 +148,19 @@ var ModuleProtagonist = ModuleAbstract.extend({
         var shiftedX = v1.x,
             shiftedY = v1.y;
 
-        if (Math.abs(this.cameraShift.x) > this.cameraThreshold) {
-            shiftedX += this.cameraShift.x + (this.cameraShift.x > 0 ? -this.cameraThreshold : this.cameraThreshold);
-        }
-        if (Math.abs(this.cameraShift.y) > this.cameraThreshold) {
-            shiftedY += this.cameraShift.y + (this.cameraShift.y > 0 ? -this.cameraThreshold : this.cameraThreshold);
+        if (this.opts.dynamicCamera) {
+            if (Math.abs(this.cameraShift.x) > this.cameraThreshold) {
+                shiftedX += this.cameraShift.x + (this.cameraShift.x > 0 ? -this.cameraThreshold : this.cameraThreshold);
+            }
+            if (Math.abs(this.cameraShift.y) > this.cameraThreshold) {
+                shiftedY += this.cameraShift.y + (this.cameraShift.y > 0 ? -this.cameraThreshold : this.cameraThreshold);
+            }
         }
 
         this.opts.viewport.moveCameraToLocationXY(shiftedX, shiftedY);
-        this.adjustCameraScale();
+        if (this.opts.dynamicCamera) {
+            this.adjustCameraScale();
+        }
     },
 
     reconfigureBySibling: function(sibling) {
@@ -169,6 +175,12 @@ var ModuleProtagonist = ModuleAbstract.extend({
             if (config.audio && undefined !== config.audio.effectVolume) {
                 audioEngine.setEffectsVolume(config.audio.effectVolume);
             }
+        }
+
+        if (config.features) {
+            this.opts.dynamicCamera = config.features.dynamicCamera;
+        } else {
+            this.opts.dynamicCamera = true;
         }
     },
 
@@ -232,7 +244,7 @@ var ModuleProtagonist = ModuleAbstract.extend({
             barPanel.doUpdate(true);
         }
 
-    }
+    },
 });
 
 module.exports = ModuleProtagonist;

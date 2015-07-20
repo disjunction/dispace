@@ -32,15 +32,17 @@ Omni-Side Events:
  * inert
  * injectAvatar
  * injectField
+ * injectModule - not used
  * injectQuest
  * injectSibling
  * injectThing
  * interstate
  * moveThing
- * questUpdate
+ * updateQuest
  * removeAvatar
  * removeSibling
  * removeThing
+ * respawn - respawning without being destroyed
  * shot
  * teff
  * will
@@ -70,4 +72,14 @@ Sample:
         params: {
             assemblyName: ...
         }
+    }
+
+### updateQuest
+
+Sample:
+
+    {
+        type: "updateQuest",
+        questId: "guildDrones",
+        stats: {stats}
     }

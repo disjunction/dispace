@@ -195,6 +195,9 @@ var ModuleDispaceClient = ModuleAbstract.extend({
             var payload = events[i][1],
                 thing;
             switch (events[i][0]) {
+                case "proxy":
+                    this.fe.fd.dispatch(events[i][1]);
+                    break;
                 case "shot":
                     this.fe.fd.dispatch({
                         type: "shot",

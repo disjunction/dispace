@@ -1,3 +1,6 @@
+/*jslint node: true */
+"use strict";
+
 var cc = require('cc'),
     Interactor = require('fgtk/flame/view/Interactor'),
     rofCore = require('fgtk/flame/rof/core'),
@@ -147,8 +150,8 @@ var EgoInteractorApplier = cc.Class.extend({
 
         this.setupInteractorListeners(interactor.dispatcher);
 
-        events = interactor.layout.events;
-        states = interactor.layout.states;
+        var events = interactor.layout.events;
+        var states = interactor.layout.states;
 
         states[Interactor.ARROW_UP] = states[Interactor.KEY_W] = rofCore.ACCELERATE;
         states[Interactor.ARROW_DOWN] = states[Interactor.KEY_S] = rofCore.DECELERATE;
@@ -180,11 +183,11 @@ var EgoInteractorApplier = cc.Class.extend({
         };
         states[Interactor.SHIFT] = "shift";
 
-        events[Interactor.KEY_P] = {
+        events[Interactor.KEY_O] = events[Interactor.DIGIT_0] ={
             keyUp: "spawnLast"
         };
 
-        if (this.opts.fe.m.mayor || fe.m.c.opts.viewport.opts.webpage.host.indexOf('.local') >= 0) {
+        if (this.opts.fe.m.mayor || this.opts.fe.m.c.opts.viewport.opts.webpage.host.indexOf('.local') >= 0) {
             events[Interactor.MINUS] = events[Interactor.CHROME_MINUS] = {keyUp: "zoomOut"};
             events[Interactor.EQUAL] = events[Interactor.CHROME_EQUAL] = {keyUp: "zoomIn"};
             events[Interactor.SCROLL] = {

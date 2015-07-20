@@ -52,9 +52,19 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             "teff",
             "inert",
             "gutsUpdate",
+            "injectQuest",
+            "updateQuest",
+            "alert",
         ];
 
        this.addNativeListeners(myEvents);
+    },
+
+    proxy: function(event) {
+        this.fevBuffer.push([
+            "proxy",
+            event
+        ]);
     },
 
     onSimStepEnd: function(event) {
@@ -214,6 +224,19 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             [event.thing.id, event.thing.g]
         ]);
     },
+
+    onInjectQuest: function(event) {
+        this.proxy(event);
+    },
+    onUpdateQuest: function(event) {
+        this.proxy(event);
+    },
+    onAlert: function(event) {
+        this.proxy(event);
+    },
+
+
+
 });
 
 module.exports = ModuleDispaceServer;

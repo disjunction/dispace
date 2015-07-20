@@ -25,6 +25,7 @@ var cc = require('cc'),
     ModuleInsight = require('dispace/field/ModuleInsight'),
     ModuleMayor = require('dispace/field/ModuleMayor'),
     ModuleProtagonist = require('dispace/field/ModuleProtagonist'),
+    ModuleQuestMaster = require('dispace/field/ModuleQuestMaster'),
     ModuleRof = require('dispace/field/ModuleRof'),
     ModuleServerStats = require('dispace/field/ModuleServerStats'),
     ModuleShooter = require('dispace/field/ModuleShooter'),
@@ -113,6 +114,7 @@ _p.registerMasterModules = function(opts) {
     var fe = this.fe;
     fe.registerModule(new ModuleShooter({}), 'shooter');
     fe.registerModule(new ModuleMayor({}), 'mayor');
+    fe.registerModule(new ModuleQuestMaster({}), 'questMaster');
 };
 
 _p.makeServer = function(opts) {
@@ -182,6 +184,7 @@ _p.makeVisual = function(opts) {
     this.ui = new ModuleUi({
         viewport: this.viewport
     });
+    this.fe.registerModule(this.ui, 'ui');
 
     return fe;
 };

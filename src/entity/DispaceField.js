@@ -10,7 +10,7 @@ var DispaceField = Field.extend({
     ctor: function(opts) {
         Field.prototype.ctor.call(this, opts);
         this.spawnPoints = null;
-        this.quests = [];
+        this.quests = {};
         this.ai = {
             hordes: {}
         };
@@ -23,6 +23,9 @@ var DispaceField = Field.extend({
         }
         if (field.ai && field.ai.hordes) {
             this.ai.hordes = util.combineObjects(this.ai.hordes, field.ai.hordes);
+        }
+        if (field.quests) {
+            this.quests = util.combineObjects(this.quests, field.quests);
         }
     }
 });
