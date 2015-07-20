@@ -23,6 +23,9 @@ var ViewhullSmartTrack = ViewhullAbstract.extend({
     },
 
     applyInterstate: function(newI, thing) {
+        if (!thing.things.leftTrack || !thing.things.leftTrack) {
+            return;
+        }
         var plan = thing.plan,
             modCocos = this.opts.fe.m.c;
         var map = newI.map;
