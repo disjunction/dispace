@@ -27,9 +27,9 @@ var ModuleInsight = ModuleAbstract.extend({
         var thingPlanHelper = this.fe.opts.cosmosManager.thingPlanHelper;
 
         this.damageColors = {
-            'a': thingPlanHelper.readValue('#ffffff'),
+            'a': thingPlanHelper.readValue('#aaffaa'),
             'i': thingPlanHelper.readValue('#ff0000'),
-            's': thingPlanHelper.readValue('#7799ff')
+            's': thingPlanHelper.readValue('#77bbff')
         };
 
         this.addNativeListeners([

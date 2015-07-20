@@ -67,9 +67,6 @@ _p.initHud = function(uiController, ego) {
     this.dev1.addProp('camera-location', function(thing) {
         return this.opts.viewport.camera.cameraLocation;
     }.bind(this));
-    this.dev1.addProp('turret1', function(thing) {
-        return ego.things.turret1.aa;
-    }.bind(this));
     uiController.registerElement('dev1', this.dev1);
 
 

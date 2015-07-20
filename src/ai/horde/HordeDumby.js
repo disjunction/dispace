@@ -17,8 +17,8 @@ var behavePatterns = {
         [2, "a"],
         [1, "al"],
         [1, "ar"],
-        [1, "r"],
-        [1, "l"],
+        [0.5, "r"],
+        [0.5, "l"],
         [2, "al"],
         [2, "ar"]
     ],
@@ -26,8 +26,8 @@ var behavePatterns = {
         [1, "d"],
         [1, "dl"],
         [1, "dr"],
-        [1, "r"],
-        [1, "l"]
+        [0.7, "r"],
+        [0.7, "l"]
     ]
 };
 
@@ -117,21 +117,23 @@ var HordeDumby = HordeRandom.extend({
         this.spawnPeriod = Cospeak.readRangedFloat(this.opts.plan.spawnPeriod) || 3;
     },
 
-    planRandom: function(thing, behaviorSet) {
-        var totalBehviors = Math.floor(Math.random() * 4) + 1,
-            behviors = [];
-        for (var i = 0; i < totalBehviors; i++) {
-            behviors.push(util.randomElement(behaviorSet));
+    planRandom: function(thing, behaviorSet, behaviors) {
+        var totalBehviors = Math.floor(Math.random() * 4) + 1;
+        if (!behaviors) {
+            behaviors = [];
         }
-        behviors.push([0.5, []]);
-        Behavior.pushInterstateStreak(this.behaveQueue, this.opts.fe.simSum, thing, behviors, true);
+        for (var i = 0; i < totalBehviors; i++) {
+            behaviors.push(util.randomElement(behaviorSet));
+        }
+        behaviors.push([0.3, []]);
+        Behavior.pushInterstateStreak(this.behaveQueue, this.opts.fe.simSum, thing, behaviors, true);
     },
 
     think: function(thing) {
         this.currentIid = thing.__instanceId;
-        this.fe.m.b.rayCastFromThing(this.ray, thing, 3, 0.5);
+        this.fe.m.b.rayCastFromThing(this.ray, thing, 4, 0.5);
         if (this.ray.isHit) {
-            this.planRandom(thing, behavePatterns.backward);
+            this.planRandom(thing, behavePatterns.backward, [[0.5, ["d"]]]);
         } else {
             this.planRandom(thing, behavePatterns.forward);
         }
