@@ -5,12 +5,12 @@
 ## Universe
 
 It's a parallel reality - doesn't have to accurately relate to human civilization.
-Everything happens thousands years after after Human and other Alien lifeforms were destroyed by a cataclysm.
+Everything happens thousands years after Human and other Alien lifeforms were destroyed by a cataclysm.
 The only conscious life are android-like robots, who assume they have evolved with the rest of the world.
 They refer to themselves as '''Gens'''.
 
 The story revolves around the Gens exploring the space and finding out what happened to the extinct Human Civilizational.
-Even though its "space exploration", most of action happens on the surface of the planets as the player visits them.
+Even though its "space exploration", most of the action happens on the surface of the planets as the player visits them.
 
 Each sub-game in the setting can be released as a septate game with a strategic idea
 of incorporating them into a bigger one (Big Game).

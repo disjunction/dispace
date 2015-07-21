@@ -44,10 +44,10 @@ It may be even possible to make one.
 
  * simple clicking and swiping, making game accessible on mobile
  * swiping can add additional feel, e.g. if you're on a ship screen, then:
-    * swiping backward sends you to the previous planet
+    * swiping to the left sends you to the previous planet
     * swiping to the right sends your ship to the new unexplored planet
     * swiping down gives Planet Details screen
-    * swiping down from the planet screen sends your crew on a mission on surface
+    * swiping down from the Planet Details sends your crew on a mission on surface
 
 ## Game Flow
 
@@ -60,10 +60,15 @@ It may be even possible to make one.
  * player has the following options each "turn":
     * fly to the next or previous planet. If there is a mission running, there is an option to abandon it
     * send a mining mission if he has Robo-Miner(s)
-    * send an adventure mission
+    * send an adventure mission:
+       * depending on the mission you select the best lander suitable for it
+       * install the devices/weapons
+       * you get a summary what's the expected success chances and time - weaker faster lander has less chances for success, but less requires also less time
     * craft new landers or devices for your ship
- * after having given the orders the player may just check the Mission Progress
- * as the game progresses, player obtains more landers and robo-miners, filling more of the time to manage it
+    * repair the existing landers and devices
+ * after having given the orders the player may just check the Mission Progress from time-to-time
+    * to add some more life, there will be a text log messages appearing, e.g. "we found a strange entrance to tomb, entering it", "mission accomplished! we drive back to the landing spot"
+ * as the game progresses, player obtains more landers and robo-miners, requiring more of the time to manage it
 
 ## Technology
 
@@ -72,10 +77,10 @@ so the client will make rare requests to the server, no websockets or whatsoever
 
 Unlike Prelude this game will always persist the game state (in mongodb).
 
-It will used (share) same game definition JSON file, extending it with the new objects such as Ship and Planet.
+It will use (share) same game definition JSON file, extending it with the new objects such as Ship and Planet.
 
 
 ## Graphics
 
  * same style as in Prelude
- * Landers and devices may be directly borrowed from there
+ * Landers and Devices assets may be directly borrowed from Prelude

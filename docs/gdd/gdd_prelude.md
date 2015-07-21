@@ -3,8 +3,7 @@
 ## Summary
 
 '''Prelude''' is a training program for lander operators (pilots).
-Player plays the role of such an operator, trying to get his diploma
-as a certified interstellar lander operator.
+Player plays the role of such an operator, trying to get his diploma.
 
 The player controls a lander, looking like a tank, hovercraft or a buggy
 in a 2d environment with top-down perspective.
@@ -23,8 +22,8 @@ Main activity:
  * **driving** - missions can be limited by time
  * **fighting** - a complicated rock-paper-scissors system (range, damage, speed, armor, energy)
  * **exploration** - worlds can be big, and finding "3 flowers" may become an adventure
- * **simple puzzles**, based on 2d physics''' - pushing boxes, using explosion impacts etc.
- * **simple stealths** - some missions can be completed by sneaking around the enemies,
+ * **simple puzzles**, based on 2d physics - pushing boxes, using explosion impacts etc.
+ * **simple stealth** - some missions can be completed by sneaking around the enemies,
    e.g. using cloak device
 
 ## Main Features
@@ -61,10 +60,10 @@ Still to be implemented:
 
 The missions should be interesting because of the flexibility of the mechanics the player can use.
 
-E.g. to get to specific point behind a wall, the player may:
+E.g. to get to a specific point behind a wall, the player may:
 
  * blast through the wall if he has a required firepower
- * use teleportation device
+ * use a teleporter device
  * accomplish some quest to open a door
 
 Weapons also work differently depending on their nature.
@@ -83,7 +82,7 @@ The devices give advantage/disadvantage for a short time. The planned devices ar
  * control capture - you can control enemy's vehicle
  * nitro - speed boost for short time
  * slow-down - enemy vehicle and turret rotation slows down
- * reflector - received damage is reduced, sometime to zero
+ * reflector - received damage is reduced, sometimes even to zero
  * teleporter - teleport vehicle for short distances
  * trap - you can leave a trap behind you
 
@@ -104,15 +103,15 @@ The devices give advantage/disadvantage for a short time. The planned devices ar
 
 In single player, you always play as a Federation pilot,
 exploring new worlds or fighting/defending from the pirates.
-You still experience using all vehicles,
+You still experience using all landers,
 because pirates just steal ones from Federation and repaint them.
 
  * Upon starting a mission you see a briefing screen, explaining what the mission is about
- * On this screen you see a list of vehicles which may be used for this mission (not all)
- * The not-yet-unlocked are shown grayed
- * The ones, which you used and completed the mission are marked somehow
- * Upon selecting the vehicle your vehicle appears in the world
- * On death - goto briefing screen
+ * On this screen you see a list of landers which may be used for this mission (not all)
+ * Not-yet-unlocked landers are shown grayed
+ * The landers you used and completed the mission are marked... somehow
+ * Upon selecting a lander, it  appears in the world and the actual game starts
+ * On death - goto Scenario Briefing
  * On accomplishing the mission you see Scenario Bounty screen, giving you info, what you have unlocked
 
 ### Multiplayer Scenario
@@ -121,7 +120,7 @@ Multiplayer is always Federation vs. Pirates
 
  * You go to Multiplayer Lobby, and select the game to join
  * TBD if faction is random or selectable
- * Upon selection you instantly appear in the game and select a vehicle like in Demo
+ * Upon selection you instantly appear in the game and select a vehicle like in Demo, you can respawn any time
  * in the end of the round you go to Multiplayer Round Finished screen with stats
  * Multiplayer Round Finished allows to click "Continue" to continue with the same people but another random mission
 
@@ -130,15 +129,15 @@ Multiplayer is always Federation vs. Pirates
 ### Technology
 
 All parts of are created with JavaScript, which allows to reuse code on client and server side,
-and also easily mix the sub-games. It also allows porting the game to mobile devices in future.
+and also easily mix the sub-games. It also simplifies porting the game to mobile devices in future.
 
  * cocos2d-x
  * Fabric.js (additional graphics, level design)
  * Knockout or AngularJS (in demo - Knockout)
  * box2d
  * node.js for game server
- * express (in demo, a quick PHP hack instead)
- * socket.io (m.b. replaced with sockJs)
+ * express (in demo replaced with a quick PHP hack)
+ * socket.io (m.b. to be replaced with sockJs)
  * mongodb
 
 I can give a big presentation about all the concepts used behind,
@@ -150,18 +149,19 @@ I just haven't found more testers yet ;)
 ### Game Definitions
 
 All objects, items, levels are defined as JSON,
-using a common definition standard. So to see anything in a game
-you just change the JSON and reload the page.
+using a common definition standard. In order to change anything in the game,
+you just need to edit the JSON file and reload the page.
 
 This allows:
 
  * instant balancing of vehicle and weapon stats (damage, energy etc.)
  * quick creation of variations of the same weapon (Plasma Cannon Mark1, Plasma Cannon Mark2, etc.)
- * quick design of the new components as long as they use existing mechanics
+ * quick design of the new components as long as they use existing mechanics:
     * make new sprites
     * copy existing JSON
-    * change them to point to the new sprites
-    * do some stats balancing
+    * edit JSON to point to the new sprites
+    * do some stats balancing, trying it out in your browser
+    * new component ready!
 
 For example the whole tank with rotating tracks, turrets, all its stats is just a bunch JSON definition.
 
@@ -170,21 +170,21 @@ For example the whole tank with rotating tracks, turrets, all its stats is just 
 The levels on a low level are also JSON definitions.
 The definition language allows inclusion of other JSON files,
 so there will be a set of defined components, such as "house with a garden around", "a pyramid with treasure".
-Which will be then planed in the main level JSON.
+Which will be then placed in the main level JSON.
 
 The level generator also supports procedurally generated environment,
 this is used in the current demo.
 
 After the level has been created,
 you can start it in a single player mode, drive with some vehicle and change certain parts of it
-in a "WYSIWYG" mode, e.g. move this hose a bit to the left, and add one more stone like that.
+in a "WYSIWYG" mode, e.g. "move this house a bit to the left", "add one more stone like that".
 
 You can then serialize the level definition back to JSON and decide what you want ot do with that.
 
 ### Quests
 
 The tasks, which have to be accomplished are separate from level, thus you can run
-different tasks on the same map and vice versa.
+different missions on the same map and vice versa.
 
 Quests have a JS class behind, but all the parameters are exposed as JSON definition,
 still easily editable. As an example in the demo the following params were exposed as follows:
@@ -218,19 +218,27 @@ Animated parts:
  * track has 3 sprites animation (same sprites for back and forth)
  * each turret on firing has 4 sprites animation
 
-All of it was drawn in Inkscape without and exported as is without any post-processing.
-So creating an asset should be fast. I spent about 45 minutes per vehicle, as I did the current revamp.
+All of it was drawn in Inkscape and exported as-is without any post-processing.
+So creating an asset should be fast. I spent about 45 minutes per lander, as I did the latest graphics revamp.
+
+The surface is easily created using tiled (tool for creating tile-based maps)
 
 ### Graphics needed
 
- * A lot for weapons and vehicles, because the variety is one of the main features
- * The environment may stay rather schematic, because the idea is that it is a simulation
+ * A lot for weapons and landers, because the variety is one of the main features
+ * The environment may stay rather schematic, because the idea is that it is a simulation. Still at least 50 other alements to draw:
+   * diffent flora as a background or obstacles
+   * stones (semi-3d)
+   * primitive buildings: walls, towers, gates  
+ * Alien world animals - these are used as enemies or hunting resources
+ * Items and resouces - collectible things droppping from enemies. Scarse, as they don't persist and are used only in current mission.
+ * Screens
 
 ## Sound
 
  * The music should be ambient sci-fi
  * Effects rather cartoonish than realistic
- * Text-to-Speech may be used, because by th settings all characters are robots
+ * Text-to-Speech may be used, because by the settings all characters are robots
 
 ## Schedule
 
@@ -240,9 +248,11 @@ So creating an asset should be fast. I spent about 45 minutes per vehicle, as I 
     * all the screens except for multiplayer
     * a few level maps
     * a few mission quests
-    * while working on it - test the multiplayer mode internally
- 2. Integrate into Facebook, release
+ 2. Integrate into Facebook (free version)
     * while integrating into facebook, do thorough testing/bugfix, as it will be a feature freeze
-    * make some parts of the game hard to unlock, and make them unlockable for money?
- 3. Add multiplayer
- 4. Moar content (more of everything)
+    * release, collect feedback
+ 3. Integrate into Facebook commercial
+    * make some missions runnable limited number of times per day, unlock for money
+    * device/lander shop for for real money
+ 4. Add multiplayer
+ 5. Moar content (more of everything)
