@@ -122,6 +122,12 @@ var ModuleWillMaster = ModuleAbstract.extend({
             this.fe.removeThing(sibling.avatar.opts.thing);
         }
 
+        // this message duplicates initial injectSibling
+        // this is done to avoid orphan Things
+        if (!this.fe.siblingMap[sibling.siblingId]) {
+            this.fe.injectSibling(sibling);
+        }
+
         // prevent the new thing to be captured by a horde
 
         rover.inert = true;
@@ -140,10 +146,6 @@ var ModuleWillMaster = ModuleAbstract.extend({
             thing: rover,
             teff: ["+spawn"]
         });
-
-        // this message duplicates initial injectSibling
-        // this is done to avoid orphan Things
-        this.fe.injectSibling(sibling);
 
         this.fe.injectAvatar(avatar);
 

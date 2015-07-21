@@ -3,6 +3,7 @@
 
 var cc = require('cc'),
     smog = require('fgtk/smog'),
+    util = smog.util.util,
     SchedulingQueue = smog.util.SchedulingQueue,
     FriendOrFoe = require('dispace/ai/FriendOrFoe');
 /**
@@ -25,6 +26,7 @@ var QuestGuildDrones = cc.Class.extend({
         fe.fd.addListener('hit', this.onHit.bind(this));
         fe.fd.addListener('simEnd', this.onSimEnd.bind(this));
         fe.fd.addListener('respawn', this.onRespawn.bind(this));
+        fe.fd.addListener('injectSibling', this.onInjectSibling.bind(this));
 
         this.timeQueue.schedule(fe.simSum + 1, true);
 
@@ -123,7 +125,15 @@ var QuestGuildDrones = cc.Class.extend({
         if (this.stats[affectedFaction] === undefined) return;
         this.stats[affectedFaction] += this.opts.plan.pointsPerRespawn;
         this.dispatchUpdateQuest();
-    }
+    },
+
+    onInjectSibling: function(event) {
+        // if we just got the first player,
+        // then we better restart the mission
+        if (util.countKeys(this.opts.fe.siblingMap) == 1) {
+            this.resetStats();
+        }
+    },
 });
 
 module.exports = QuestGuildDrones;
