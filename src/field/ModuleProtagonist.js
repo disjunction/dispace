@@ -192,7 +192,7 @@ var ModuleProtagonist = ModuleAbstract.extend({
         if (!ego) return;
 
         function callRotateTurrent(turretThing, turretComponent) {
-            if (me.ego.inert) {
+            if (!me.ego.isControlled()) {
                 return;
             }
             me.rotateTurret(me.ego, turretThing, turretComponent, event.dt);

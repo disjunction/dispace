@@ -50,7 +50,6 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             "shot",
             "hit",
             "teff",
-            "inert",
             "gutsUpdate",
             "injectQuest",
             "updateQuest",
@@ -208,13 +207,6 @@ var ModuleDispaceServer = ModuleAbstract.extend({
         this.fevBuffer.push([
             "teff",
             [event.thing.id, event.teff]
-        ]);
-    },
-
-    onInert: function(event) {
-        this.fevBuffer.push([
-            "inert",
-            [event.thing.id, event.inert]
         ]);
     },
 

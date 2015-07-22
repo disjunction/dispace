@@ -102,7 +102,7 @@ var ModuleMayor = ModuleAbstract.extend({
                     thing.horde.think(thing);
                 }
             }
-            if (!thing.inert && Array.isArray(action)) {
+            if (thing.isControlled() && Array.isArray(action)) {
                 switch (action[0]) {
                     case "i":
                         this.runInterstateAction(thing, action[1]);

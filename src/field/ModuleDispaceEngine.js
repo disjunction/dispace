@@ -26,35 +26,8 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
             "simStepEnd",
             "hit",
             "shot",
-            "inert",
+            "teff",
         ]);
-    },
-
-    onInjectThing: function(event) {
-        var thing = event.thing;
-        if (thing.type && thing.type == 'rover') {
-            // store important for "us" things,
-            // so that we iterate only through the relevant ones in simStepEnd
-            this.importantThings.push(thing);
-        }
-    },
-
-    /**
-     * creates cyclic links between sibling and thing through an avatar
-     * event:
-     * * avatar: flame.entity.Avatar
-     */
-    onInjectAvatar: function(event) {
-        var avatar = event.avatar;
-        avatar.opts.sibling.avatar = avatar;
-        avatar.opts.thing.avatar = avatar;
-    },
-
-
-    onRemoveAvatar: function(event) {
-        var avatar = event.avatar;
-        avatar.opts.sibling.avatar = null;
-        avatar.opts.thing.avatar = null;
     },
 
     stepSubthing: function(thing, subthing, dt) {
@@ -96,6 +69,31 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
         }
     },
 
+    onRemoveAvatar: function(event) {
+        var avatar = event.avatar;
+        avatar.opts.sibling.avatar = null;
+        avatar.opts.thing.avatar = null;
+    },
+
+    onInjectThing: function(event) {
+        var thing = event.thing;
+        if (thing.type && thing.type == 'rover') {
+            // store important for "us" things,
+            // so that we iterate only through the relevant ones in simStepEnd
+            this.importantThings.push(thing);
+        }
+    },
+
+    /**
+     * creates cyclic links between sibling and thing through an avatar
+     * event:
+     * * avatar: flame.entity.Avatar
+     */
+    onInjectAvatar: function(event) {
+        var avatar = event.avatar;
+        avatar.opts.sibling.avatar = avatar;
+        avatar.opts.thing.avatar = avatar;
+    },
 
     onMoveThing: function(event) {
         var thing = event.thing;
@@ -157,11 +155,21 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
         }
     },
 
-    onInert: function(event) {
-        if (event.thing) {
-            event.thing.inert = event.inert;
+    onTeff: function(event) {
+        if (event.thing && !event.thing.removed) {
+            var teffs = Array.isArray(event.teff) ? event.teff : [event.teff];
+            for (var i = 0; i < teffs.length; i++) {
+                var effectString = teffs[i];
+                if (event.thing.applyEffect(effectString)) {
+                    this.fe.fd.dispatch({
+                        type: 'teffChange',
+                        thing: event.thing,
+                        teff: effectString
+                    });
+                }
+            }
         }
-    }
+    },
 });
 
 module.exports = ModuleDispaceEngine;

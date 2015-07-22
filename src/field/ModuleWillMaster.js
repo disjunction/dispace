@@ -128,32 +128,19 @@ var ModuleWillMaster = ModuleAbstract.extend({
             this.fe.injectSibling(sibling);
         }
 
-        // prevent the new thing to be captured by a horde
-
-        rover.inert = true;
         this.findSpawnPoint(rover);
-
-        /*
-        if (rover.plan.states.spawn) {
-            rover.s = "spawn";
-        }
-        */
 
         this.fe.injectThing(rover);
 
-        this.fe.fd.dispatch({
-            type: "teff",
-            thing: rover,
-            teff: ["+spawn"]
-        });
+        this.fe.dispatchTeff(
+            rover,
+            ["+spawn", "+inert", "+invuln"],
+            1,
+            ["-spawn", "-inert", "-invuln"]
+        );
 
         this.fe.injectAvatar(avatar);
 
-        this.fe.scheduler.scheduleIn(1.5, {
-            type: "inert",
-            thing: rover,
-            inert: false
-        });
     },
 
 });

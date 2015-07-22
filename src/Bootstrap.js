@@ -18,7 +18,7 @@ var cc = require('cc'),
     DispaceThingSerializer = require('dispace/service/serialize/DispaceThingSerializer'),
     FriendOrFoe = require('dispace/ai/FriendOrFoe'),
 
-
+    ModuleCheat = require('dispace/field/ModuleCheat'),
     ModuleDispaceClient = require('dispace/field/ModuleDispaceClient'),
     ModuleDispaceEngine = require('dispace/field/ModuleDispaceEngine'),
     ModuleDispaceServer = require('dispace/field/ModuleDispaceServer'),
@@ -185,6 +185,9 @@ _p.makeVisual = function(opts) {
         viewport: this.viewport
     });
     this.fe.registerModule(this.ui, 'ui');
+
+    this.cheat = new ModuleCheat({});
+    this.fe.registerModule(this.cheat, 'cheat');
 
     return fe;
 };

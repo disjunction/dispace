@@ -81,7 +81,6 @@ Feed message normally has the following structure
 #### rup - rover update
 
  * rotation direction and angles of the towers
- * guts changes
 
     ["rup", [
         ["thingId", {
@@ -99,7 +98,7 @@ Feed message normally has the following structure
 
 Possible fevTypes:
 
- * proxy - message will be passed to client as is. Used for rare events
+ * proxy - event will be passed to client as is. Used for rare events
  * gup - guts update, e.g. increase of energy
  * shot
  * hit
@@ -140,8 +139,13 @@ Events which are usually proxied:
 
 Possible effects:
 
- * spawn
- * explode
+ * inert    - completely inactive and non-controllable
+ * invuln   - invulnerable (right after spawning)
+ * spawn    - (visual effect)
+ * explode  - (visual effect)
+ * ...
+
+More on teffs in a separate doc
 
 #### changes to collections in field
 

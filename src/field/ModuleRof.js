@@ -38,7 +38,7 @@ var ModuleRof = ModuleAbstract.extend({
         }.bind(this));
 
         this.fe.fd.addListener('removeThing', function(event) {
-            if (!event.thing.mover || event.thing.inert) return;
+            if (!event.thing.mover || !event.thing.isControlled()) return;
             smog.util.util.removeOneFromArray(event.thing, this.rovers);
         }.bind(this));
     },

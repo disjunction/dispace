@@ -1,3 +1,6 @@
+/*jslint node: true, jasmine: true */
+"use strict";
+
 var dispace = require('dispace'),
     Assembly = dispace.entity.Assembly;
 

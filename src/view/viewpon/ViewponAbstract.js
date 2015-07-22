@@ -1,3 +1,6 @@
+/*jslint node: true */
+"use strict";
+
 var cc = require('cc'),
     flame = require('fgtk/flame'),
     Thing = flame.entity.Thing;

@@ -33,7 +33,6 @@ module.exports = {
             DevGenerator: require('./field/generator/DevGenerator'),
             PlanGenerator: require('./field/generator/PlanGenerator')
         },
-        ModuleDispaceLocal: require('./field/ModuleDispaceLocal'),
         ModuleDispaceClient: require('./field/ModuleDispaceClient'),
         ModuleDispaceEngine: require('./field/ModuleDispaceEngine'),
         ModuleDispaceServer: require('./field/ModuleDispaceServer'),

@@ -1,12 +1,13 @@
 /*jslint node: true */
 "use strict";
 
-var b2 = require('jsbox2d'),
-    cc = require('cc'),
+var cc = require('cc'),
+    b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
     Thing = flame.entity.Thing,
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
     ViewponAbstract = require('dispace/view/viewpon/ViewponAbstract'),
+    InsightEffectApplier = require('dispace/view/InsightEffectApplier'),
     geo = require('fgtk/smog').util.geo;
 
 var viewhullMapping = {
@@ -22,6 +23,11 @@ var viewhullMapping = {
  * * config
  */
 var ModuleInsight = ModuleAbstract.extend({
+    ctor: function(opts) {
+        this._super(opts);
+        this.insightEffectApplier = new InsightEffectApplier(this);
+    },
+
     injectFe: function(fe, name) {
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
         var thingPlanHelper = this.fe.opts.cosmosManager.thingPlanHelper;
@@ -38,7 +44,7 @@ var ModuleInsight = ModuleAbstract.extend({
             'shot',
             'hit',
             'simEnd',
-            'teff',
+            'teffChange',
         ]);
 
         this.viewhulls = {};
@@ -119,7 +125,7 @@ var ModuleInsight = ModuleAbstract.extend({
         var thing = event.thing,
             interstate = event.interstate;
 
-        if (thing.inert || !interstate.enabled) {
+        if (!thing.isControlled() || !interstate.enabled) {
             return;
         }
         var viewhull = this.getViewhullForThing(thing);
@@ -159,24 +165,8 @@ var ModuleInsight = ModuleAbstract.extend({
         }
     },
 
-    onTeff: function(event) {
-        var thing = event.thing,
-            viewhull;
-        for (var i = 0; i < event.teff.length; i++) {
-            var effect = event.teff[i];
-            switch (effect) {
-                case "+explode":
-                    viewhull = this.getViewhullForThing(thing);
-                    if (viewhull) viewhull.explode(thing);
-                    break;
-                case "+spawn":
-                    viewhull = this.getViewhullForThing(thing);
-                    if (viewhull) viewhull.spawn(thing);
-                    break;
-                default:
-                    throw new Error('uknown teff while processing in Insight: ' + effect);
-            }
-        }
+    onTeffChange: function(event) {
+        this.insightEffectApplier.applyTeffChange(event);
     },
 
     displayRover: function(thing) {

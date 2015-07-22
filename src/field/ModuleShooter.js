@@ -62,7 +62,7 @@ var ModuleShooter = ModuleAbstract.extend({
         var things = this.energyQueue.fetchArray(this.fe.simSum);
         for (var i = 0; i < things.length; i++) {
             var thing = things[i];
-            if (thing.inert || thing.removed) continue;
+            if (!thing.isControlled()) continue;
             var e = thing.g.e;
             if (e[0] >= e[1]) continue;
             e[0] = Math.min(e[0] + thing.c.hull.params.energyRecoveryAmount, e[1]);
@@ -84,11 +84,11 @@ var ModuleShooter = ModuleAbstract.extend({
      * @returns {shotResult|null}
      */
     attemptShoot: function(subjThing, subjComponent) {
-        if (subjThing.inert || subjThing.removed) {
+        if (!subjThing.isControlled() || subjThing.hasEffect('shooting')) {
             return null;
         }
 
-        if (subjComponent.lastShot + subjComponent.params.chargeTime < this.fe.timeSum &&
+        if (subjComponent.lastShot + subjComponent.params.chargeTime < this.fe.simSum &&
             subjThing.g.e[0] >= subjComponent.params.energyCost) {
 
             var shotResult = this.shoot(subjThing, subjComponent);
@@ -96,6 +96,16 @@ var ModuleShooter = ModuleAbstract.extend({
                 type: 'shot',
                 shot: shotResult.shot
             });
+
+            if (subjThing.c.hull.params.weaponLock) {
+                this.fe.dispatchTeff(
+                    subjThing,
+                    '+shooting',
+                    subjThing.c.hull.params.weaponLock,
+                    '-shooting'
+                );
+            }
+
             if (shotResult.hit) {
                 this.fe.fd.dispatch({
                     type: 'hit',
@@ -103,23 +113,25 @@ var ModuleShooter = ModuleAbstract.extend({
                 });
 
                 if (shotResult.hit.teff) {
-                    this.fe.fd.dispatch({
-                        type: 'teff',
-                        thing: shotResult.hit.objThing,
-                        teff: shotResult.hit.teff
-                    });
+                    this.fe.dispatchTeff(
+                        shotResult.hit.objThing,
+                        shotResult.hit.teff
+                    );
                 }
 
                 if (shotResult.hit.isKill) {
-                    shotResult.hit.objThing.inert = true;
+                    this.fe.dispatchTeff(
+                        shotResult.hit.objThing,
+                        "+inert"
+                    );
 
-                   this.fe.scheduler.scheduleIn(0.5, function() {
-                       this.fe.removeThing(shotResult.hit.objThing);
-                   }.bind(this));
+                    this.fe.scheduler.scheduleIn(0.5, function() {
+                        this.fe.removeThing(shotResult.hit.objThing);
+                    }.bind(this));
                 }
 
             }
-            subjComponent.lastShot = this.fe.timeSum;
+            subjComponent.lastShot = this.fe.simSum;
             return shotResult;
         } else {
             return null;
@@ -138,11 +150,12 @@ var ModuleShooter = ModuleAbstract.extend({
             return value;
         }
 
-        if (objThing.inert) {
-            return smog.EMPTY;
-        }
         // if object thing can be actually damaged, then correct damage values respectively
         if (objThing.g) {
+            if (objThing.isInvuln()) {
+                return smog.EMPTY;
+            }
+
             var effect = subjComponent.params.effect,
                 result = {};
 
@@ -188,7 +201,7 @@ var ModuleShooter = ModuleAbstract.extend({
 
             if (result.hit.damage.i && result.hit.objThing.g && result.hit.damage.i >= result.hit.objThing.g.i[0]) {
                 result.hit.isKill = true;
-                result.hit.teff = ['+explode'];
+                result.hit.teff = ['+explode', "+invuln"];
             }
 
             result.shot = {

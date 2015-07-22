@@ -23,7 +23,8 @@ FE loop:
 Client Events:
  * ownInterstate - client-side interstate
 
-Master Events:
+Master Events (not forwarded to clients):
+ * respawn - respawning without being destroyed
 
 Omni-Side Events:
 
@@ -42,9 +43,9 @@ Omni-Side Events:
  * removeAvatar
  * removeSibling
  * removeThing
- * respawn - respawning without being destroyed
  * shot
  * teff
+ * teffChange - normally follows teff, if the state actually changed
  * will
 
 
@@ -74,7 +75,9 @@ Sample:
         }
     }
 
-### updateQuest
+### updateQuest, injectQuest
+
+injectQuest for now has the same params as updateQuest
 
 Sample:
 

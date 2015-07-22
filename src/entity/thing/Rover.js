@@ -7,14 +7,21 @@ var Rover = Thing.extend({
         if (!opts.assembly) {
             throw new Error('Rover requires "assembly" opt');
         }
-        this.type = 'rover';
-        Thing.prototype.ctor.call(this, opts);
-        
-        this.things = {}
 
-        // create alias
         this.assembly = opts.assembly;
-    }
+        this.things = {};
+        this.type = opts.type || 'rover';
+
+        this._super(opts);
+    },
+
+    isControlled: function() {
+        return (!this.removed && !this.hasEffect('inert'));
+    },
+
+    isInvuln: function() {
+        return (this.removed || this.hasEffect('invuln'));
+    },
 });
 
 module.exports = Rover;

@@ -42,24 +42,19 @@ var HordeAbstract = cc.Class.extend({
     spawn: function(thing) {
         thing.ai = true;
         thing.horde = this;
-        thing.inert = true;
         thing.l = this.findSpawnPoint(thing);
 
         this.pushThing(thing);
 
         this.fe.injectThing(thing);
 
-        this.fe.fd.dispatch({
-            type: "teff",
-            thing: thing,
-            teff: ["+spawn"]
-        });
+        this.fe.dispatchTeff(
+            thing,
+            ["+spawn", "+inert", "+invuln"],
+            1,
+            ["-spawn", "-inert", "-invuln"]
+        );
 
-        this.fe.scheduler.scheduleIn(1.5, {
-            type: "inert",
-            thing: thing,
-            inert: false
-        });
     },
 
     scheduleNextStep: function() {

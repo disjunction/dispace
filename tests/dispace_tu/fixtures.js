@@ -1,4 +1,6 @@
 var flame = require('flame'),
+    dispace = require('dispace'),
+    Bootstrap = dispace.Bootstrap,
     FieldEngine = flame.engine.FieldEngine,
     Thing = flame.entity.Thing,
     GutsManager = require('dispace/service/GutsManager'),
@@ -73,5 +75,31 @@ module.exports = {
         fe.m.b.makeWorld();
 
         return fe;
-    }
+    },
+
+    makeAssembly: function() {
+        var item1 = new dispace.entity.item.Item({mark: 'shocker'}, 'turret');
+        var item2 = new dispace.entity.item.Item({mark: 'lamarck-hawk'}, 'hull');
+        return new dispace.entity.Assembly({
+            components: {
+                'turret1': item1,
+                'hull': item2
+            }
+        });
+    },
+
+    makeBootstrap: function() {
+        return new Bootstrap({
+            config: this.makeConfig(),
+            cosmosManager: this.makeCosmosManager(),
+            assetManager: this.makeAssetManager(),
+        });
+    },
+
+    makeFeMaster: function() {
+        var b = this.makeBootstrap();
+        b.makeBasicFe();
+        b.registerMasterModules();
+        return b.fe;
+    },
 };

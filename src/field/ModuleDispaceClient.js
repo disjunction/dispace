@@ -222,14 +222,6 @@ var ModuleDispaceClient = ModuleAbstract.extend({
                         console.warn('unknown thing while unserializing teff: ' + payload[1]);
                     }
                     break;
-                case "inert":
-                    thing = this.fe.thingMap[payload[0]];
-                    this.fe.fd.dispatch({
-                        type: "inert",
-                        thing: thing,
-                        inert: payload[1]
-                    });
-                    break;
                 case "gup":
                     thing = this.fe.thingMap[payload[0]];
                     thing.g = payload[1];

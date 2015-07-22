@@ -13,7 +13,6 @@ var flame = require('fgtk/flame'),
  *  Interstate bund
  *  "i": ["a", "l"], // in this example "accelerate" and "turn left"
  *  "s": "spawn" // current state
- *  "inert": true/false
  *  "assemblyPlan": {"components": ... }, // custom assembly spec. passed as is, because is needed only when a new rover is added
  *  "assemblyPlanSrc": "assembly/mob/evil_guy", // (not yet implemented) predefined assembly, referenced just by src
  *
@@ -29,9 +28,6 @@ var RoverSerializer = ThingSerializer.extend({
         bundle[2].g = thing.g;
         if (thing.s) {
             bundle[2].s = thing.s;
-        }
-        if (thing.inert) {
-            bundle[2].inert = true;
         }
         return bundle;
     },
@@ -57,9 +53,6 @@ var RoverSerializer = ThingSerializer.extend({
         rover.id = bundle[0];
         if (payload.s) {
             rover.s = payload.s;
-        }
-        if (payload.inert) {
-            rover.inert = true;
         }
         return rover;
     }
