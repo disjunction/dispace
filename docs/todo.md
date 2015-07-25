@@ -1,8 +1,12 @@
 # high
-
- * quests
  * centry guns
- * ai
+ * invuln
+ * cargo and collection
+ * shield regen
+ * armor regen (repair kit)
+ * teleport
+ * quests refactoring
+ * ai - path finding
  * name in sibling settings
  * sibling list
 

@@ -126,7 +126,7 @@ var GutsHudComponent = SelfUpdater.extend({
     removeFromWatchList: function(thing) {
         if (thing.state && thing.state.nodes.gutsHud) {
             var action = cc.sequence([
-                cc.fadeTo(0.5, 0),
+                cc.fadeTo(0.3, 0),
                 cc.removeSelf(),
             ]);
 
