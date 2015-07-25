@@ -3,7 +3,7 @@ var cc = require('cc'),
     SelfUpdater = require('dispace/ui/SelfUpdater');
 
 var defaultConfig = {
-    hideDelay: 5,
+    hideDelay: 7,
     switchDelay: 2,
 };
 
