@@ -1,14 +1,13 @@
 # high
 
  * quests
- * restart quest on demand
  * centry guns
  * ai
  * name in sibling settings
+ * sibling list
 
 # medium
 
- * use teff for inert, introduce invuln effect
  * reconnect
  * stats postback
 

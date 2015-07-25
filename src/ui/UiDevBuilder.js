@@ -5,7 +5,8 @@ var cc = require('cc'),
     UiController = require('./UiController'),
     PropMonitor = require('./panel/PropMonitor'),
     SelectionBarPanel = require('./panel/SelectionBarPanel'),
-    TurretPointerHudComponent = require('./hud/TurretPointerHudComponent');
+    TurretPointerHudComponent = require('./hud/TurretPointerHudComponent'),
+    GutsHudComponent = require('./hud/GutsHudComponent');
 
 /**
  * Builds some basic UI elements for devs
@@ -34,6 +35,14 @@ _p.initTurretPointer = function(uiController, ego, turretComponent, cursorPlanSr
         fe: this.opts.fe
     });
     uiController.registerElement('hudTurretPointer' + number, hudTurrentPointer);
+};
+
+_p.initGutsHud = function(uiController) {
+    var hudComponent = new GutsHudComponent({
+        fe: this.opts.fe,
+        viewport: this.opts.viewport
+    });
+    uiController.registerElement('gutsHud', hudComponent);
 };
 
 _p.initHud = function(uiController, ego) {
@@ -84,6 +93,8 @@ _p.initHud = function(uiController, ego) {
     this.initTurretPointer(uiController, ego,
         ego.assembly.opts.components.turret2,
         'thing/ui/secondary-pointer', 2);
+
+    this.initGutsHud(uiController);
 };
 
 module.exports = UiDevBuilder;

@@ -32,12 +32,16 @@ var ModuleProtagonist = ModuleAbstract.extend({
         this.baseScale = 0.5;
 
         this.uiController = new UiController({});
+
+        // current mouse location in absolute phisical coords
+        this.mouseL = cc.p();
     },
 
     injectFe: function(fe, name) {
         ModuleAbstract.prototype.injectFe.call(this, fe, name);
 
         this.addNativeListeners([
+            "hit",
             "loopEnd",
             "removeThing",
             "injectSibling",
@@ -99,9 +103,16 @@ var ModuleProtagonist = ModuleAbstract.extend({
         }
     },
 
+    inSemiVisualRange: function(l) {
+        if (!this.ego) {
+            return false;
+        }
+
+        return (cc.pDistanceSQ(this.ego.l, l) < 1024); // 32*32 = 1024
+    },
+
     rotateTurret: function(rover, turretThing, turretComponent, dt) {
-        var mouseL = this.opts.viewport.targetToScrolledLocation(this.mouse.l),
-            mouseAngle = geo.segment2Angle(turretThing.l, mouseL),
+        var mouseAngle = geo.segment2Angle(turretThing.l, this.mouseL),
             closestRotation = geo.closestRotation(turretThing.a, mouseAngle),
             absClosestRotation = Math.abs(closestRotation),
             omega = turretComponent.params.omegaRad;
@@ -184,10 +195,31 @@ var ModuleProtagonist = ModuleAbstract.extend({
         }
     },
 
+    processMouseOver: function() {
+        var thingFinder = this.fe.m.b.thingFinder,
+            thing = thingFinder.findThingAtLocation(this.mouseL);
+        if (thing && thing.g && this.uiController.elements.gutsHud) {
+            this.uiController.elements.gutsHud.addToWatchList(thing);
+        }
+    },
+
+    onHit: function(event) {
+        var thing = event.hit.objThing;
+        if (thing.g && this.inSemiVisualRange(thing.l)) {
+            if (this.uiController.elements.gutsHud) {
+                this.uiController.elements.gutsHud.addToWatchList(thing);
+            }
+        }
+    },
+
     onLoopEnd: function(event) {
         var me = this,
             ego = this.ego,
             controlEvent;
+
+        if (this.mouse) {
+            this.mouseL = this.opts.viewport.targetToScrolledLocation(this.mouse.l);
+        }
 
         if (!ego) return;
 
@@ -223,6 +255,8 @@ var ModuleProtagonist = ModuleAbstract.extend({
             this.fe.fd.dispatch(controlEvent);
         }
 
+        this.processMouseOver();
+
         this.uiController.update(event.dt);
     },
 
@@ -243,7 +277,6 @@ var ModuleProtagonist = ModuleAbstract.extend({
         if (barPanel && barPanel.thing == this.ego) {
             barPanel.doUpdate(true);
         }
-
     },
 });
 

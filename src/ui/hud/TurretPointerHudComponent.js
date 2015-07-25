@@ -30,14 +30,6 @@ var TurretPointerHudComponent = SelfUpdater.extend({
 
         this.fof = this.opts.fe.opts.fof;
 
-        /*
-        var tint = cc.sequence(
-            cc.tintTo(1, 255, 0, 0),
-            cc.tintTo(1, 0, 255, 0),
-            cc.tintTo(1, 0, 0, 255)
-        );
-        */
-
         this.aniNeutral = cc.sequence(
             cc.tintTo(0.5, 100, 100, 100),
             cc.tintTo(0.5, 255, 255, 255)
@@ -61,6 +53,8 @@ var TurretPointerHudComponent = SelfUpdater.extend({
 
         this.currentAction = this.aniNeutral;
         this.aniNode.runAction(this.currentAction);
+
+        this.uiElements = this.opts.fe.m.p.uiController.elements;
 
         this.radius = opts.turretComponent.params.range;
 
@@ -113,6 +107,11 @@ var TurretPointerHudComponent = SelfUpdater.extend({
                     this.currentAction = this.aniFriend;
                     node.runAction(this.currentAction);
                 }
+
+                // quite ugly dependency of one hud component on another
+                if (this.uiElements.gutsHud) {
+                    this.uiElements.gutsHud.addToWatchList(this.ray.results[0].thing);
+                }
             }
 
 
@@ -121,13 +120,6 @@ var TurretPointerHudComponent = SelfUpdater.extend({
                     appearL = cc.p((turretTargetL.x + p.x)/2, (turretTargetL.y + p.y)/2);
 
                 node.setPosition(p);
-
-                // the animation below is distracting, but cool. not sure if we need it
-                /*
-                node.setPosition(appearL);
-                var moveTo = cc.moveTo(fixedInterval, p).easing(cc.easeOut(0.5));
-                node.runAction(moveTo);
-                */
 
                 fadeAction = cc.fadeTo(fixedInterval * 2, 255);
                 node.runAction(fadeAction);

@@ -45,7 +45,14 @@ var UiController = cc.Class.extend({
         for (var i in this.elements) {
             this.elements[i].update(dt);
         }
-    }
+    },
+
+    getHudRadius: function(thing) {
+        if (thing.plan && thing.plan.hud && thing.plan.hud.radius) {
+            return thing.plan.hud.radius;
+        }
+        return 1;
+    },
 });
 
 module.exports = UiController;

@@ -12,8 +12,6 @@ var ViewhullAbstract = cc.Class.extend({
         this.cosmosManager = this.opts.fe.opts.cosmosManager;
         this.stateBuilder = this.opts.fe.m.c.opts.stateBuilder;
         this.moduleCocos = this.opts.fe.m.c;
-
-
     },
 
     explode: function(thing) {
@@ -24,6 +22,9 @@ var ViewhullAbstract = cc.Class.extend({
             for (var j in thing.things) {
                 this.moduleCocos.removeThing(thing.things[j]);
             }
+        }
+        if (thing.state.nodes.gutsHud) {
+            thing.state.nodes.gutsHud.runAction(cc.fadeTo(0.5, 0));
         }
     },
 
