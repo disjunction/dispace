@@ -7,7 +7,6 @@ var cc = require('cc'),
     smog = require('fgtk/smog'),
     Cospeak = smog.Cospeak,
     geo = smog.util.geo,
-    SchedulingQueue = smog.util.SchedulingQueue,
     Behavior = require('dispace/ai/Behavior'),
     FriendOrFoe = require('dispace/ai/FriendOrFoe');
 
@@ -34,7 +33,7 @@ var HordeAbstract = cc.Class.extend({
         this.opts = opts;
         this.fe = opts.fe;
         this.things = [];
-        this.behaveQueue = new SchedulingQueue();
+        this.behaveQueue = require('radiopaque').create().timeAt(opts.fe.simSum);
 
         this.fof = this.opts.fe.opts.fof;
         this.thingFinder = this.opts.fe.m.b.thingFinder;
@@ -56,7 +55,7 @@ var HordeAbstract = cc.Class.extend({
     pushThing: function(thing) {
         thing.horde = this;
         this.things.push(thing);
-        this.behaveQueue.schedule(0, new Behavior(thing, ["think"]));
+        this.behaveQueue.pushIn(0, new Behavior(thing, ["think"]));
     },
 
     removeThing: function(thing) {
@@ -86,7 +85,7 @@ var HordeAbstract = cc.Class.extend({
 
     scheduleNextStep: function() {
         if (this.opts.plan.stepPeriod) {
-            this.mayor.hordeQueue.schedule(this.opts.fe.simSum + this.opts.plan.stepPeriod, this);
+            this.mayor.hordeQueue.pushIn(this.opts.plan.stepPeriod, this);
         }
     },
 

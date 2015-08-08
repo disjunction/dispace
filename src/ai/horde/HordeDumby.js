@@ -148,7 +148,7 @@ var HordeDumby = HordeRandom.extend({
     step: function(event) {
         this.attemptSpawn();
 
-        var behavior = this.behaveQueue.fetch(this.opts.fe.simSum);
+        var behavior = this.behaveQueue.timeAt(this.opts.fe.simSum).fetch();
         if (behavior) {
             this.mayor.runBehavior(behavior);
         }

@@ -70,7 +70,7 @@ var EgoInteractorApplier = cc.Class.extend({
             me.opts.viewport.scaleCameraTo(me.opts.protagonist.baseScale);
         }
 
-        dispatcher.addListener("interstateChanged", function(event) {
+        dispatcher.channel("interstateChanged").subscribe(function(event) {
             if (!me.ego) {
                 return;
             }
@@ -85,36 +85,36 @@ var EgoInteractorApplier = cc.Class.extend({
             me.opts.fe.fd.dispatch(proxyEvent);
         });
 
-        dispatcher.addListener("mouseMove", function(event) {
+        dispatcher.channel("mouseMove").subscribe(function(event) {
             if (me.opts.mouseThing) {
                 mouse = me.opts.mouseThing;
-                mouse.l.x = event.event._x;
-                mouse.l.y = event.event._y;
+                mouse.l.x = event._x;
+                mouse.l.y = event._y;
                 mouse.state.nodes.main.setPosition(mouse.l);
             }
         });
 
-        dispatcher.addListener("mouseDown1", function(event) {
-            me.applyMouseDown(event.event, 1);
+        dispatcher.channel("mouseDown1").subscribe(function(event) {
+            me.applyMouseDown(event, 1);
         });
-        dispatcher.addListener("mouseDown2", function(event) {
-            me.applyMouseDown(event.event, 2);
+        dispatcher.channel("mouseDown2").subscribe(function(event) {
+            me.applyMouseDown(event, 2);
         });
-        dispatcher.addListener("mouseUp1", function(event) {
-            me.applyMouseUp(event.event, 1);
+        dispatcher.channel("mouseUp1").subscribe(function(event) {
+            me.applyMouseUp(event, 1);
         });
-        dispatcher.addListener("mouseUp2", function(event) {
-            me.applyMouseUp(event.event, 2);
+        dispatcher.channel("mouseUp2").subscribe(function(event) {
+            me.applyMouseUp(event, 2);
         });
-        dispatcher.addListener("zoomIn", function(event) {
+        dispatcher.channel("zoomIn").subscribe(function(event) {
             me.opts.protagonist.baseScale *= 1.25;
             updateCamera();
         });
-        dispatcher.addListener("zoomOut", function(event) {
+        dispatcher.channel("zoomOut").subscribe(function(event) {
             me.opts.protagonist.baseScale /= 1.25;
             updateCamera();
         });
-        dispatcher.addListener("spawnLast", function(event) {
+        dispatcher.channel("spawnLast").subscribe(function(event) {
             var sibling = me.opts.protagonist.sibling,
                 settings = sibling.settings;
             if (settings.last && settings.last.assemblyName) {

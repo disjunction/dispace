@@ -1,8 +1,7 @@
 var cc = require('cc'),
     flame = require('fgtk/flame'),
     smog = require('fgtk/smog'),
-    Interactor = flame.view.Interactor,
-    EventDispatcher = smog.util.EventDispatcher;
+    Interactor = flame.view.Interactor;
 
 var UiController = cc.Class.extend({
     /**
@@ -12,12 +11,6 @@ var UiController = cc.Class.extend({
     ctor: function(opts) {
         this.elements = {};
         this.opts = opts || {};
-
-        /**
-         * Hud event Dispatcher
-         * This is typically injected in things and fields
-         */
-        this.hd = new EventDispatcher();
     },
 
     registerElement: function(name, element){

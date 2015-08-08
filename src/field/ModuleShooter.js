@@ -3,7 +3,6 @@
 
 var cc = require('cc'),
     smog = require('fgtk/smog'),
-    SchedulingQueue = smog.util.SchedulingQueue,
     geo = smog.util.geo,
     b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
@@ -18,7 +17,7 @@ var ModuleShooter = ModuleAbstract.extend({
     ctor: function(opts) {
         this.opts = opts || {};
         this.shootingThings = [];
-        this.energyQueue = new SchedulingQueue();
+        this.energyQueue = require('radiopaque').create();
     },
 
     injectFe: function(fe, name) {
@@ -53,13 +52,13 @@ var ModuleShooter = ModuleAbstract.extend({
         var hullParams = thing.c.hull.params;
         if (!thing.charging && hullParams.energyRecoveryAmount) {
             var period = hullParams.energyRecoveryPeriod || 1;
-            this.energyQueue.schedule(this.fe.simSum + period, thing);
+            this.energyQueue.pushIn(period, thing);
             thing.charging = true;
         }
     },
 
     recoverEnergy: function() {
-        var things = this.energyQueue.fetchArray(this.fe.simSum);
+        var things = this.energyQueue.timeAt(this.fe.simSum).fetchAll();
         for (var i = 0; i < things.length; i++) {
             var thing = things[i];
             if (!thing.isControlled()) continue;
@@ -68,7 +67,7 @@ var ModuleShooter = ModuleAbstract.extend({
             e[0] = Math.min(e[0] + thing.c.hull.params.energyRecoveryAmount, e[1]);
             if (e[0] < e[1]) {
                 var period = thing.c.hull.params.energyRecoveryPeriod || 1;
-                this.energyQueue.schedule(this.fe.simSum + period, thing);
+                this.energyQueue.pushIn(period, thing);
             } else {
                 thing.charging = false;
             }

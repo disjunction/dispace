@@ -7,8 +7,7 @@ var b2 = require('jsbox2d'),
     Rover = require('dispace/entity/thing/Rover'),
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
     ViewponAbstract = require('dispace/view/viewpon/ViewponAbstract'),
-    ShotSerializer = require('dispace/service/serialize/ShotSerializer'),
-    Radiopaque = require('radiopaque');
+    ShotSerializer = require('dispace/service/serialize/ShotSerializer');
 
 
 var radius;
@@ -33,7 +32,7 @@ var ModuleDispaceServer = ModuleAbstract.extend({
         this.fevBuffer = [];
 
         // contains references to things which need to audited reqularly
-        this.auditQ = new Radiopaque();
+        this.auditQ = require('radiopaque').create();
 
         // contains a quick lookup hash (thing.id => boolean), to check if a thing is being audited
         this.auditStatus = {};
@@ -299,9 +298,6 @@ var ModuleDispaceServer = ModuleAbstract.extend({
     onAlert: function(event) {
         this.proxy(event);
     },
-
-
-
 });
 
 module.exports = ModuleDispaceServer;

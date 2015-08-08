@@ -16,11 +16,11 @@ Behavior.pushInterstateStreak = function(queue, startTime, thing, calls, addThin
     var time = startTime;
     for (var i = 0; i < calls.length; i++) {
         var call = calls[i];
-        queue.schedule(time, new Behavior(thing, [["i", call[1]]]));
+        queue.pushAt(time, new Behavior(thing, [["i", call[1]]]));
         time += call[0];
     }
     if (addThink) {
-        queue.schedule(time, new Behavior(thing, ["think"]));
+        queue.pushAt(time, new Behavior(thing, ["think"]));
     }
 };
 

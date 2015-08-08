@@ -4,7 +4,6 @@
 var cc = require('cc'),
     smog = require('fgtk/smog'),
     util = smog.util.util,
-    SchedulingQueue = smog.util.SchedulingQueue,
     FriendOrFoe = require('dispace/ai/FriendOrFoe');
 /**
  * opts:
@@ -16,7 +15,7 @@ var QuestGuildDrones = cc.Class.extend({
     ctor: function(opts) {
         this.opts = opts;
         this.fof = this.opts.fe.opts.fof;
-        this.timeQueue = new SchedulingQueue();
+        this.timeQueue = require('radiopaque').create().timeAt(opts.fe.simSum);
     },
 
     registerQuestMaster: function(questMaster) {
@@ -28,7 +27,7 @@ var QuestGuildDrones = cc.Class.extend({
         fe.fd.addListener('respawn', this.onRespawn.bind(this));
         fe.fd.addListener('injectSibling', this.onInjectSibling.bind(this));
 
-        this.timeQueue.schedule(fe.simSum + 1, true);
+        this.timeQueue.pushIn(1, true);
 
         this.resetStats();
     },
@@ -106,7 +105,7 @@ var QuestGuildDrones = cc.Class.extend({
     },
 
     onSimEnd: function(event) {
-        if (this.timeQueue.fetch(this.opts.fe.simSum)) {
+        if (this.timeQueue.timeAt(this.opts.fe.simSum).fetch()) {
             this.dispatchUpdateQuest();
             this.stats.time --;
 
@@ -118,7 +117,7 @@ var QuestGuildDrones = cc.Class.extend({
                 this.resetStats();
             }
 
-            this.timeQueue.schedule(this.opts.fe.simSum + 1, true);
+            this.timeQueue.pushIn(1, true);
         }
     },
 

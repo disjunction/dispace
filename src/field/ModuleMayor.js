@@ -3,10 +3,7 @@
 
 var cc = require('cc'),
     smog = require('fgtk/smog'),
-    ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
-    EventDispatcher = smog.util.EventDispatcher,
-    SchedulingQueue = smog.util.SchedulingQueue,
-    EventScheduler = smog.util.EventScheduler;
+    ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract');
 
 /**
  * should be added somewhere in the end of init
@@ -14,9 +11,7 @@ var cc = require('cc'),
 var ModuleMayor = ModuleAbstract.extend({
     ctor: function(opts) {
         ModuleAbstract.prototype.ctor.call(this, opts);
-
-        this.ed = new EventDispatcher();
-        this.hordeQueue = new SchedulingQueue();
+        this.hordeQueue = require('radiopaque').create();
         this.hordes = {};
     },
 
@@ -71,9 +66,10 @@ var ModuleMayor = ModuleAbstract.extend({
     },
 
     onSimStepEnd: function(event) {
-        var horde = null;
+        var horde = null,
+            q = this.hordeQueue.timeAt(this.fe.simSum);
         do {
-            horde = this.hordeQueue.fetch(this.fe.simSum + event.dt);
+            horde = q.fetch();
             if (horde) {
                 horde.step(event);
             }

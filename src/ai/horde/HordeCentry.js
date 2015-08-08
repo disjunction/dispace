@@ -34,7 +34,7 @@ var HordeCentry = HordeDumby.extend({
             }
         }.bind(this));
 
-        this.behaveQueue.schedule(this.fe.simSum + this.opts.plan.stepPeriod, new Behavior(thing, ["think"]));
+        this.behaveQueue.pushIn(this.opts.plan.stepPeriod, new Behavior(thing, ["think"]));
     },
 
     attemptSpawn: function() {
