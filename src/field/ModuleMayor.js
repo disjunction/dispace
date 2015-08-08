@@ -50,6 +50,7 @@ var ModuleMayor = ModuleAbstract.extend({
         var ai = event.field.ai;
         if (ai && ai.hordes) {
             for (var i in ai.hordes) {
+                this.hordes.name = i;
                 this.hordes[i] = ai.hordes[i];
                 this.hordes[i].registerMayor(this);
             }
@@ -70,10 +71,13 @@ var ModuleMayor = ModuleAbstract.extend({
     },
 
     onSimStepEnd: function(event) {
-        var horde = this.hordeQueue.fetch(this.fe.simSum + event.dt);
-        if (horde) {
-            horde.step(event);
-        }
+        var horde = null;
+        do {
+            horde = this.hordeQueue.fetch(this.fe.simSum + event.dt);
+            if (horde) {
+                horde.step(event);
+            }
+        } while (horde);
     },
 
     runInterstateAction: function(thing, action) {
@@ -99,7 +103,12 @@ var ModuleMayor = ModuleAbstract.extend({
             var action = behavior.actions[i];
             if (action == "think") {
                 if (thing.horde && thing.horde.think) {
-                    thing.horde.think(thing);
+                    try {
+                        thing.horde.think(thing);
+                    } catch(e) {
+                        console.log('error while thinking on ', thing)
+                        console.log(new Error())
+                    }
                 }
             }
             if (thing.isControlled() && Array.isArray(action)) {

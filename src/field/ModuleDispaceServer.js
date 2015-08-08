@@ -4,14 +4,16 @@
 var b2 = require('jsbox2d'),
     flame = require('fgtk/flame'),
     Thing = flame.entity.Thing,
+    Rover = require('dispace/entity/thing/Rover'),
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
     ViewponAbstract = require('dispace/view/viewpon/ViewponAbstract'),
-    ShotSerializer = require('dispace/service/serialize/ShotSerializer');
+    ShotSerializer = require('dispace/service/serialize/ShotSerializer'),
+    Radiopaque = require('radiopaque');
 
 
 var radius;
 
-var broadcastedTypes = ['rover', 'obstacle'];
+var broadcastedTypes = ["rover", "obstacle"];
 
 /**
  * opts:
@@ -30,6 +32,11 @@ var ModuleDispaceServer = ModuleAbstract.extend({
         // collects events in one simStep, so that it's sent as one message
         this.fevBuffer = [];
 
+        // contains references to things which need to audited reqularly
+        this.auditQ = new Radiopaque();
+
+        // contains a quick lookup hash (thing.id => boolean), to check if a thing is being audited
+        this.auditStatus = {};
     },
 
     injectFe: function(fe, name) {
@@ -57,6 +64,54 @@ var ModuleDispaceServer = ModuleAbstract.extend({
         ];
 
        this.addNativeListeners(myEvents);
+
+       this.auditQ.timeAt(fe.simSum);
+    },
+
+    attemptPushAudit: function(thing) {
+        if (!this.auditStatus[thing.id]) {
+            this.auditQ.pushIn(0.5, thing);
+            this.auditStatus[thing.id] = true;
+        }
+    },
+
+    broadcastRup: function(thing) {
+        var fieldSocketManager = this.opts.fieldSocketManager,
+            thingSerializer = this.thingSerializer,
+            roverSerializer = this.roverSerializer;
+
+        fieldSocketManager.broadcast([
+            "rup",
+            [[
+                thing.id,
+                roverSerializer.makeRupBundle(thing)
+            ]],
+            roverSerializer.outFloat(this.fe.simSum)
+        ]);
+    },
+
+    audit: function(thing) {
+        var reschedule = false;
+
+        if (thing.removed) {
+            this.auditStatus[thing.id] = false;
+            return;
+        }
+
+        for (var i = 0; i < Rover.turretIndexes.length; i++) {
+            var component = thing.c[Rover.turretIndexes[i]];
+            if (component && component.thing && component.thing.o !== 0) {
+                reschedule = true;
+                this.broadcastRup(thing);
+                break;
+            }
+        }
+
+        if (reschedule) {
+            this.auditQ.pushIn(0.5, thing);
+        } else {
+            this.auditStatus[thing.id] = false;
+        }
     },
 
     proxy: function(event) {
@@ -64,6 +119,26 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             "proxy",
             event
         ]);
+    },
+
+    syncRupForSocket: function(socket) {
+        var thingSerializer = this.thingSerializer,
+            roverSerializer = this.roverSerializer,
+            rups = [];
+
+        for (var i = 0; i < this.fe.field.things.length; i++) {
+            var thing = this.fe.field.things[i];
+            if (thing.type == "rover" && !thing.removed) {
+                rups.push([
+                    thing.id,
+                    roverSerializer.makeRupBundle(thing)
+                ]);
+            }
+        }
+
+        if (rups.length > 0) {
+            socket.emit("f", ["rup", rups]);
+        }
     },
 
     onSimStepEnd: function(event) {
@@ -76,6 +151,11 @@ var ModuleDispaceServer = ModuleAbstract.extend({
                 this.fevBuffer
             ]);
             this.fevBuffer = [];
+        }
+
+        var auditThing = this.auditQ.timeAt(this.fe.simSum).fetch();
+        if (auditThing) {
+            this.audit(auditThing);
         }
     },
 
@@ -105,6 +185,12 @@ var ModuleDispaceServer = ModuleAbstract.extend({
             thingSerializer = this.thingSerializer,
             things = [thingSerializer.serializeInitial(thing)];
         fieldSocketManager.broadcast(['things', things]);
+
+        // put all new rovers on routine audit
+        // if it was not necessary, the audit method will not continue auditing
+        if (thing.type == "rover") {
+            this.attemptPushAudit(thing);
+        }
     },
 
     onRemoveThing: function(event) {
@@ -161,26 +247,13 @@ var ModuleDispaceServer = ModuleAbstract.extend({
      * * turret2: turret2 thing
      */
     onControlRover: function(event) {
-        var fieldSocketManager = this.opts.fieldSocketManager,
-            thingSerializer = this.thingSerializer,
-            roverSerializer = this.roverSerializer;
+        var thing = event.thing;
 
-        var rupBundle = {};
-        if (event.turret1) {
-            rupBundle.t1 = roverSerializer.makeTurretBundle(event.turret1);
-        }
-        if (event.turret2) {
-            rupBundle.t2 = roverSerializer.makeTurretBundle(event.turret2);
-        }
+        this.broadcastRup(thing);
 
-        fieldSocketManager.broadcast([
-            'rup',
-            [[
-                event.thing.id,
-                rupBundle
-            ]],
-            roverSerializer.outFloat(this.fe.simSum)
-        ]);
+        if (!this.auditStatus[thing.id]) {
+            this.attemptPushAudit(thing);
+        }
     },
 
     onShot: function(event) {

@@ -55,6 +55,11 @@ _p.attemptPlaceThing = function(thing, params) {
     }
     thing.l = l;
     thing.a = Math.random() * geo.PI2;
+
+    if (params.horde && this.field.ai && this.field.ai.hordes && this.field.ai.hordes[params.horde]) {
+        this.field.ai.hordes[params.horde].pushThing(thing);
+    }
+
     this.field.things.push(thing);
     return true;
 };
@@ -63,26 +68,33 @@ _p.attemptPlaceThing = function(thing, params) {
  * params:
  * * planSrcList
  * * count, default = 1
- * * l: center point (cospeak)
+ * * l: center point (cospeak) |  ls: [l1, l2, ... ln]
  * * size: (cospeak), default = 0
  * * form: enum("rect", "circle"), default = "rect"
  * * ai: boolean
  */
 _p.cluster = function(params){
     var plans = this.cosmosManager.getByArray(params.planSrcList);
-    var count = params.count || 1;
+    var count = params.count;
+    if (!count) {
+        count = params.ls ? params.ls.length : 1;
+    }
     for (var i = 0; i < count; i++) {
         var thing,
             plan = util.randomElement(plans);
         if (plan.from.substring(0, 9) == 'assembly/') {
             thing = this.roverBuilder.makeRoverByAssemblyPlan(plan);
             if (params.ai) {
-                thing.ai = params.ai;
+                thing.ai = {};
             }
         } else {
             thing = this.thingBuilder.makeThing({
                 plan: plan
             });
+        }
+
+        if (params.ls) {
+            params.l = params.ls[i];
         }
 
         this.attemptPlaceThing(thing, params);

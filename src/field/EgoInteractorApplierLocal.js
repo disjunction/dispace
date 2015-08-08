@@ -187,7 +187,7 @@ var EgoInteractorApplier = cc.Class.extend({
             keyUp: "spawnLast"
         };
 
-        if (this.opts.fe.m.mayor || this.opts.fe.m.c.opts.viewport.opts.webpage.host.indexOf('.local') >= 0) {
+        if (this.opts.fe.m.cheat.enabled || this.opts.fe.m.mayor || this.opts.fe.m.c.opts.viewport.opts.webpage.host.indexOf('.local') >= 0) {
             events[Interactor.MINUS] = events[Interactor.CHROME_MINUS] = {keyUp: "zoomOut"};
             events[Interactor.EQUAL] = events[Interactor.CHROME_EQUAL] = {keyUp: "zoomIn"};
             events[Interactor.SCROLL] = {

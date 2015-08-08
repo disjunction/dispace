@@ -36,6 +36,9 @@ var QuestGuildDrones = cc.Class.extend({
     resetField: function() {
         var things = this.opts.fe.field.things;
         for (var i = things.length - 1; i >= 0; i--) {
+            if (things[i].assembly && things[i].assembly.opts.plan.info.short == "hexmkr") {
+                continue;
+            }
             if (things[i].type == 'rover') {
                 this.opts.fe.removeThing(things[i]);
             }

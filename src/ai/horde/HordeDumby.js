@@ -31,6 +31,8 @@ var behavePatterns = {
     ]
 };
 
+var turretIndexes = ["turret1", "turret2"];
+
 /**
  * plan:
  * * stepPeriod
@@ -45,7 +47,7 @@ var behavePatterns = {
  */
 var HordeDumby = HordeRandom.extend({
     ctor: function(opts) {
-        HordeRandom.prototype.ctor.call(this, opts);
+        this._super(opts);
 
         this.currentIid = null;
         this.ray = new flame.engine.ray.RayClosestFilterFunction({
@@ -58,9 +60,7 @@ var HordeDumby = HordeRandom.extend({
 
         var plan = opts.plan;
 
-        this.maxThings = plan.maxThings || 10;
-
-        this.fe = opts.fe;
+        this.maxThings = (plan.count === undefined) ? 10 : plan.count;
 
         this.lastSpawn = 0;
 
@@ -137,6 +137,12 @@ var HordeDumby = HordeRandom.extend({
         } else {
             this.planRandom(thing, behavePatterns.forward);
         }
+
+        turretIndexes.forEach(function(index) {
+            if (thing.c && thing.c[index]) {
+                this.checkFireLine(thing, thing.c[index]);
+            }
+        }.bind(this));
     },
 
     step: function(event) {

@@ -2,16 +2,26 @@
 "use strict";
 
 var flame = require('fgtk/flame'),
+    smog = require('fgtk/smog'),
     ThingSerializer = flame.service.serialize.ThingSerializer;
+
+var turretMapping = {
+    "turret1": "t1",
+    "turret2": "t2",
+};
+
+var turretMappingReverse = {
+    "t1": "turret1",
+    "t2": "turret2",
+};
+
 
 /**
  * Delegates Serialization/Unserialization to serializers depending on thing.type
  *
  *  Additional rover bundles:
  *  "g": ["i": [5, 10], "a": [7, 20]], // guts object is passed as is
- *
- *  Interstate bund
- *  "i": ["a", "l"], // in this example "accelerate" and "turn left"
+ *  "rup": {t1: [1, 2]. t2: [1.5, 3]} // same bundles as in dislex rup
  *  "s": "spawn" // current state
  *  "assemblyPlan": {"components": ... }, // custom assembly spec. passed as is, because is needed only when a new rover is added
  *  "assemblyPlanSrc": "assembly/mob/evil_guy", // (not yet implemented) predefined assembly, referenced just by src
@@ -29,7 +39,25 @@ var RoverSerializer = ThingSerializer.extend({
         if (thing.s) {
             bundle[2].s = thing.s;
         }
+
+        var rupBundle = this.makeRupBundle(thing);
+        if (rupBundle) {
+            bundle[2].rup = rupBundle;
+        }
+
         return bundle;
+    },
+
+    makeRupBundle: function(thing) {
+        var bundle = {},
+            wasChanged = false;
+        for (var i in turretMapping) {
+            if (thing.c[i]) {
+                bundle[turretMapping[i]] = this.makeTurretBundle(thing.c[i].thing);
+                wasChanged = true;
+            }
+        }
+        return wasChanged ? bundle : null;
     },
 
     makeTurretBundle: function(turretThing) {
@@ -54,6 +82,15 @@ var RoverSerializer = ThingSerializer.extend({
         if (payload.s) {
             rover.s = payload.s;
         }
+        if (payload.rup) {
+            for (var i in payload.rup) {
+                var fullIndex = turretMappingReverse[i],
+                    turret = rover.c[fullIndex].thing;
+                turret.aa = payload.rup[i][0];
+                turret.o = payload.rup[i][1];
+            }
+        }
+
         return rover;
     }
 });

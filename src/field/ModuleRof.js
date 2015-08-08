@@ -25,35 +25,37 @@ var ModuleRof = ModuleAbstract.extend({
 
         this.moverConfigBuilder = new MoverConfigBuilder();
 
-        this.fe.fd.addListener('injectThing', function(event) {
-            var thing = event.thing;
-            if (thing.type && thing.type == 'rover') {
-                this.injectThing(thing);
-                this.rovers.push(thing);
-            }
-        }.bind(this));
-
-        this.fe.fd.addListener('simStepCall', function(event) {
-            this.driveAll();
-        }.bind(this));
-
-        this.fe.fd.addListener('removeThing', function(event) {
-            if (!event.thing.mover || !event.thing.isControlled()) return;
-            smog.util.util.removeOneFromArray(event.thing, this.rovers);
-        }.bind(this));
+        this.addNativeListeners([
+            "injectThing",
+            "removeThing",
+            "simStepCall"
+        ]);
     },
 
-    injectThing: function(thing) {
-        try {
-            var moverConfig = this.moverConfigBuilder.makeByAssembly(thing.assembly);
-            thing.mover = this.driver.makeMover(thing, moverConfig);
-        } catch (e) {
-            console.error('ModuleRof failed to injectThing: ' + thing.id);
-            console.error(e);
+    onInjectThing: function(event) {
+        var thing = event.thing;
+        if (thing.c && thing.c.hull && thing.c.hull.opts && thing.c.hull.opts.mover) {
+
+            try {
+                var moverConfig = this.moverConfigBuilder.makeByAssembly(thing.assembly);
+                thing.mover = this.driver.makeMover(thing, moverConfig);
+            } catch (e) {
+                console.error('ModuleRof failed to injectThing: ' + thing.id);
+                console.error(e);
+            }
+
+            this.rovers.push(thing);
         }
     },
 
-    driveAll: function() {
+    onRemoveThing: function(event) {
+        if (!event.thing.mover || !event.thing.isControlled()) {
+            return;
+        }
+        smog.util.util.removeOneFromArray(event.thing, this.rovers);
+    },
+
+    onSimStepCall: function(event) {
 
         for (var i = 0; i < this.rovers.length; i++) {
             var thing = this.rovers[i];

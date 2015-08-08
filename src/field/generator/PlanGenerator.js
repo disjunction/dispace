@@ -5,6 +5,7 @@ var cc = require('cc'),
     AbstractGenerator = require('./AbstractGenerator');
 
 var hordeMapping = {
+    "HordeCentry": require('dispace/ai/horde/HordeCentry'),
     "HordeRandom": require('dispace/ai/horde/HordeRandom'),
     "HordeDumby": require('dispace/ai/horde/HordeDumby'),
 };
@@ -22,6 +23,10 @@ var PlanGenerator =  AbstractGenerator.extend({
             this.field.size = fieldPlan.size;
         }
 
+        if (fieldPlan.ai) {
+            this.processAi(this.field, fieldPlan);
+        }
+
         if (Array.isArray(fieldPlan.procedures)) {
             for (var i = 0; i < fieldPlan.procedures.length; i++) {
                 this.runProcedure(fieldPlan.procedures[i]);
@@ -32,9 +37,6 @@ var PlanGenerator =  AbstractGenerator.extend({
             this.field.spawnPoints = fieldPlan.spawnPoints;
         }
 
-        if (fieldPlan.ai) {
-            this.processAi(this.field, fieldPlan);
-        }
         this.processQuests(this.field, fieldPlan);
 
         return this.field;

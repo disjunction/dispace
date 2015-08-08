@@ -24,4 +24,6 @@ var Rover = Thing.extend({
     },
 });
 
+Rover.turretIndexes = ["turret1", "turret2"];
+
 module.exports = Rover;

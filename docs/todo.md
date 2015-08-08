@@ -9,6 +9,7 @@
  * ai - path finding
  * name in sibling settings
  * sibling list
+ * smart cursor (e, i, a, s)
 
 # medium
 
@@ -18,4 +19,4 @@
 # low
 
  * switch to browserify / grunt
- * switch to radio instead of EventDispatcher
+ * switch to radio instead of EventDispatcher (or develop duqueue or radiopaque)

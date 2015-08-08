@@ -205,7 +205,7 @@ var ModuleProtagonist = ModuleAbstract.extend({
 
     onHit: function(event) {
         var thing = event.hit.objThing;
-        if (thing.g && this.inSemiVisualRange(thing.l)) {
+        if (thing && thing.g && this.inSemiVisualRange(thing.l)) {
             if (this.uiController.elements.gutsHud) {
                 this.uiController.elements.gutsHud.addToWatchList(thing);
             }

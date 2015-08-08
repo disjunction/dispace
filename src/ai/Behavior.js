@@ -1,7 +1,7 @@
 /**
  * possible behavior actions:
  * * think
- * * ["i", [...]] // can be applied to interstate with setArray
+ * * [["i", [...]]] // can be applied to interstate with setArray
  */
 
 function Behavior(thing, actions) {

@@ -83,6 +83,10 @@ var RoverBuilder = cc.Class.extend({
 
         this.opts.gutsManager.fullRecover(rover.g);
 
+        if (assembly.opts.plan.effects) {
+            rover.e = cc.clone(assembly.opts.plan.effects);
+        }
+
         return rover;
     },
 

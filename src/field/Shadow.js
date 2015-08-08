@@ -39,7 +39,9 @@ var Shadow = cc.Class.extend({
         socket.on('readyForFeed', function() {
             socket.readyForFeed = true;
             console.log('socket ' + socket.socketId + ' is ready');
-        });
+            this.fe.m.d.syncRupForSocket(socket);
+            console.log('rup synched');
+        }.bind(this));
         socket.on('sup', function(msg) {
             console.log('initialField with ' + this.opts.fe.field.things.length + ' objects');
             var serialized = this.opts.fe.opts.fieldSerializer.serializeInitial(this.opts.fe.field);
