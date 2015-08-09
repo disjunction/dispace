@@ -117,7 +117,7 @@ The Server collects them during the simStep and fires onSimStepEnd (not entire l
 Proxy events must not contain any references, but only basic types (strings, ints, etc.)
 
     ["fev", [
-        ["proxy", {originalEvent}]
+        ["proxy", [channel, {originalEvent}]]
     ]]
 
 Events which are usually proxied:

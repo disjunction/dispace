@@ -26,8 +26,7 @@ var ModuleQuestMaster = ModuleAbstract.extend({
             for (var i in quests) {
                 this.quests[i] = quests[i];
                 this.quests[i].registerQuestMaster(this);
-                this.fe.fd.dispatch({
-                    type: "injectQuest",
+                this.fe.eq.channel("injectQuest").broadcast({
                     questId: i,
                     stats: quests[i].stats
                 });

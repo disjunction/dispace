@@ -80,13 +80,11 @@ var ModuleMayor = ModuleAbstract.extend({
         var i = thing.i;
         thing.i.setArray(action);
         if (i.changed) {
-            var proxyEvent = {
-                type: 'interstate',
+            i.changed = false;
+            this.fe.eq.channel("interstate").broadcast({
                 thing: thing,
                 interstate: i
-            };
-            i.changed = false;
-            this.fe.fd.dispatch(proxyEvent);
+            });
         }
     },
 

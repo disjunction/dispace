@@ -44,8 +44,7 @@ var InsightEffectApplier = cc.Class.extend({
     onRemoveInert: function(thing) {
         var fe = this.insight.fe;
         if (thing.i && thing.i.array.length) {
-            fe.fd.dispatch({
-                type: "interstate",
+            fe.eq.channel("interstate").broadcast({
                 thing: thing,
                 interstate: thing.i,
             });

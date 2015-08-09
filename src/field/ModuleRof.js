@@ -56,7 +56,6 @@ var ModuleRof = ModuleAbstract.extend({
     },
 
     onSimStepCall: function(event) {
-
         for (var i = 0; i < this.rovers.length; i++) {
             var thing = this.rovers[i];
             this.driver.drive(thing);

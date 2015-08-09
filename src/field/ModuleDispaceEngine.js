@@ -81,6 +81,9 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
             // store important for "us" things,
             // so that we iterate only through the relevant ones in simStepEnd
             this.importantThings.push(thing);
+
+            // put subthings in place (dt = 0)
+            this.stepAwakeRover(event.thing, 0);
         }
     },
 
@@ -161,8 +164,7 @@ var ModuleDispaceEngine = ModuleAbstract.extend({
             for (var i = 0; i < teffs.length; i++) {
                 var effectString = teffs[i];
                 if (event.thing.applyEffect(effectString)) {
-                    this.fe.fd.dispatch({
-                        type: 'teffChange',
+                    this.fe.eq.channel("teffChange").broadcast({
                         thing: event.thing,
                         teff: effectString
                     });

@@ -111,11 +111,10 @@ var HordeAbstract = cc.Class.extend({
         if (newO != turretThing.o) {
             turretThing.o = newO;
             var event = {
-                type: "controlRover",
                 thing: thing,
             };
             event[turretComponent.role] = turretThing;
-            this.fe.fd.dispatch(event);
+            this.fe.eq.channel("controlRover").broadcast(event);
         }
     },
 

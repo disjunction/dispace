@@ -20,6 +20,9 @@ var ViewhullSmartTrack = ViewhullAbstract.extend({
     onEnvision: function(thing) {
         this.addTrack(thing, 'leftTrack', thing.plan.viewhull.leftTrack);
         this.addTrack(thing, 'rightTrack', thing.plan.viewhull.rightTrack);
+
+        // force put subthings in place, to prevent first frame from rendering wrong
+        this.opts.fe.m.de.stepAwakeRover(thing, 0);
     },
 
     applyInterstate: function(newI, thing) {

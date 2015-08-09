@@ -10,14 +10,6 @@ var b2 = require('jsbox2d'),
 
 var radius;
 
-var reusableEvents = {
-    "gutsUpdate": {
-        type: "gutsUpdate",
-        thing: null
-    },
-};
-
-
 /**
  * receives and allies messages from server
  * sends updates about ego to the server
@@ -34,6 +26,12 @@ var ModuleDispaceClient = ModuleAbstract.extend({
         this.shotSerializer = new ShotSerializer({
             fe: fe
         });
+
+        this.prepared = {
+            gutsUpdate: fe.eq.channel("gutsUpdate").prepare(function(template, args) {
+                template.thing = args[0];
+            })
+        };
 
         this.addNativeListeners([
             "ownInterstate",
@@ -128,8 +126,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
             }
 
             serializer.applyInterstateBundle(thing, event[1][i][1]);
-            this.fe.fd.dispatch({
-                type: 'interstate',
+            this.fe.eq.channel("interstate").broadcast({
                 thing: thing,
                 interstate: thing.i
             });
@@ -196,25 +193,22 @@ var ModuleDispaceClient = ModuleAbstract.extend({
                 thing;
             switch (events[i][0]) {
                 case "proxy":
-                    this.fe.fd.dispatch(events[i][1]);
+                    this.fe.eq.channel(payload[0]).broadcast(payload[1]);
                     break;
                 case "shot":
-                    this.fe.fd.dispatch({
-                        type: "shot",
+                    this.fe.eq.channel("shot").broadcast({
                         shot: this.shotSerializer.unserializeShot(payload)
                     });
                     break;
                 case "hit":
-                    this.fe.fd.dispatch({
-                        type: "hit",
+                    this.fe.eq.channel("hit").broadcast({
                         hit: this.shotSerializer.unserializeHit(payload)
                     });
                     break;
                 case "teff":
                     thing = this.fe.thingMap[payload[0]];
                     if (thing) {
-                        this.fe.fd.dispatch({
-                            type: "teff",
+                        this.fe.eq.channel("teff").broadcast({
                             thing: thing,
                             teff: payload[1]
                         });
@@ -225,8 +219,7 @@ var ModuleDispaceClient = ModuleAbstract.extend({
                 case "gup":
                     thing = this.fe.thingMap[payload[0]];
                     thing.g = payload[1];
-                    reusableEvents.gutsUpdate.thing = thing;
-                    this.fe.fd.dispatch(reusableEvents.gutsUpdate);
+                    this.prepared.gutsUpdate.execute(thing);
                     break;
                 default:
                     throw new Error("unknown fev: " + events[i][0]);

@@ -232,7 +232,6 @@ var ModuleProtagonist = ModuleAbstract.extend({
                 turretThing.turretChanged = false;
                 if (controlEvent === undefined) {
                     controlEvent = {
-                        type: 'controlRover',
                         thing: ego,
                     };
                 }
@@ -252,7 +251,7 @@ var ModuleProtagonist = ModuleAbstract.extend({
         }
 
         if (controlEvent !== undefined) {
-            this.fe.fd.dispatch(controlEvent);
+            this.fe.eq.channel("controlRover").broadcast(controlEvent);
         }
 
         this.processMouseOver();

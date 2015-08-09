@@ -51,7 +51,6 @@ var ModuleWillMaster = ModuleAbstract.extend({
     controlRover: function(willId, siblingId, params) {
         var thing = this.fe.thingMap[params.thingId],
             proxyEvent = {
-                type: 'controlRover',
                 thing: thing
             };
 
@@ -76,7 +75,7 @@ var ModuleWillMaster = ModuleAbstract.extend({
             applyTurret('turret2', params.turret2);
         }
 
-        this.fe.fd.dispatch(proxyEvent);
+        this.fe.eq.channel("controlRover").broadcast(proxyEvent);
     },
 
     findSpawnPoint: function(rover) {
@@ -114,8 +113,7 @@ var ModuleWillMaster = ModuleAbstract.extend({
         // if there is already another avatar for the same sibling,
         // then first remove the old one
         if (sibling.avatar && !sibling.avatar.opts.thing.removed) {
-            this.fe.fd.dispatch({
-                type: "respawn",
+            this.fe.eq.channel("respawn").broadcast({
                 thing: sibling.avatar.opts.thing
             });
 

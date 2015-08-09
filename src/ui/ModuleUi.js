@@ -50,8 +50,7 @@ var ModuleUi = ModuleAbstract.extend({
 
     onUpdateQuest: function(event) {
         if (!this.output) {
-            event.type = 'injectQuest';
-            this.fe.fd.dispatch(event);
+            this.fe.eq.channel("injectQuest").broadcast(event);
             return;
         }
 

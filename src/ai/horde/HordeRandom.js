@@ -54,12 +54,11 @@ _p.randomizeInterstate = function(value) {
 
         if (i.changed) {
             var proxyEvent = {
-                type: 'interstate',
                 thing: thing,
                 interstate: i
             };
             i.changed = false;
-            me.opts.fe.fd.dispatch(proxyEvent);
+            me.opts.fe.eq.channel("interstate").broadcast(proxyEvent);
         }
     }
 

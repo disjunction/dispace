@@ -95,8 +95,7 @@ var Shadow = cc.Class.extend({
                 if (this.sibling && this.sibling.avatar) {
                     var thing = this.sibling.avatar.opts.thing;
                     this.thingSerializer.applyInterstateBundle(thing, payload);
-                    this.opts.fe.fd.dispatch({
-                        type: "interstate",
+                    this.opts.fe.eq.channel("interstate").broadcast({
                         thing: thing,
                         interstate: thing.i
                     });

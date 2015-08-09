@@ -75,14 +75,12 @@ var EgoInteractorApplier = cc.Class.extend({
                 return;
             }
             var proxyEvent = {
-                type: 'interstate',
                 thing: me.ego,
                 interstate: event.i
             };
 
-            me.opts.fe.fd.dispatch(proxyEvent);
-            proxyEvent.type = 'ownInterstate';
-            me.opts.fe.fd.dispatch(proxyEvent);
+            me.opts.fe.eq.channel("interstate").broadcast(proxyEvent);
+            me.opts.fe.eq.channel("ownInterstate").broadcast(proxyEvent);
         });
 
         dispatcher.channel("mouseMove").subscribe(function(event) {
@@ -118,8 +116,7 @@ var EgoInteractorApplier = cc.Class.extend({
             var sibling = me.opts.protagonist.sibling,
                 settings = sibling.settings;
             if (settings.last && settings.last.assemblyName) {
-                me.opts.fe.fd.dispatch({
-                    type: "will",
+                me.opts.fe.eq.channel("will").broadcast({
                     operation: "spawnRover",
                     params: {
                         assemblySrc: settings.last.assemblyName

@@ -8,16 +8,12 @@ var cc = require('cc'),
     flame = require('fgtk/flame'),
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract');
 
-var energyRecoveryEvent = {
-    type: "gutsUpdate",
-    thing: null
-};
-
 var ModuleShooter = ModuleAbstract.extend({
     ctor: function(opts) {
         this.opts = opts || {};
         this.shootingThings = [];
         this.energyQueue = require('radiopaque').create();
+
     },
 
     injectFe: function(fe, name) {
@@ -26,6 +22,12 @@ var ModuleShooter = ModuleAbstract.extend({
         this.di = 0; // dispace iteration
         this.importantThings = [];
         this.shooterIid = 0;
+
+        this.prepared = {
+            energyRecoveryEvent: fe.eq.channel("gutsUpdate").prepare(function(template, args) {
+                template.thing = args[0];
+            })
+        };
 
         this.ray = new flame.engine.ray.RayClosestFilterFunction({
             filterFunction: function(thing) {
@@ -71,8 +73,7 @@ var ModuleShooter = ModuleAbstract.extend({
             } else {
                 thing.charging = false;
             }
-            energyRecoveryEvent.thing = thing;
-            this.fe.fd.dispatch(energyRecoveryEvent);
+            this.prepared.energyRecoveryEvent.execute(thing);
         }
     },
 
@@ -91,8 +92,7 @@ var ModuleShooter = ModuleAbstract.extend({
             subjThing.g.e[0] >= subjComponent.params.energyCost) {
 
             var shotResult = this.shoot(subjThing, subjComponent);
-            this.fe.fd.dispatch({
-                type: 'shot',
+            this.fe.eq.channel("shot").broadcast({
                 shot: shotResult.shot
             });
 
@@ -106,8 +106,7 @@ var ModuleShooter = ModuleAbstract.extend({
             }
 
             if (shotResult.hit) {
-                this.fe.fd.dispatch({
-                    type: 'hit',
+                this.fe.eq.channel("hit").broadcast({
                     hit: shotResult.hit
                 });
 
@@ -124,7 +123,7 @@ var ModuleShooter = ModuleAbstract.extend({
                         "+inert"
                     );
 
-                    this.fe.scheduler.scheduleIn(0.5, function() {
+                    this.fe.eq.pushIn(0.5, function() {
                         this.fe.removeThing(shotResult.hit.objThing);
                     }.bind(this));
                 }

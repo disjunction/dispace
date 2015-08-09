@@ -22,10 +22,12 @@ var QuestGuildDrones = cc.Class.extend({
         this.questMaster = questMaster;
         var fe = this.opts.fe;
 
-        fe.fd.addListener('hit', this.onHit.bind(this));
-        fe.fd.addListener('simEnd', this.onSimEnd.bind(this));
-        fe.fd.addListener('respawn', this.onRespawn.bind(this));
-        fe.fd.addListener('injectSibling', this.onInjectSibling.bind(this));
+        fe.eq.subscribeObject(this, [
+            "hit",
+            "simEnd",
+            "respawn",
+            "injectSibling",
+        ]);
 
         this.timeQueue.pushIn(1, true);
 
@@ -72,10 +74,9 @@ var QuestGuildDrones = cc.Class.extend({
     },
 
     dispatchUpdateQuest: function() {
-        this.opts.fe.fd.dispatch({
-            type: "updateQuest",
+        this.opts.fe.eq.channel("updateQuest").broadcast({
             questId: this.opts.questId,
-            stats: this.stats
+            stats: this.stats,
         });
     },
 
@@ -110,8 +111,7 @@ var QuestGuildDrones = cc.Class.extend({
             this.stats.time --;
 
             if (this.stats.time <= 0) {
-                this.opts.fe.fd.dispatch({
-                    type: "alert",
+                this.opts.fe.eq.channel("alert").broadcast({
                     message: this.getFinalMessage()
                 });
                 this.resetStats();
