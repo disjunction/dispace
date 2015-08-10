@@ -39,6 +39,8 @@ var PlanGenerator =  AbstractGenerator.extend({
 
         this.processQuests(this.field, fieldPlan);
 
+        this.cleanupDraftBodies();
+
         return this.field;
     },
 

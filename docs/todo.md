@@ -1,6 +1,4 @@
 # high
- * centry guns
- * invuln
  * cargo and collection
  * shield regen
  * armor regen (repair kit)
@@ -19,4 +17,3 @@
 # low
 
  * switch to browserify / grunt
- * switch to radio instead of EventDispatcher (or develop duqueue or radiopaque)

@@ -34,10 +34,53 @@ var AbstractGenerator = cc.Class.extend({
         this.thingBuilder = this.opts.fe.opts.thingBuilder;
         this.gutsManager = this.opts.fe.opts.gutsManager;
         this.roverBuilder = this.opts.fe.opts.roverBuilder;
+
+        this.field.draftWorld = new b2.World(new b2.Vec2(0, 0));
+        this.thingFinder = new flame.service.ThingFinder({
+            fe: opts.fe,
+            world: this.field.draftWorld
+        });
+        this.bodyBuilder = new flame.engine.BodyBuilder({
+            world: this.field.draftWorld,
+            cosmosManager: this.cosmosManager,
+            assetManager: this.opts.fe.opts.assetManager,
+            config: this.opts.fe.opts.config
+        });
     }
 });
 
 var _p = AbstractGenerator.prototype;
+
+_p.fitsInDraftWorld = function(thing) {
+    if (!thing.plan.body) return true;
+
+    if (!thing.draftBody) {
+        thing.draftBody = this.bodyBuilder.makeBody(thing.plan);
+    }
+
+    thing.draftBody.SetTransform(thing.l, thing.a);
+
+    var aabb = new b2.AABB(),
+        fixture = thing.draftBody.GetFixtureList();
+
+    aabb.lowerBound = new b2.Vec2(thing.l.x, thing.l.y);
+    aabb.upperBound = new b2.Vec2(thing.l.x, thing.l.y);
+
+    while (fixture) {
+        var shape = fixture.GetShape(),
+            childCount = shape.GetChildCount();
+        for (var i = 0; i < childCount; i++) {
+            var shapeAABB = new b2.AABB();
+            shape.ComputeAABB(shapeAABB, thing.draftBody.GetTransform(), i);
+            aabb.Combine(shapeAABB);
+        }
+        fixture = fixture.GetNext();
+    }
+
+    var bodies = this.thingFinder.findAllBodiesInAreaDirty(aabb.lowerBound, aabb.upperBound);
+
+    return bodies.length <= 1;
+};
 
 /**
  * extracted from cluster - just finding the best place for a given thing
@@ -47,14 +90,35 @@ var _p = AbstractGenerator.prototype;
  * @return {boolean} if successful
  */
 _p.attemptPlaceThing = function(thing, params) {
-    var l = cc.clone(Cospeak.readPoint(params.l));
-    if (params.size !== 0) {
-        var size = Cospeak.readSize(params.size);
-        l.x += Math.random() * size.width - size.width / 2;
-        l.y += Math.random() * size.height - size.height / 2;
+    var l,
+        maxAttempts = 5;
+
+    for (var i = 0; i <= maxAttempts; i++) {
+        l = cc.clone(Cospeak.readPoint(params.l));
+
+        if (i == maxAttempts) {
+            this.field.draftWorld.DestroyBody(thing.draftBody);
+            break;
+        }
+
+        if (params.size !== 0) {
+            var size = Cospeak.readSize(params.size);
+            l.x += Math.random() * size.width - size.width / 2;
+            l.y += Math.random() * size.height - size.height / 2;
+        }
+
+        thing.l = l;
+        thing.a = Math.random() * geo.PI2;
+
+        if (this.fitsInDraftWorld(thing)) {
+            break;
+        }
     }
-    thing.l = l;
-    thing.a = Math.random() * geo.PI2;
+
+    if (i == maxAttempts) {
+        console.log('could not find place for ' + thing.plan.from);
+        return false;
+    }
 
     if (params.horde && this.field.ai && this.field.ai.hordes && this.field.ai.hordes[params.horde]) {
         this.field.ai.hordes[params.horde].pushThing(thing);
@@ -123,6 +187,16 @@ _p.tileField = function(plans, tileSize) {
                     }
                 });
             this.field.things.push(thing);
+        }
+    }
+};
+
+_p.cleanupDraftBodies = function() {
+    for (var i = 0; i < this.field.things.length; i++) {
+        var thing = this.field.things[i];
+        if (thing.draftBody) {
+            this.field.draftWorld.DestroyBody(thing.draftBody);
+            delete thing.draftBody;
         }
     }
 };
