@@ -15,7 +15,8 @@ var ViewponAbstract = cc.Class.extend({
     ctor: function(opts) {
         this.opts = opts;
 
-        this.viewport = this.opts.fe.m.c.opts.viewport;
+        this.moduleCocos = this.opts.fe.m.c;
+        this.viewport = this.moduleCocos.opts.viewport;
         this.assetManager = this.opts.fe.opts.assetManager;
     },
 
@@ -46,6 +47,14 @@ var ViewponAbstract = cc.Class.extend({
         var shotThing = this.makeThingBySubplan(subplan);
         this.opts.fe.injectThing(shotThing);
         Thing.stretch(shotThing, shot.l1, shot.l2);
+
+        // this is an ugly hack, forcing node attching after stretch has a clear shot position
+        // makes sense only when ModuleCocosVicnity is used
+        if (shot.subjThing.vicinity) {
+            shotThing.vicinity = shot.subjThing.vicinity;
+            this.moduleCocos.attachState(shotThing);
+        }
+
         this.opts.fe.m.c.syncStateFromThing(shotThing);
     },
 

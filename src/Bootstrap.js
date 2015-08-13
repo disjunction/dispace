@@ -94,6 +94,8 @@ _p.makeBasicFe = function(opts) {
         field: new DispaceField(),
     });
 
+    fe.registerModule(new flame.engine.ModuleVicinity({}), "vicinity");
+
     fe.registerModule(new flame.engine.ModuleBox2d({
         cosmosManager: this.cosmosManager,
         assetManager: this.assetManager,
@@ -163,7 +165,7 @@ _p.makeVisual = function(opts) {
 
     // visual modules
 
-    fe.registerModule(new flame.engine.ModuleCocos({
+    fe.registerModule(new flame.engine.ModuleCocosVicinity({
         viewport: this.viewport,
         stateBuilder: this.stateBuilder,
         config: this.config,

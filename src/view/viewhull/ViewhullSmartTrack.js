@@ -10,11 +10,16 @@ var ViewhullSmartTrack = ViewhullAbstract.extend({
 
     addTrack: function(thing, trackName, trackDef) {
         var plan = cc.clone(this.cosmosManager.get(trackDef.planSrc));
-        thing.things[trackName] = this.opts.fe.opts.thingBuilder.makeThingByPlan(plan);
+        var trackthing = thing.things[trackName] = this.opts.fe.opts.thingBuilder.makeThingByPlan(plan);
 
         // rotation relative to hull
-        thing.things[trackName].a = 0;
-        thing.things[trackName].aa = 0;
+        trackthing.a = 0;
+        trackthing.aa = 0;
+
+        if (thing.vicinity) {
+            trackthing.vicinity = thing.vicinity;
+            trackthing.vicinity.things.push(trackthing);
+        }
     },
 
     onEnvision: function(thing) {

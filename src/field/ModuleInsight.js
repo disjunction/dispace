@@ -48,6 +48,8 @@ var ModuleInsight = ModuleAbstract.extend({
         ]);
 
         this.viewhulls = {};
+
+        this.moduleVicinity = fe.m.vicinity;
     },
 
     displayDamage: function(hit) {
@@ -145,11 +147,19 @@ var ModuleInsight = ModuleAbstract.extend({
     },
 
     onShot: function(event) {
+        if (this.moduleVicinity) {
+            var v = this.moduleVicinity.getVicinityByL(event.shot.l1);
+            if (!v.visible) return;
+        }
         var viewpon = this.getViewponForComponent(event.shot.subjComponent);
         viewpon.showShot(event.shot);
     },
 
     onHit: function(event) {
+        if (this.moduleVicinity) {
+            var v = this.moduleVicinity.getVicinityByL(event.hit.l);
+            if (!v.visible) return;
+        }
         var viewpon = this.getViewponForComponent(event.hit.subjComponent);
         viewpon.showHit(event.hit);
         this.displayDamage(event.hit);

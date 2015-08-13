@@ -91,7 +91,7 @@ _p.fitsInDraftWorld = function(thing) {
  */
 _p.attemptPlaceThing = function(thing, params) {
     var l,
-        maxAttempts = 5;
+        maxAttempts = 10;
 
     for (var i = 0; i <= maxAttempts; i++) {
         l = cc.clone(Cospeak.readPoint(params.l));
@@ -216,6 +216,7 @@ _p.pushEdgeDeco = function() {
     planRight.states.basic.main.a = 90;
 
     var bgPlan = {
+        "ignoreVicinity": true,
         "static": true,
         "states" : {
             "basic" : {

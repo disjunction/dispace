@@ -22,6 +22,8 @@ FE loop:
 
 Client Events:
  * ownInterstate - client-side interstate
+ * moveCamera - fired by Protagonist
+ * sceneReady - once after all cocos-related stuff including camera and viewport is initialized
 
 Master Events (not forwarded to clients):
  * respawn - respawning without being destroyed

@@ -4,6 +4,7 @@
 var cc = require('cc'),
     b2 = require('jsbox2d'),
     smog = require('fgtk/smog'),
+    Cospeak = smog.Cospeak,
     geo = smog.util.geo,
     util = smog.util.util,
     ModuleAbstract = require('fgtk/flame/engine/ModuleAbstract'),
@@ -46,6 +47,7 @@ var ModuleProtagonist = ModuleAbstract.extend({
             "removeThing",
             "injectSibling",
             "gutsUpdate",
+            "sceneReady",
         ]);
     },
 
@@ -96,10 +98,9 @@ var ModuleProtagonist = ModuleAbstract.extend({
         } else {
             additionalScale = 0;
         }
-        var targetScale = this.baseScale - Math.min(this.baseScale * 0.6, additionalScale / 40);
+        var targetScale = this.baseScale - Math.min(this.baseScale - 0.15, additionalScale / 40);
         if (targetScale != this.opts.viewport.camera.scale) {
             this.opts.viewport.scaleCameraTo(targetScale);
-        } else {
         }
     },
 
@@ -169,6 +170,11 @@ var ModuleProtagonist = ModuleAbstract.extend({
         }
 
         this.opts.viewport.moveCameraToLocationXY(shiftedX, shiftedY);
+
+        // we fire inaccurate camera coordinates (without shift),
+        // but this way the Vec2 object is reused and coordinates are exactly the thing coords
+        this.fe.eq.channel("moveCamera").broadcast(v1);
+
         if (this.opts.dynamicCamera) {
             this.adjustCameraScale();
         }
@@ -276,6 +282,26 @@ var ModuleProtagonist = ModuleAbstract.extend({
         if (barPanel && barPanel.thing == this.ego) {
             barPanel.doUpdate(true);
         }
+    },
+
+    // try to find a nice point to show before spawn
+    onSceneReady: function(event) {
+        var l = cc.p(0, 0),
+            field = this.fe.field;
+
+        if (field.spawnPoints) {
+            if (field.spawnPoints.default) {
+                l = Cospeak.readPoint(field.spawnPoints.default.l);
+            } else {
+                for (var i in field.spawnPoints) {
+                    l = Cospeak.readPoint(field.spawnPoints[i].l);
+                    break;
+                }
+            }
+        }
+
+        this.opts.viewport.moveCameraToLocationXY(l.x, l.y);
+        this.fe.eq.channel("moveCamera").broadcast(l);
     },
 });
 

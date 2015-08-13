@@ -113,10 +113,10 @@ var ModuleDispaceServer = ModuleAbstract.extend({
         }
     },
 
-    proxy: function(event) {
+    proxy: function(channel, event) {
         this.fevBuffer.push([
             "proxy",
-            event
+            [channel, event]
         ]);
     },
 
@@ -290,13 +290,13 @@ var ModuleDispaceServer = ModuleAbstract.extend({
     },
 
     onInjectQuest: function(event) {
-        this.proxy(event);
+        this.proxy("injectQuest", event);
     },
     onUpdateQuest: function(event) {
-        this.proxy(event);
+        this.proxy("updateQuest", event);
     },
     onAlert: function(event) {
-        this.proxy(event);
+        this.proxy("alert", event);
     },
 });
 
