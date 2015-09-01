@@ -26,7 +26,7 @@ var TurretPointerHudComponent = SelfUpdater.extend({
         });
         this.opts.fe.m.c.envision(this.cursorThing);
 
-        this.aniNode = this.cursorThing.state.nodes.main;
+        this.aniNode = this.cursorThing.look.nodes.main;
 
         this.fof = this.opts.fe.opts.fof;
 
@@ -81,7 +81,7 @@ var TurretPointerHudComponent = SelfUpdater.extend({
             return;
         }
 
-        var node = this.cursorThing.state.nodes.main;
+        var node = this.cursorThing.look.nodes.main;
         this.opts.fe.m.b.rayCastFromThing(this.ray, this.turretThing, this.radius);
 
         node.setRotation(- this.turretThing.a * geo.rad2Deg);

@@ -5,7 +5,7 @@
 Most of the resources are referrred as "plans"
 
 Implementation is partially in Cospeak.js, and partially adhoc where it is used,
-e.g. in flame/view/StateBuilder.js
+e.g. in flame/view/LookBuilder.js
 
 ## Basic plan elements
 

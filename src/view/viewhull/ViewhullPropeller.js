@@ -14,13 +14,13 @@ var ViewhullPropeller = ViewhullAbstract.extend({
         switch (true) {
             case map[rofCore.TURN_LEFT]:
                 if (thing.stateName != 'driveLeft') {
-                    modCocos.changeState(thing, 'driveLeft');
+                    modCocos.changeLook(thing, 'driveLeft');
                 }
                 break;
 
             case map[rofCore.TURN_RIGHT]:
                 if (thing.stateName != 'driveRight') {
-                    modCocos.changeState(thing, 'driveRight');
+                    modCocos.changeLook(thing, 'driveRight');
                 }
                 break;
 
@@ -29,7 +29,7 @@ var ViewhullPropeller = ViewhullAbstract.extend({
                      map[rofCore.ACCELERATE] ||
                      map[rofCore.DECELERATE]
                 )):
-                modCocos.changeState(thing, 'driveForward');
+                modCocos.changeLook(thing, 'driveForward');
                 break;
 
             case (thing.stateName != 'stop' &&
@@ -39,7 +39,7 @@ var ViewhullPropeller = ViewhullAbstract.extend({
                      map[rofCore.TURN_RIGHT] ||
                      map[rofCore.DECELERATE]
                 )):
-                modCocos.changeState(thing, 'stop');
+                modCocos.changeLook(thing, 'stop');
                 break;
         }
     }

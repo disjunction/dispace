@@ -1,3 +1,5 @@
+
+
 var cc = require('cc'),
     flame = require('fgtk/flame'),
     Thing = flame.entity.Thing;

@@ -39,18 +39,18 @@ var ViewhullSmartTrack = ViewhullAbstract.extend({
         var map = newI.map;
         switch (true) {
             case map[rofCore.DECELERATE] && thing.stateName != 'driveBackward':
-                modCocos.changeState(thing.things.leftTrack, 'backward', true);
-                modCocos.changeState(thing.things.rightTrack, 'backward', true);
+                modCocos.changeLook(thing.things.leftTrack, 'backward', true);
+                modCocos.changeLook(thing.things.rightTrack, 'backward', true);
                 break;
 
             case map[rofCore.TURN_RIGHT] && ! map[rofCore.ACCELERATE]:
-                modCocos.changeState(thing.things.leftTrack, 'forward', true);
-                modCocos.changeState(thing.things.rightTrack, 'backward', true);
+                modCocos.changeLook(thing.things.leftTrack, 'forward', true);
+                modCocos.changeLook(thing.things.rightTrack, 'backward', true);
                 break;
 
             case map[rofCore.TURN_LEFT] && ! map[rofCore.ACCELERATE]:
-                modCocos.changeState(thing.things.leftTrack, 'backward', true);
-                modCocos.changeState(thing.things.rightTrack, 'forward', true);
+                modCocos.changeLook(thing.things.leftTrack, 'backward', true);
+                modCocos.changeLook(thing.things.rightTrack, 'forward', true);
                 break;
 
             case (
@@ -58,8 +58,8 @@ var ViewhullSmartTrack = ViewhullAbstract.extend({
                      map[rofCore.TURN_LEFT] ||
                      map[rofCore.TURN_RIGHT]
                 ):
-                modCocos.changeState(thing.things.leftTrack, 'forward', true);
-                modCocos.changeState(thing.things.rightTrack, 'forward', true);
+                modCocos.changeLook(thing.things.leftTrack, 'forward', true);
+                modCocos.changeLook(thing.things.rightTrack, 'forward', true);
                 break;
 
             case !(
@@ -68,8 +68,8 @@ var ViewhullSmartTrack = ViewhullAbstract.extend({
                      map[rofCore.TURN_RIGHT] ||
                      map[rofCore.DECELERATE]
                 ):
-                modCocos.changeState(thing.things.leftTrack, 'stop', true);
-                modCocos.changeState(thing.things.rightTrack, 'stop', true);
+                modCocos.changeLook(thing.things.leftTrack, 'stop', true);
+                modCocos.changeLook(thing.things.rightTrack, 'stop', true);
                 break;
         }
     }

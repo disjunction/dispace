@@ -150,7 +150,7 @@ _p.makeVisual = function(opts) {
         cosmosManager: this.cosmosManager
     });
 
-    this.stateBuilder = new flame.view.StateBuilder({
+    this.lookBuilder = new flame.view.LookBuilder({
         nb : this.nb,
         config: this.config
     });
@@ -167,7 +167,7 @@ _p.makeVisual = function(opts) {
 
     fe.registerModule(new flame.engine.ModuleCocosVicinity({
         viewport: this.viewport,
-        stateBuilder: this.stateBuilder,
+        lookBuilder: this.lookBuilder,
         config: this.config,
         containerPlans: this.cosmosManager.getAllInDirectory('container', false, true)
     }),  'c');

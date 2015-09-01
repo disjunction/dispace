@@ -30,10 +30,10 @@ var GutsHudComponent = SelfUpdater.extend({
         this.viewport = opts.viewport;
         this.cosmosManager = this.fe.opts.cosmosManager;
         this.moduleCocos = this.fe.m.c;
-        this.stateBuilder = this.moduleCocos.opts.stateBuilder;
+        this.lookBuilder = this.moduleCocos.opts.lookBuilder;
 
         this.gutsPlan = this.cosmosManager.get('thing/ui/guts-hud');
-        this.statsState = this.stateBuilder.makeState(this.gutsPlan, 'basic');
+        this.statsLook = this.lookBuilder.makeLook(this.gutsPlan, 'basic');
 
         this.watchList = {};
 
@@ -44,7 +44,7 @@ var GutsHudComponent = SelfUpdater.extend({
         };
 
         for (var j in this.animate) {
-            var frames = this.statsState.nodes[j].plan.spriteCache.frames;
+            var frames = this.statsLook.nodes[j].plan.spriteCache.frames;
             for (var i = 0; i < frames.length; i++) {
                 var a = new cc.Animation([frames[i]], 0.01);
                 this.animate[j].push(cc.animate(a));
@@ -82,7 +82,7 @@ var GutsHudComponent = SelfUpdater.extend({
 
     updateDisplayGuts: function(watchElement) {
         var thing = watchElement.thing,
-            container = thing.state.nodes.gutsHud,
+            container = thing.look.nodes.gutsHud,
             childIndex = 1;
 
         if (!container) return;
@@ -109,12 +109,12 @@ var GutsHudComponent = SelfUpdater.extend({
 
             var radius = this.uiController.getHudRadius(thing),
                 plan = this.cosmosManager.get('thing/ui/guts-hud'),
-                state = this.stateBuilder.makeState(plan, 'basic'),
+                look = this.lookBuilder.makeLook(plan, 'basic'),
                 scale = Math.sqrt(radius / 1),
                 localL = cc.p(radius / scale, 0);
 
 
-            this.moduleCocos.attachStateToContainerNode(state, thing, localL, 'gutsHud');
+            this.moduleCocos.attachLookToContainerNode(look, thing, localL, 'gutsHud');
             var container = this.moduleCocos.getContainerNode(thing, 'gutsHud');
             container.setScaleX(scale);
             container.setScaleY(scale);
@@ -124,14 +124,14 @@ var GutsHudComponent = SelfUpdater.extend({
     },
 
     removeFromWatchList: function(thing) {
-        if (thing.state && thing.state.nodes.gutsHud) {
+        if (thing.look && thing.look.nodes.gutsHud) {
             var action = cc.sequence([
                 cc.fadeTo(0.3, 0),
                 cc.removeSelf(),
             ]);
 
-            thing.state.nodes.gutsHud.runAction(action);
-            delete thing.state.nodes.gutsHud;
+            thing.look.nodes.gutsHud.runAction(action);
+            delete thing.look.nodes.gutsHud;
         }
         delete this.watchList[thing.id];
     },

@@ -1,10 +1,12 @@
+/*jslint node: true */
+"use strict";
+
 var cc = require('cc'),
     smog = require('fgtk/smog');
 
 var Item = cc.Class.extend({
-    ctor: function(opts, type, n) {
+    ctor: function(opts, type) {
         this.opts = opts || smog.EMPTY;
-        this.n = n || 1;
         if (!this.type) {
             if (!type) {
                 throw new Error('item MUST have a type');

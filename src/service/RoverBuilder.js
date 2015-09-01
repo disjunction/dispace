@@ -1,3 +1,6 @@
+/*jslint node: true */
+"use strict";
+
 var cc = require('cc'),
     flame = require('fgtk/flame'),
     smog = require('fgtk/smog'),
@@ -94,7 +97,8 @@ var RoverBuilder = cc.Class.extend({
         if (!assemblyPlan.components) {
             throw new Error('assemblyPlan must contain "components" property');
         }
-        var components = {};
+        var components = {},
+            mark;
         for (var i in assemblyPlan.components) {
             var component = assemblyPlan.components[i],
                 m = component.match(/(.+):(.+)/);

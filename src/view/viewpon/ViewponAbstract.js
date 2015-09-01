@@ -24,9 +24,9 @@ var ViewponAbstract = cc.Class.extend({
         var distance = shot.subjComponent.params.range * shot.fraction;
         var distances = this.opts.viewponPlan.shot.distances;
 
-        // if the subcomponent is drawable + has shoot state
+        // if the subcomponent is drawable + has shoot look
         if (shot.subjComponent.thing.plan.states && shot.subjComponent.thing.plan.states.shoot) {
-            this.opts.fe.m.c.changeState(shot.subjComponent.thing, 'shoot');
+            this.opts.fe.m.c.changeLook(shot.subjComponent.thing, 'shoot');
         }
 
         for (var i = 0; i < distances.length; i++) {
@@ -52,10 +52,10 @@ var ViewponAbstract = cc.Class.extend({
         // makes sense only when ModuleCocosVicnity is used
         if (shot.subjThing.vicinity) {
             shotThing.vicinity = shot.subjThing.vicinity;
-            this.moduleCocos.attachState(shotThing);
+            this.moduleCocos.attachLook(shotThing);
         }
 
-        this.opts.fe.m.c.syncStateFromThing(shotThing);
+        this.opts.fe.m.c.syncLookFromThing(shotThing);
     },
 
     makeThingBySubplan: function(subplan) {
@@ -105,11 +105,11 @@ var ViewponAbstract = cc.Class.extend({
         var hitThing = this.makeThingBySubplan(subplan);
 
         // dynamic hit is only available for visible and embodied bodies ;)
-        if (hit.objThing && hit.objThing.state && hit.objThing.body) {
-            var state = this.opts.fe.m.c.opts.stateBuilder.makeState(hitThing.plan, hitThing.s),
+        if (hit.objThing && hit.objThing.look && hit.objThing.body) {
+            var look = this.opts.fe.m.c.opts.lookBuilder.makeLook(hitThing.plan, hitThing.s),
                 localL = hit.objThing.body.GetLocalPoint(hit.l);
 
-            this.opts.fe.m.c.attachStateToContainerNode(state, hit.objThing, localL, 'effects');
+            this.opts.fe.m.c.attachLookToContainerNode(look, hit.objThing, localL, 'effects');
         } else {
             hitThing.l = hit.l;
             this.opts.fe.injectThing(hitThing);

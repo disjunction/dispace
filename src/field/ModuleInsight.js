@@ -96,7 +96,7 @@ var ModuleInsight = ModuleAbstract.extend({
         this.fe.m.c.envision(thing);
 
         for (i in hit.damage) {
-            var node = thing.state.nodes[i];
+            var node = thing.look.nodes[i];
             node.setPosition(node.plan.damageStart);
         }
     },
@@ -169,8 +169,10 @@ var ModuleInsight = ModuleAbstract.extend({
         var important = this.fe.m.de.importantThings;
         for (var i = 0; i < important.length; i++) {
             var thing = important[i];
-            if (thing.things) for (var j in thing.things) {
-                this.fe.m.c.syncStateFromThing(thing.things[j]);
+            if (thing.things) {
+                for (var j in thing.things) {
+                    this.fe.m.c.syncLookFromThing(thing.things[j]);
+                }
             }
         }
     },

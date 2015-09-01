@@ -88,7 +88,7 @@ var EgoInteractorApplier = cc.Class.extend({
                 mouse = me.opts.mouseThing;
                 mouse.l.x = event._x;
                 mouse.l.y = event._y;
-                mouse.state.nodes.main.setPosition(mouse.l);
+                mouse.look.nodes.main.setPosition(mouse.l);
             }
         });
 

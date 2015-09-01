@@ -1,3 +1,5 @@
+"use strict";
+
 var cc = require('cc'),
     flame = require('fgtk/flame'),
     ViewhullAbstract = require('./ViewhullAbstract'),
@@ -11,7 +13,7 @@ var ViewhullTrack = ViewhullAbstract.extend({
         var map = newI.map;
         switch (true) {
             case map[rofCore.DECELERATE] && thing.stateName != 'driveBackward':
-                modCocos.changeState(thing, 'driveBackward');
+                modCocos.changeLook(thing, 'driveBackward');
                 break;
             case (thing.stateName != 'driveForward' &&
                  (
@@ -19,7 +21,7 @@ var ViewhullTrack = ViewhullAbstract.extend({
                      map[rofCore.TURN_LEFT] ||
                      map[rofCore.TURN_RIGHT]
                 )):
-                modCocos.changeState(thing, 'driveForward');
+                modCocos.changeLook(thing, 'driveForward');
                 break;
             case (thing.stateName != 'stop' &&
                  !(
@@ -28,7 +30,7 @@ var ViewhullTrack = ViewhullAbstract.extend({
                      map[rofCore.TURN_RIGHT] ||
                      map[rofCore.DECELERATE]
                 )):
-                modCocos.changeState(thing, 'stop');
+                modCocos.changeLook(thing, 'stop');
                 break;
         }
     }
